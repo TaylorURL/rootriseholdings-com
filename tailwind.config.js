@@ -1,0 +1,51 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,jsx}'],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['var(--ds-font-sans)'],
+        mono: ['var(--ds-font-mono)'],
+      },
+      colors: {
+        bg: 'var(--ds-bg)',
+        'bg-elevated': 'var(--ds-bg-elevated)',
+        surface: 'var(--ds-surface)',
+        'surface-2': 'var(--ds-surface-2)',
+        'surface-3': 'var(--ds-surface-3)',
+        border: 'var(--ds-border)',
+        'border-strong': 'var(--ds-border-strong)',
+        'border-hover': 'var(--ds-border-hover)',
+        text: 'var(--ds-text)',
+        'text-muted': 'var(--ds-text-muted)',
+        'text-faint': 'var(--ds-text-faint)',
+        accent: 'var(--ds-accent)',
+        'accent-bright': 'var(--ds-accent-bright)',
+        'accent-soft': 'var(--ds-accent-soft)',
+        'on-accent': 'var(--ds-on-accent)',
+        positive: 'var(--ds-positive)',
+        'positive-soft': 'var(--ds-positive-soft)',
+        warning: 'var(--ds-warning)',
+        'warning-soft': 'var(--ds-warning-soft)',
+        danger: 'var(--ds-danger)',
+        'danger-soft': 'var(--ds-danger-soft)',
+        cyan: 'var(--ds-cyan)',
+      },
+      borderRadius: {
+        xs: 'var(--ds-radius-xs)',
+        sm: 'var(--ds-radius-sm)',
+        md: 'var(--ds-radius-md)',
+        lg: 'var(--ds-radius-lg)',
+        xl: 'var(--ds-radius-xl)',
+        '2xl': 'var(--ds-radius-2xl)',
+        full: 'var(--ds-radius-full)',
+      },
+      boxShadow: {
+        sm: 'var(--ds-shadow-sm)',
+        md: 'var(--ds-shadow-md)',
+        lg: 'var(--ds-shadow-lg)',
+      },
+    },
+  },
+  plugins: [],
+}

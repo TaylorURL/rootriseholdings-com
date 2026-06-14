@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap');
+
+:root {
+  --ds-font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  --ds-font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --ds-radius-xs: 4px;
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-xl: 16px;
+  --ds-radius-2xl: 22px;
+  --ds-radius-full: 9999px;
+  --ds-duration-fast: 120ms;
+  --ds-duration-base: 180ms;
+  --ds-duration-slow: 280ms;
+  --ds-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ds-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ds-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ds-shadow-sm: 0 1px 1px var(--ds-shadow-ambient), 0 1px 2px var(--ds-shadow-key);
+  --ds-shadow-md: 0 1px 1px var(--ds-shadow-ambient), 0 2px 4px var(--ds-shadow-key), 0 6px 14px var(--ds-shadow-key);
+  --ds-shadow-lg: 0 1px 1px var(--ds-shadow-ambient), 0 4px 8px var(--ds-shadow-key), 0 16px 36px var(--ds-shadow-key);
+}
+
+.ds-root, .ds-root[data-theme='dark'], [data-theme='dark'] {
+  --ds-bg: #000000;
+  --ds-bg-elevated: #0a0a0a;
+  --ds-surface: #111111;
+  --ds-surface-2: #1a1a1a;
+  --ds-surface-3: #262626;
+  --ds-border: rgba(255, 255, 255, 0.08);
+  --ds-border-strong: rgba(255, 255, 255, 0.14);
+  --ds-border-input: rgba(255, 255, 255, 0.26);
+  --ds-border-hover: rgba(168, 85, 247, 0.5);
+  --ds-text: #fafafa;
+  --ds-text-muted: #a3a3a3;
+  --ds-text-faint: #7c7c7c;
+  --ds-accent: #a855f7;
+  --ds-accent-bright: #c084fc;
+  --ds-accent-glow: rgba(168, 85, 247, 0.40);
+  --ds-accent-soft: rgba(168, 85, 247, 0.14);
+  --ds-accent-softer: rgba(168, 85, 247, 0.06);
+  --ds-on-accent: #ffffff;
+  --ds-positive: #4ade80;
+  --ds-positive-soft: rgba(74, 222, 128, 0.14);
+  --ds-warning: #fbbf24;
+  --ds-warning-soft: rgba(251, 191, 36, 0.14);
+  --ds-danger: #f87171;
+  --ds-danger-soft: rgba(248, 113, 113, 0.14);
+  --ds-cyan: #22d3ee;
+  --ds-cyan-soft: rgba(34, 211, 238, 0.16);
+  --ds-overlay: rgba(0, 0, 0, 0.66);
+  --ds-backdrop: rgba(10, 10, 10, 0.72);
+  --ds-sheen: rgba(255, 255, 255, 0.06);
+  --ds-sheen-strong: rgba(255, 255, 255, 0.1);
+  --ds-glaze: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0) 38%);
+  --ds-inset-line: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --ds-field-inset: inset 0 1px 2px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  --ds-shadow-ambient: rgba(0, 0, 0, 0.5);
+  --ds-shadow-key: rgba(0, 0, 0, 0.45);
+  --ds-accent-face: linear-gradient(180deg, #c084fc 0%, #a855f7 52%, #9333ea 100%);
+  --ds-accent-face-hover: linear-gradient(180deg, #d8b4fe 0%, #c084fc 52%, #a855f7 100%);
+  --ds-raised-face: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 50%, rgba(255, 255, 255, 0) 100%);
+  color-scheme: dark;
+}
+
+.ds-root[data-theme='light'], [data-theme='light'] {
+  --ds-bg: #f3f5f8;
+  --ds-bg-elevated: #ffffff;
+  --ds-surface: #fafbfd;
+  --ds-surface-2: #ebeef2;
+  --ds-surface-3: #dde1e7;
+  --ds-border: rgba(15, 23, 42, 0.09);
+  --ds-border-strong: rgba(15, 23, 42, 0.16);
+  --ds-border-input: rgba(15, 23, 42, 0.22);
+  --ds-border-hover: rgba(124, 58, 237, 0.5);
+  --ds-text: #0a0a0a;
+  --ds-text-muted: #525252;
+  --ds-text-faint: #767676;
+  --ds-accent: #7c3aed;
+  --ds-accent-bright: #9333ea;
+  --ds-accent-glow: rgba(124, 58, 237, 0.30);
+  --ds-accent-soft: rgba(124, 58, 237, 0.12);
+  --ds-on-accent: #ffffff;
+  --ds-positive: #16a34a;
+  --ds-positive-soft: rgba(22, 163, 74, 0.12);
+  --ds-warning: #d97706;
+  --ds-warning-soft: rgba(217, 119, 6, 0.12);
+  --ds-danger: #dc2626;
+  --ds-danger-soft: rgba(220, 38, 38, 0.1);
+  --ds-overlay: rgba(15, 23, 42, 0.4);
+  --ds-backdrop: rgba(255, 255, 255, 0.72);
+  --ds-sheen: rgba(255, 255, 255, 0.9);
+  --ds-sheen-strong: rgba(255, 255, 255, 1);
+  --ds-glaze: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 40%);
+  --ds-inset-line: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --ds-field-inset: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ds-shadow-ambient: rgba(15, 23, 42, 0.06);
+  --ds-shadow-key: rgba(15, 23, 42, 0.07);
+  --ds-accent-face: linear-gradient(180deg, #9333ea 0%, #7c3aed 52%, #6d28d9 100%);
+  --ds-accent-face-hover: linear-gradient(180deg, #a855f7 0%, #9333ea 52%, #7c3aed 100%);
+  --ds-raised-face: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.6) 100%);
+  color-scheme: light;
+}
+
+.ds-root {
+  font-family: var(--ds-font-sans);
+  background: var(--ds-bg);
+  color: var(--ds-text);
+  font-feature-settings: 'ss01', 'ss02', 'cv11';
+  -webkit-font-smoothing: antialiased;
+}
