@@ -6,7 +6,7 @@ import Badge from '../components/ui/Badge'
 import Select from '../components/ui/Select'
 import { tradeHistory } from '../data/mockData'
 import { cn } from '../lib/cn'
-import { durationBetween, formatCurrency, formatPercent, formatPips, formatPrice, signedColor } from '../lib/format'
+import { durationBetween, formatCurrency, formatPips, formatPrice, signedColor } from '../lib/format'
 
 const DATE_RANGE_OPTIONS = [
   { value: '7d', label: 'Last 7 days' },
