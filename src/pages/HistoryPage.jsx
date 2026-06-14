@@ -122,7 +122,7 @@ export default function HistoryPage() {
       </PageSection>
 
       <PageSection>
-        <Card title="Trade History" padded={false} action={<span className="text-xs text-text-faint">{formatPercent(winRate - 0)} win rate</span>}>
+        <Card title="Trade History" padded={false} action={<span className="text-xs text-text-faint">{winRate.toFixed(0)}% win rate</span>}>
           <Table columns={columns} rows={visibleTrades} footer={footer} empty="No trades match your filters." />
         </Card>
       </PageSection>
