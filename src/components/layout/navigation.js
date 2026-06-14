@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, Layers, History, User } from 'lucide-react'
+import { LayoutDashboard, TrendingUp, Layers, History, Lightbulb, User } from 'lucide-react'
 
 /** Primary navigation items shared by the sidebar and header title resolver. */
 export const NAV_ITEMS = [
@@ -6,6 +6,7 @@ export const NAV_ITEMS = [
   { to: '/markets', label: 'Markets', icon: TrendingUp },
   { to: '/positions', label: 'Positions', icon: Layers },
   { to: '/history', label: 'History', icon: History },
+  { to: '/insights', label: 'Insights', icon: Lightbulb },
   { to: '/account', label: 'Account', icon: User },
 ]
 
