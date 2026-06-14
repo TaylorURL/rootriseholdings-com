@@ -30,6 +30,10 @@ export default {
         danger: 'var(--ds-danger)',
         'danger-soft': 'var(--ds-danger-soft)',
         cyan: 'var(--ds-cyan)',
+        purple: 'var(--ds-purple)',
+        'purple-bright': 'var(--ds-purple-bright)',
+        'purple-soft': 'var(--ds-purple-soft)',
+        'purple-glow': 'var(--ds-purple-glow)',
       },
       borderRadius: {
         xs: 'var(--ds-radius-xs)',
