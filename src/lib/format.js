@@ -46,6 +46,26 @@ export function signedColor(value) {
 }
 
 /**
+ * Decimal precision for an FX price, by quote convention.
+ * JPY-quoted pairs use 3 decimals; high-value exotics use 4; the rest use 5.
+ * @param {string} pair
+ */
+export function pairDecimals(pair) {
+  if (pair.includes('JPY')) return 3
+  if (/TRY|MXN|ZAR/.test(pair)) return 4
+  return 5
+}
+
+/**
+ * Format an FX price using the correct precision for its pair.
+ * @param {number} value
+ * @param {string} pair
+ */
+export function formatPrice(value, pair) {
+  return value.toFixed(pairDecimals(pair))
+}
+
+/**
  * Compute the elapsed duration between two "YYYY-MM-DD HH:mm" timestamps.
  * @param {string} startTime
  * @param {string} endTime
