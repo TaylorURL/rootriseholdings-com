@@ -98,6 +98,16 @@ function SignalRow({ signal }) {
   )
 }
 
+/** Single sentiment read rendered as a label plus a colored verdict pill. */
+function SentimentGauge({ label, value, tone }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface-2/40 px-4 py-3">
+      <span className="text-sm text-text-muted">{label}</span>
+      <Badge variant={tone}>{value}</Badge>
+    </div>
+  )
+}
+
 /** Column card grouping signals of a single direction. */
 function SignalColumn({ title, signals, action }) {
   return (
