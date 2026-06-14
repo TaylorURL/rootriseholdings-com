@@ -1,30 +1,40 @@
-import { Wallet, TrendingUp, Layers, Gauge, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { Wallet, Coins, Landmark, TrendingUp, CalendarRange, CalendarDays } from 'lucide-react'
 import { PageContainer, PageSection } from '../components/layout/PageContainer'
+import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import KpiCard from '../components/ui/KpiCard'
-import PriceChart from '../components/ui/PriceChart'
 import Badge from '../components/ui/Badge'
-import { account, currencyPairs, openPositions, tradeHistory } from '../data/mockData'
+import Sparkline from '../components/ui/Sparkline'
+import EquityCurveChart from '../components/ui/EquityCurveChart'
+import {
+  account,
+  currencyPairs,
+  openPositions,
+  tradeHistory,
+  performance,
+  generateEquityCurve,
+  generateSparkline,
+} from '../data/mockData'
 import { cn } from '../lib/cn'
-import { formatCurrency, formatPercent, signedColor } from '../lib/format'
+import { formatCurrency, formatPercent, formatPips, formatPrice, signedColor } from '../lib/format'
 
-const watchlist = currencyPairs.slice(0, 4)
-const summaryPositions = openPositions.slice(0, 3)
-const recentTrades = tradeHistory.slice(0, 3)
+const equityCurve = generateEquityCurve()
+const majorPairs = currencyPairs.filter((entry) => entry.category === 'Majors')
+const recentTrades = tradeHistory.slice(0, 4)
 
-/** Single row in the dashboard market-watch mini table. */
-function MarketWatchRow({ pair, bid, ask, changePct }) {
+/** Deterministic 10-point sparkline per major pair for the market pulse strip. */
+const PULSE_SPARKLINES = majorPairs.reduce((accumulator, pair, index) => {
+  accumulator[pair.pair] = generateSparkline(pair.bid, 10, 0.005, index + 11)
+  return accumulator
+}, {})
+
+/** Card showing one headline performance metric for the summary row. */
+function PerformanceSummaryCard({ label, children }) {
   return (
-    <li className="flex items-center justify-between gap-3 rounded-md px-2.5 py-2 transition-colors hover:bg-surface-2">
-      <span className="font-mono text-sm font-medium text-text">{pair}</span>
-      <div className="flex items-center gap-4 font-mono text-xs tabular-nums">
-        <span className="text-text-muted">{bid.toFixed(pair.includes('JPY') ? 3 : 5)}</span>
-        <span className="text-text-faint">{ask.toFixed(pair.includes('JPY') ? 3 : 5)}</span>
-        <span className={cn('w-14 text-right font-medium', signedColor(changePct))}>
-          {formatPercent(changePct)}
-        </span>
-      </div>
-    </li>
+    <div className="rounded-lg border border-border bg-surface-2/40 p-5">
+      <p className="text-xs font-medium uppercase tracking-wide text-text-faint">{label}</p>
+      {children}
+    </div>
   )
 }
 
@@ -32,115 +42,199 @@ export default function DashboardPage() {
   return (
     <PageContainer>
       <PageSection>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <PageHeader
+          title="Dashboard"
+          subtitle="Good morning, Trenton · Sunday, 14 June 2026"
+        />
+      </PageSection>
+
+      <PageSection>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
           <KpiCard
-            label="Account Balance"
+            label="Balance"
             value={formatCurrency(account.balance)}
-            changePct={account.weekPnlPct}
-            changeLabel="this week"
+            changePct={account.monthPnlPct}
+            changeLabel="30d"
             icon={Wallet}
             active
           />
           <KpiCard
-            label="Today's P&L"
+            label="Equity"
+            value={formatCurrency(account.equity)}
+            changePct={account.todayPnlPct}
+            changeLabel="today"
+            icon={Coins}
+          />
+          <KpiCard
+            label="Free Margin"
+            value={formatCurrency(account.freeMargin)}
+            changePct={+1.84}
+            changeLabel="available"
+            icon={Landmark}
+          />
+          <KpiCard
+            label="Today P&L"
             value={formatCurrency(account.todayPnl, { signed: true })}
             changePct={account.todayPnlPct}
             icon={TrendingUp}
             valueClassName={signedColor(account.todayPnl)}
           />
           <KpiCard
-            label="Open Positions"
-            value={account.openPositions}
-            changeLabel="across 4 pairs"
-            icon={Layers}
+            label="Week P&L"
+            value={formatCurrency(account.weekPnl, { signed: true })}
+            changePct={account.weekPnlPct}
+            icon={CalendarRange}
+            valueClassName={signedColor(account.weekPnl)}
           />
           <KpiCard
-            label="Margin Level"
-            value={`${account.marginLevel.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`}
-            changeLabel="healthy"
-            icon={Gauge}
-            valueClassName="text-positive"
+            label="Month P&L"
+            value={formatCurrency(account.monthPnl, { signed: true })}
+            changePct={account.monthPnlPct}
+            icon={CalendarDays}
+            valueClassName={signedColor(account.monthPnl)}
           />
         </div>
       </PageSection>
 
       <PageSection>
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-          <Card title="EUR/USD" className="xl:col-span-2" action={<span className="text-xs text-text-faint">48h · Spot</span>}>
-            <PriceChart pair="EUR/USD" baseValue={1.08423} changePct={0.31} />
-          </Card>
+        <Card
+          title="Equity Curve"
+          action={<span className="text-xs text-text-faint">Last 30 days · Balance growth</span>}
+        >
+          <EquityCurveChart data={equityCurve} height={300} xTickInterval={4} />
+        </Card>
+      </PageSection>
 
-          <Card title="Market Watch" action={<span className="text-xs text-text-faint">Bid / Ask / Chg</span>}>
-            <ul className="space-y-0.5">
-              {watchlist.map((entry) => (
-                <MarketWatchRow key={entry.pair} {...entry} />
-              ))}
-            </ul>
-          </Card>
+      <PageSection>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <PerformanceSummaryCard label="Win Rate">
+            <div className="mt-3 flex items-baseline justify-between">
+              <span className="font-mono text-2xl font-semibold tabular-nums text-text">{performance.winRate}%</span>
+              <span className="text-xs text-text-faint">last 30d</span>
+            </div>
+            <div
+              className="mt-3 h-2 overflow-hidden rounded-full bg-surface-2"
+              role="meter"
+              aria-valuenow={performance.winRate}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Win rate"
+            >
+              <div className="h-full rounded-full bg-[var(--ds-accent-face)]" style={{ width: `${performance.winRate}%` }} />
+            </div>
+          </PerformanceSummaryCard>
+
+          <PerformanceSummaryCard label="Profit Factor">
+            <p className="mt-3 font-mono text-2xl font-semibold tabular-nums text-positive">
+              {performance.profitFactor.toFixed(2)}
+            </p>
+            <p className="mt-3 text-xs text-text-faint">Gross profit / gross loss</p>
+          </PerformanceSummaryCard>
+
+          <PerformanceSummaryCard label="Avg Trade Duration">
+            <p className="mt-3 font-mono text-2xl font-semibold tabular-nums text-text">{performance.avgTradeDuration}</p>
+            <p className="mt-3 text-xs text-text-faint">Across {performance.totalTrades} trades</p>
+          </PerformanceSummaryCard>
         </div>
+      </PageSection>
+
+      <PageSection>
+        <Card title="Market Pulse" action={<span className="text-xs text-text-faint">6 major pairs</span>} padded={false}>
+          <div className="ds-scroll flex gap-3 overflow-x-auto p-5">
+            {majorPairs.map((entry) => (
+              <div
+                key={entry.pair}
+                className="flex w-44 shrink-0 flex-col gap-2 rounded-lg border border-border bg-surface-2/40 p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-sm font-semibold text-text">{entry.pair}</span>
+                  <span className={cn('font-mono text-xs font-medium tabular-nums', signedColor(entry.changePct))}>
+                    {formatPercent(entry.changePct)}
+                  </span>
+                </div>
+                <span className="font-mono text-lg font-semibold tabular-nums text-text">
+                  {formatPrice(entry.bid, entry.pair)}
+                </span>
+                <div className="h-8">
+                  <Sparkline data={PULSE_SPARKLINES[entry.pair]} positive={entry.changePct >= 0} height={32} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
       </PageSection>
 
       <PageSection>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <Card title="Open Positions" action={<span className="text-xs text-text-faint">Top 3</span>}>
+          <Card
+            title="Open Positions"
+            action={
+              <button type="button" className="text-xs font-medium text-accent-bright transition-colors hover:text-accent">
+                View all →
+              </button>
+            }
+            padded={false}
+          >
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  {['Pair', 'Type', 'Lots', 'Entry', 'Current', 'P&L'].map((header, index) => (
+                    <th
+                      key={header}
+                      className={cn(
+                        'px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-text-faint',
+                        index > 1 ? 'text-right' : 'text-left',
+                      )}
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {openPositions.map((position) => (
+                  <tr key={position.id} className="border-b border-border/60 last:border-b-0 hover:bg-surface-2">
+                    <td className="px-4 py-2.5 font-mono font-medium text-text">{position.pair}</td>
+                    <td className="px-4 py-2.5">
+                      <Badge variant={position.type === 'BUY' ? 'buy' : 'sell'}>{position.type}</Badge>
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-text-muted">{position.lots.toFixed(2)}</td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-text-muted">
+                      {formatPrice(position.entryPrice, position.pair)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-text">
+                      {formatPrice(position.currentPrice, position.pair)}
+                    </td>
+                    <td className={cn('px-4 py-2.5 text-right font-mono font-semibold tabular-nums', signedColor(position.pnl))}>
+                      {formatCurrency(position.pnl, { signed: true })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+
+          <Card title="Recent Trades" action={<span className="text-xs text-text-faint">Last 4 closed</span>}>
             <ul className="space-y-2">
-              {summaryPositions.map((position) => (
+              {recentTrades.map((trade) => (
                 <li
-                  key={position.id}
+                  key={trade.id}
                   className="flex items-center justify-between gap-3 rounded-md border border-border bg-surface-2/40 px-3 py-2.5"
                 >
                   <div className="flex items-center gap-3">
-                    <Badge variant={position.type === 'BUY' ? 'buy' : 'sell'}>{position.type}</Badge>
-                    <div className="leading-tight">
-                      <p className="font-mono text-sm font-medium text-text">{position.pair}</p>
-                      <p className="font-mono text-xs text-text-faint">{position.lots.toFixed(2)} lots</p>
-                    </div>
+                    <Badge variant={trade.type === 'BUY' ? 'buy' : 'sell'}>{trade.type}</Badge>
+                    <span className="font-mono text-sm font-medium text-text">{trade.pair}</span>
                   </div>
-                  <div className="text-right">
-                    <p className={cn('font-mono text-sm font-semibold tabular-nums', signedColor(position.pnl))}>
-                      {formatCurrency(position.pnl, { signed: true })}
-                    </p>
-                    <p className={cn('font-mono text-xs tabular-nums', signedColor(position.pips))}>
-                      {position.pips > 0 ? '+' : ''}
-                      {position.pips.toFixed(1)} pips
-                    </p>
+                  <div className="flex items-center gap-5">
+                    <span className={cn('font-mono text-xs tabular-nums', signedColor(trade.pips))}>
+                      {formatPips(trade.pips)} pips
+                    </span>
+                    <span className={cn('w-20 text-right font-mono text-sm font-semibold tabular-nums', signedColor(trade.pnl))}>
+                      {formatCurrency(trade.pnl, { signed: true })}
+                    </span>
                   </div>
                 </li>
               ))}
-            </ul>
-          </Card>
-
-          <Card title="Recent Activity" action={<span className="text-xs text-text-faint">Closed</span>}>
-            <ul className="space-y-2">
-              {recentTrades.map((trade) => {
-                const Icon = trade.pnl >= 0 ? ArrowUpRight : ArrowDownRight
-                return (
-                  <li
-                    key={trade.id}
-                    className="flex items-center justify-between gap-3 rounded-md border border-border bg-surface-2/40 px-3 py-2.5"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={cn(
-                          'flex h-8 w-8 items-center justify-center rounded-md',
-                          trade.pnl >= 0 ? 'bg-[var(--ds-positive-soft)] text-positive' : 'bg-[var(--ds-danger-soft)] text-danger',
-                        )}
-                      >
-                        <Icon className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                      <div className="leading-tight">
-                        <p className="font-mono text-sm font-medium text-text">{trade.pair}</p>
-                        <p className="font-mono text-xs text-text-faint">
-                          {trade.type} · {trade.closeTime.slice(5)}
-                        </p>
-                      </div>
-                    </div>
-                    <p className={cn('font-mono text-sm font-semibold tabular-nums', signedColor(trade.pnl))}>
-                      {formatCurrency(trade.pnl, { signed: true })}
-                    </p>
-                  </li>
-                )
-              })}
             </ul>
           </Card>
         </div>

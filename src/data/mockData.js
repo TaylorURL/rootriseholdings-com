@@ -136,6 +136,55 @@ export const insights = [
   },
 ]
 
+export const performance = {
+  winRate: 67,
+  profitFactor: 2.14,
+  avgTradeDuration: '4h 22m',
+  totalTrades: 248,
+  bestStreak: 9,
+}
+
+// Realised P&L per month for the current trading year (Jun is month-to-date).
+export const monthlyPnl = [
+  { month: 'Jan', pnl: +6420.5 },
+  { month: 'Feb', pnl: -2180.25 },
+  { month: 'Mar', pnl: +9340.8 },
+  { month: 'Apr', pnl: +4120.4 },
+  { month: 'May', pnl: -1560.1 },
+  { month: 'Jun', pnl: +14982.6 },
+]
+
+// Live market session snapshot for the markets status banner.
+export const marketStatus = {
+  state: 'Open',
+  session: 'London Session',
+  liquidity: 'High Liquidity',
+}
+
+// Aggregate sentiment read used by the insights page.
+export const marketSentiment = [
+  { id: 'usd', label: 'USD Sentiment', value: 'Bearish', tone: 'sell' },
+  { id: 'eur', label: 'EUR Sentiment', value: 'Bullish', tone: 'buy' },
+  { id: 'risk', label: 'Risk Appetite', value: 'Neutral', tone: 'neutral' },
+]
+
+// Net exposure by currency leg across open positions (sums to 100%).
+export const currencyExposure = [
+  { currency: 'USD', exposure: 42 },
+  { currency: 'EUR', exposure: 26 },
+  { currency: 'GBP', exposure: 19 },
+  { currency: 'JPY', exposure: 13 },
+]
+
+// Recent account event log for the activity feed (relative to 2026-06-14).
+export const activityFeed = [
+  { id: 'A1', time: '14 Jun · 09:04', type: 'position', message: 'Position P004 opened — AUD/USD BUY 1.0 lots' },
+  { id: 'A2', time: '14 Jun · 07:15', type: 'position', message: 'Position P002 opened — GBP/USD SELL 1.5 lots' },
+  { id: 'A3', time: '14 Jun · 06:32', type: 'signal', message: 'Signal alert triggered — USD/JPY SELL' },
+  { id: 'A4', time: '13 Jun · 18:45', type: 'closed', message: 'Position T1044 closed — EUR/USD +$844.00' },
+  { id: 'A5', time: '13 Jun · 08:00', type: 'deposit', message: 'Deposit processed — $5,000.00' },
+]
+
 export const tradeHistory = [
   { id: 'T1044', pair: 'EUR/USD', type: 'BUY', lots: 2.0, entryPrice: 1.07812, exitPrice: 1.08234, openTime: '2026-06-13 14:22', closeTime: '2026-06-13 18:45', pnl: +844.0, pips: +42.2 },
   { id: 'T1043', pair: 'GBP/JPY', type: 'SELL', lots: 1.0, entryPrice: 191.234, exitPrice: 190.812, openTime: '2026-06-13 09:10', closeTime: '2026-06-13 14:05', pnl: +316.5, pips: +42.2 },

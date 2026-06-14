@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
 import { TrendingUp, TrendingDown, Zap, Target, ShieldAlert, Clock } from 'lucide-react'
 import { PageContainer, PageSection } from '../components/layout/PageContainer'
+import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import KpiCard from '../components/ui/KpiCard'
 import Table from '../components/ui/Table'
-import { insights } from '../data/mockData'
+import { insights, marketSentiment } from '../data/mockData'
 import { cn } from '../lib/cn'
 import { formatPrice } from '../lib/format'
 
@@ -97,6 +98,16 @@ function SignalRow({ signal }) {
   )
 }
 
+/** Single sentiment read rendered as a label plus a colored verdict pill. */
+function SentimentGauge({ label, value, tone }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface-2/40 px-4 py-3">
+      <span className="text-sm text-text-muted">{label}</span>
+      <Badge variant={tone}>{value}</Badge>
+    </div>
+  )
+}
+
 /** Column card grouping signals of a single direction. */
 function SignalColumn({ title, signals, action }) {
   return (
@@ -172,6 +183,28 @@ export default function InsightsPage() {
 
   return (
     <PageContainer>
+      <PageSection>
+        <PageHeader
+          title="Insights"
+          subtitle="Model-generated trade signals across 14 pairs"
+          action={
+            <span className="rounded-md border border-border bg-surface-2 px-3 py-1.5 text-xs text-text-muted">
+              Signals refreshed · 14 Jun 2026, 09:30 UTC
+            </span>
+          }
+        />
+      </PageSection>
+
+      <PageSection>
+        <Card title="Market Sentiment" action={<span className="text-xs text-text-faint">Aggregate read</span>}>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {marketSentiment.map((entry) => (
+              <SentimentGauge key={entry.id} label={entry.label} value={entry.value} tone={entry.tone} />
+            ))}
+          </div>
+        </Card>
+      </PageSection>
+
       <PageSection>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard label="Total Signals" value={insights.length} icon={Zap} changeLabel="active now" />
