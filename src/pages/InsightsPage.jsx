@@ -184,6 +184,28 @@ export default function InsightsPage() {
   return (
     <PageContainer>
       <PageSection>
+        <PageHeader
+          title="Insights"
+          subtitle="Model-generated trade signals across 14 pairs"
+          action={
+            <span className="rounded-md border border-border bg-surface-2 px-3 py-1.5 text-xs text-text-muted">
+              Signals refreshed · 14 Jun 2026, 09:30 UTC
+            </span>
+          }
+        />
+      </PageSection>
+
+      <PageSection>
+        <Card title="Market Sentiment" action={<span className="text-xs text-text-faint">Aggregate read</span>}>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {marketSentiment.map((entry) => (
+              <SentimentGauge key={entry.id} label={entry.label} value={entry.value} tone={entry.tone} />
+            ))}
+          </div>
+        </Card>
+      </PageSection>
+
+      <PageSection>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard label="Total Signals" value={insights.length} icon={Zap} changeLabel="active now" />
           <KpiCard label="Strong Signals" value={strongCount} icon={ShieldAlert} changeLabel="high conviction" />
