@@ -16,6 +16,7 @@ export default function App() {
           <Route path="markets" element={<MarketsPage />} />
           <Route path="positions" element={<PositionsPage />} />
           <Route path="history" element={<HistoryPage />} />
+          <Route path="insights" element={<InsightsPage />} />
           <Route path="account" element={<AccountPage />} />
         </Route>
       </Routes>
