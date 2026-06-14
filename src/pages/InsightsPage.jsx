@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
 import { TrendingUp, TrendingDown, Zap, Target, ShieldAlert, Clock } from 'lucide-react'
 import { PageContainer, PageSection } from '../components/layout/PageContainer'
+import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import KpiCard from '../components/ui/KpiCard'
 import Table from '../components/ui/Table'
-import { insights } from '../data/mockData'
+import { insights, marketSentiment } from '../data/mockData'
 import { cn } from '../lib/cn'
 import { formatPrice } from '../lib/format'
 
