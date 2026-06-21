@@ -108,20 +108,22 @@ export default function AboutPage() {
             title="A small, focused crew."
             description="Quant research, engineering and market operations — building one thing, carefully."
           />
-          <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-            {TEAM.map((member, index) => (
-              <Reveal key={member.role} delay={index * 0.07} className="bg-bg p-8">
-                <span
-                  className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-base font-bold text-on-accent shadow-[0_8px_30px_-10px_var(--ds-accent-glow)]"
-                  aria-hidden="true"
-                >
-                  {member.initials}
-                </span>
-                <h3 className="mt-6 text-base font-semibold tracking-tight text-text">{member.role}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-muted">{member.focus}</p>
-              </Reveal>
+          <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4" stagger={0.07}>
+            {TEAM.map((member) => (
+              <StaggerItem key={member.role} className="h-full">
+                <SpotlightCard className="h-full bg-bg p-8">
+                  <span
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-base font-bold text-on-accent shadow-[0_8px_30px_-10px_var(--ds-accent-glow)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-105"
+                    aria-hidden="true"
+                  >
+                    {member.initials}
+                  </span>
+                  <h3 className="mt-6 text-base font-semibold tracking-tight text-text">{member.role}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-text-muted">{member.focus}</p>
+                </SpotlightCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </Container>
       </Section>
 
