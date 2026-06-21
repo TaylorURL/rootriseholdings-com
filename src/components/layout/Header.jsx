@@ -25,7 +25,6 @@ function useClock() {
 export default function Header({ theme, onToggleTheme, onOpenDrawer }) {
   const { pathname } = useLocation()
   const now = useClock()
-  const { mode } = useFxQuotes()
   const isDark = theme === 'dark'
 
   return (
