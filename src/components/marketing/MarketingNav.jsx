@@ -63,6 +63,7 @@ export default function MarketingNav() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           {isAuthenticated ? (
             <MarketingButton to="/app" size="sm">
               Open Terminal
