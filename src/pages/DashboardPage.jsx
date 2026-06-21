@@ -6,6 +6,7 @@ import KpiCard from '../components/ui/KpiCard'
 import Badge from '../components/ui/Badge'
 import Sparkline from '../components/ui/Sparkline'
 import EquityCurveChart from '../components/ui/EquityCurveChart'
+import ChartInView from '../components/charts/ChartInView'
 import {
   account,
   openPositions,
