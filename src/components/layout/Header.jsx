@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Menu, Moon, Sun } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { titleForPath } from './navigation'
+import ThemeToggle from '../ui/ThemeToggle'
 
 /** Live wall clock that re-renders every second. */
 function useClock() {
