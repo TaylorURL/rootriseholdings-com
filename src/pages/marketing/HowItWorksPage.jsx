@@ -5,7 +5,7 @@ import { Section, Container, SectionHeading } from '../../components/marketing/S
 import Eyebrow from '../../components/marketing/Eyebrow'
 import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
-import LivePairChart from '../../components/marketing/LivePairChart'
+import LivePairChart from '../../components/ui/LivePairChart'
 import HowSignalAnatomy from '../../components/marketing/HowSignalAnatomy'
 
 /** Deep dive on the scripts → signal → decision loop. */
