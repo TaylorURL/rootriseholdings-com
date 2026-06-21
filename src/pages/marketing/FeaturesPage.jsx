@@ -5,6 +5,10 @@ import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import LivePairChart from '../../components/ui/LivePairChart'
 import FxTicker from '../../components/marketing/FxTicker'
+import CapabilityMatrix from '../../components/marketing/CapabilityMatrix'
+import TextReveal from '../../components/motion/TextReveal'
+import { StaggerGroup, StaggerItem } from '../../components/motion/Stagger'
+import { SpotlightCard } from '../../components/motion/Spotlight'
 
 /** Comprehensive capability tour with alternating feature blocks. */
 export default function FeaturesPage() {
