@@ -46,6 +46,7 @@ function LiveDot({ cx, cy, index, dataLength, stroke, reduce }) {
  */
 export default function LivePairChart({ pair, height = 220, compact = false, className }) {
   const quote = useFxQuote(pair)
+  const reduce = useReducedMotion()
   const gradientId = useId()
   const seededRef = useRef(false)
   const [series, setSeries] = useState(() => seedSeries(quote?.bid ?? 1))
