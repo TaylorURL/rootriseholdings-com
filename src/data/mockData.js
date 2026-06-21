@@ -206,37 +206,6 @@ export function generateSparkline(baseValue, points = 20, volatility = 0.003, se
 }
 
 /**
- * Generate hourly OHLC data for the main price chart.
- * @param {number} baseValue - starting price
- * @param {number} [hours=48] - hours of history
- * @param {number} [seed=7] - deterministic seed
- */
-export function generatePriceHistory(baseValue, hours = 48, seed = 7) {
-  const random = seededRandom(seed)
-  const data = []
-  let current = baseValue
-  const now = new Date('2026-06-14T14:00:00Z')
-  for (let i = hours; i >= 0; i--) {
-    const open = current
-    const change = (random() - 0.48) * 0.003
-    const high = open * (1 + random() * 0.0015)
-    const low = open * (1 - random() * 0.0015)
-    const close = open * (1 + change)
-    current = close
-    const time = new Date(now.getTime() - i * 3600000)
-    data.push({
-      time: time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-      open: +open.toFixed(5),
-      high: +high.toFixed(5),
-      low: +low.toFixed(5),
-      close: +close.toFixed(5),
-      value: +close.toFixed(5),
-    })
-  }
-  return data
-}
-
-/**
  * Generate a 30-day equity curve with a gentle upward drift.
  * @param {number} [startEquity=112000] - equity 30 days ago
  * @param {number} [days=30] - number of days
