@@ -151,7 +151,17 @@ export default function MarketsPage() {
 
       {featured && (
         <PageSection>
-          <Card title={`${featured.pair} — Featured`} action={<span className="text-xs text-text-faint">Live · Spot</span>}>
+          <Card
+            title={`${featured.pair} — Featured`}
+            action={
+              <SegmentedTabs
+                options={CHART_VIEWS}
+                value={chartView}
+                onChange={setChartView}
+                ariaLabel="Featured chart view"
+              />
+            }
+          >
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
               <div className="flex flex-col gap-4">
                 <div>
@@ -168,7 +178,19 @@ export default function MarketsPage() {
                 </div>
               </div>
               <div className="border-t border-border pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-                <LivePairChart pair={featured.pair} height={280} compact />
+                {chartView === 'Candles' ? (
+                  <ChartInView height={280}>
+                    {() => (
+                      <CandlestickChart
+                        data={featuredCandles}
+                        height={280}
+                        decimals={decimalsForPair(featured.pair)}
+                      />
+                    )}
+                  </ChartInView>
+                ) : (
+                  <LivePairChart pair={featured.pair} height={280} compact />
+                )}
               </div>
             </div>
           </Card>
