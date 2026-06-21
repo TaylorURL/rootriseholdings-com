@@ -26,7 +26,6 @@ import { cn } from '../lib/cn'
 import {
   formatCurrency,
   formatInstrumentPrice,
-  formatMove,
   formatPercent,
   formatR,
   signedColor,
