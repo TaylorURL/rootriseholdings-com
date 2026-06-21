@@ -4,7 +4,7 @@ import { cn } from '../../lib/cn'
 
 const VARIANT_CLASSES = {
   primary:
-    'bg-[var(--ds-accent-face)] text-on-accent shadow-[0_8px_30px_-8px_var(--ds-accent-glow)] hover:bg-[var(--ds-accent-face-hover)]',
+    'sheen-sweep bg-[var(--ds-accent-face)] text-on-accent shadow-[0_8px_30px_-8px_var(--ds-accent-glow)] hover:bg-[var(--ds-accent-face-hover)] hover:shadow-[0_10px_38px_-8px_var(--ds-glow-strong)]',
   secondary:
     'border border-border-strong bg-surface/40 text-text backdrop-blur hover:border-border-hover hover:bg-surface-2',
   ghost: 'text-text-muted hover:text-text',
