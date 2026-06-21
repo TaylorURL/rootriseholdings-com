@@ -7,17 +7,18 @@ import Sparkline from '../components/ui/Sparkline'
 import SegmentedTabs from '../components/ui/SegmentedTabs'
 import SearchInput from '../components/ui/SearchInput'
 import ChangeIndicator from '../components/ui/ChangeIndicator'
-import PriceChart from '../components/ui/PriceChart'
-import { currencyPairs, generateSparkline, marketStatus } from '../data/mockData'
+import LivePairChart from '../components/ui/LivePairChart'
+import { generateSparkline, marketStatus } from '../data/mockData'
+import { useFxQuotes, FX_PAIRS } from '../lib/fxData'
 import { cn } from '../lib/cn'
 import { formatPrice, signedColor } from '../lib/format'
 
 const CATEGORY_TABS = ['All', 'Majors', 'Minors', 'Exotics']
-const FEATURED = currencyPairs.find((entry) => entry.pair === 'EUR/USD')
+const FEATURED_PAIR = 'EUR/USD'
 
-/** Pre-compute a deterministic 10-point sparkline per pair so charts stay stable. */
-const SPARKLINES = currencyPairs.reduce((accumulator, pair, index) => {
-  accumulator[pair.pair] = generateSparkline(pair.bid, 10, 0.0045, index + 3)
+/** Pre-compute a deterministic 10-point sparkline per pair so the trend column is stable. */
+const SPARKLINES = FX_PAIRS.reduce((accumulator, entry, index) => {
+  accumulator[entry.pair] = generateSparkline(entry.seed, 10, 0.0045, index + 3)
   return accumulator
 }, {})
 
@@ -32,17 +33,20 @@ function FeaturedStat({ label, value, valueClassName }) {
 }
 
 export default function MarketsPage() {
+  const { quotes, byPair } = useFxQuotes()
   const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
 
+  const featured = byPair[FEATURED_PAIR] ?? quotes[0]
+
   const filteredPairs = useMemo(() => {
     const normalizedQuery = query.trim().toUpperCase()
-    return currencyPairs.filter((entry) => {
+    return quotes.filter((entry) => {
       const matchesCategory = category === 'All' || entry.category === category
       const matchesQuery = !normalizedQuery || entry.pair.includes(normalizedQuery)
       return matchesCategory && matchesQuery
     })
-  }, [category, query])
+  }, [quotes, category, query])
 
   const columns = [
     {
@@ -135,32 +139,31 @@ export default function MarketsPage() {
         </div>
       </PageSection>
 
-      <PageSection>
-        <Card
-          title="EUR/USD — Featured"
-          action={<span className="text-xs text-text-faint">48h · Spot</span>}
-        >
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="font-mono text-4xl font-semibold tabular-nums text-text">
-                  {formatPrice(FEATURED.bid, FEATURED.pair)}
-                </p>
-                <ChangeIndicator value={FEATURED.changePct} className="mt-1.5" />
+      {featured && (
+        <PageSection>
+          <Card title={`${featured.pair} — Featured`} action={<span className="text-xs text-text-faint">Live · Spot</span>}>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
+              <div className="flex flex-col gap-4">
+                <div>
+                  <p className="font-mono text-4xl font-semibold tabular-nums text-text">
+                    {formatPrice(featured.bid, featured.pair)}
+                  </p>
+                  <ChangeIndicator value={featured.changePct} className="mt-1.5" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FeaturedStat label="Bid" value={formatPrice(featured.bid, featured.pair)} />
+                  <FeaturedStat label="Ask" value={formatPrice(featured.ask, featured.pair)} />
+                  <FeaturedStat label="Spread" value={`${featured.spread.toFixed(1)} pips`} />
+                  <FeaturedStat label="Volume" value={featured.volume} />
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <FeaturedStat label="Bid" value={formatPrice(FEATURED.bid, FEATURED.pair)} />
-                <FeaturedStat label="Ask" value={formatPrice(FEATURED.ask, FEATURED.pair)} />
-                <FeaturedStat label="Spread" value={`${FEATURED.spread.toFixed(1)} pips`} />
-                <FeaturedStat label="Volume" value={FEATURED.volume} />
+              <div className="border-t border-border pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                <LivePairChart pair={featured.pair} height={280} compact />
               </div>
             </div>
-            <div className="border-t border-border pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-              <PriceChart pair={FEATURED.pair} baseValue={FEATURED.bid} changePct={FEATURED.changePct} height={280} />
-            </div>
-          </div>
-        </Card>
-      </PageSection>
+          </Card>
+        </PageSection>
+      )}
 
       <PageSection>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -185,6 +188,7 @@ export default function MarketsPage() {
             columns={columns}
             rows={filteredPairs}
             rowKey={(row) => row.pair}
+            animate={false}
             empty="No pairs match your filters."
           />
         </Card>
