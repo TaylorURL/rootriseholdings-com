@@ -26,8 +26,9 @@ import AccountPage from './pages/AccountPage'
  */
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Routes>
           {/* Public marketing site */}
           <Route element={<MarketingLayout />}>
