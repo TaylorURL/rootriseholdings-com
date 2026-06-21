@@ -186,7 +186,7 @@ export default function InsightsPage() {
       <PageSection>
         <PageHeader
           title="Insights"
-          subtitle="Model-generated trade signals across 14 pairs"
+          subtitle="Model-generated signals across 14 pairs"
           action={
             <span className="rounded-md border border-border bg-surface-2 px-3 py-1.5 text-xs text-text-muted">
               Signals refreshed · 14 Jun 2026, 09:30 UTC

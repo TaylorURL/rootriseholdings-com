@@ -29,7 +29,6 @@ export default {
         'warning-soft': 'var(--ds-warning-soft)',
         danger: 'var(--ds-danger)',
         'danger-soft': 'var(--ds-danger-soft)',
-        cyan: 'var(--ds-cyan)',
       },
       borderRadius: {
         xs: 'var(--ds-radius-xs)',

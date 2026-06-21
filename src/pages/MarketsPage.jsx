@@ -127,7 +127,7 @@ export default function MarketsPage() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-positive" />
           </span>
-          <span className="text-sm font-medium text-text">FX Market {marketStatus.state}</span>
+          <span className="text-sm font-medium text-text">Markets {marketStatus.state}</span>
           <span className="text-text-faint">·</span>
           <span className="text-sm text-text-muted">{marketStatus.session}</span>
           <span className="text-text-faint">·</span>
