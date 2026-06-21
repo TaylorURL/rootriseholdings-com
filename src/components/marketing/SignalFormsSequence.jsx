@@ -141,7 +141,7 @@ export default function SignalFormsSequence() {
                   {signalLive ? 'Signal live' : 'Analyzing…'}
                 </span>
               </div>
-              <CandlestickChart data={visible} height={300} decimals={5} animate={false} />
+              <CandlestickChart data={visible} height={300} decimals={2} animate={false} />
               <ResolvedSignal visible={signalLive} />
             </div>
           </div>
