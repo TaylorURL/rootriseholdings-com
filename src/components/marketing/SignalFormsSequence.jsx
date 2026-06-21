@@ -135,7 +135,7 @@ export default function SignalFormsSequence() {
               <div className="mb-3 flex items-center justify-between">
                 <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
                   <Target className="h-3.5 w-3.5 text-accent-bright" aria-hidden="true" />
-                  GBP/USD · 1H
+                  XAU/USD · 1H
                 </span>
                 <span className={cn('font-mono text-[11px] uppercase tracking-[0.16em] transition-colors', signalLive ? 'text-accent-bright' : 'text-text-faint')}>
                   {signalLive ? 'Signal live' : 'Analyzing…'}
