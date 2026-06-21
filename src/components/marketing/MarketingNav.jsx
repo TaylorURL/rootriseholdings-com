@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { MARKETING_NAV } from '../../lib/brand'
 import { useAuth } from '../../context/AuthContext'
+import ThemeToggle from '../ui/ThemeToggle'
 import BrandMark from './BrandMark'
 import MarketingButton from './MarketingButton'
 
