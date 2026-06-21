@@ -3,8 +3,8 @@ import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
 import { useReducedMotion } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { cn } from '../../lib/cn'
-import { useFxQuote } from '../../lib/fxData'
-import { decimalsForPair } from '../../lib/fxData/pairs'
+import { useInstrumentQuote } from '../../data/instruments'
+import { formatInstrumentPrice } from '../../lib/format'
 import { AREA_STOPS } from '../charts/chartTheme'
 
 const BUFFER = 48
@@ -34,18 +34,18 @@ function LiveDot({ cx, cy, index, dataLength, stroke, reduce }) {
 }
 
 /**
- * A self-updating gradient area chart bound to a single live FX pair. Each tick
- * from the data layer shifts the rolling window, producing a genuinely live
- * preview with a pulsing endpoint marker.
+ * A self-updating gradient area chart bound to a single live instrument (e.g.
+ * 'XAUUSD', 'NAS100'). Each tick from the simulated data layer shifts the
+ * rolling window, producing a genuinely live preview with a pulsing endpoint.
  *
  * @param {object} props
- * @param {string} props.pair - e.g. 'EUR/USD'
+ * @param {string} props.symbol - instrument symbol, e.g. 'XAUUSD'
  * @param {number} [props.height=220]
  * @param {boolean} [props.compact=false] - hide the header row
  * @param {string} [props.className]
  */
-export default function LivePairChart({ pair, height = 220, compact = false, className }) {
-  const quote = useFxQuote(pair)
+export default function LivePairChart({ symbol, height = 220, compact = false, className }) {
+  const quote = useInstrumentQuote(symbol)
   const reduce = useReducedMotion()
   const gradientId = useId()
   const seededRef = useRef(false)
@@ -75,11 +75,11 @@ export default function LivePairChart({ pair, height = 220, compact = false, cla
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-accent-bright shadow-[0_0_8px_var(--ds-accent-glow)]" aria-hidden="true" />
-            <span className="font-mono text-sm font-semibold text-text">{pair}</span>
+            <span className="font-mono text-sm font-semibold text-text">{quote.displaySymbol}</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="font-mono text-lg font-semibold tabular-nums text-text">
-              {quote.bid.toFixed(decimalsForPair(pair))}
+              {formatInstrumentPrice(quote.bid, symbol)}
             </span>
             <span
               className={cn(

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Signal } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { PRODUCT, COMPLIANCE } from '../../lib/brand'
+import { useTheme } from '../../context/ThemeContext'
 import BrandMark from './BrandMark'
 import Eyebrow from './Eyebrow'
 import FxTicker from './FxTicker'
@@ -12,7 +13,7 @@ import FxTicker from './FxTicker'
  * faux live-signal stat, and the live ticker.
  *
  * Renders OUTSIDE the marketing layout, so it wraps itself in the design-system
- * dark-theme root to inherit token CSS variables.
+ * root (using the persisted theme) to inherit token CSS variables.
  *
  * @param {object} props
  * @param {React.ReactNode} props.eyebrow - small caption above the heading
@@ -21,10 +22,11 @@ import FxTicker from './FxTicker'
  * @param {React.ReactNode} props.children - the form
  */
 export default function AuthShell({ eyebrow, title, subtitle, children }) {
+  const { theme } = useTheme()
   return (
     <div
       className="ds-root grid min-h-screen grid-cols-1 bg-bg lg:grid-cols-2"
-      data-theme="dark"
+      data-theme={theme}
     >
       {/* LEFT — form panel */}
       <div className="relative flex flex-col px-6 py-8 sm:px-10">

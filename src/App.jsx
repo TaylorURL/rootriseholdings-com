@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import MarketingLayout from './layouts/MarketingLayout'
 import HomePage from './pages/marketing/HomePage'
 import PricingPage from './pages/marketing/PricingPage'
@@ -25,8 +26,9 @@ import AccountPage from './pages/AccountPage'
  */
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Routes>
           {/* Public marketing site */}
           <Route element={<MarketingLayout />}>
@@ -55,7 +57,8 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

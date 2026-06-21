@@ -72,7 +72,7 @@ export default function Hero() {
         <motion.div style={{ y: copyY }}>
           <div>
             <motion.div initial="hidden" animate="visible" custom={0} variants={ENTER}>
-              <Eyebrow>Forex Signal Intelligence</Eyebrow>
+              <Eyebrow>Smart Money Concepts Signal Intelligence</Eyebrow>
             </motion.div>
 
             <motion.h1
@@ -149,7 +149,7 @@ export default function Hero() {
             </div>
 
             <div className="pt-5">
-              <LivePairChart pair="EUR/USD" height={200} />
+              <LivePairChart symbol="XAUUSD" height={200} />
             </div>
 
             {/* Signal callout — the product's core output */}
@@ -159,12 +159,12 @@ export default function Hero() {
                   BUY
                 </span>
                 <div className="leading-tight">
-                  <p className="font-mono text-sm font-semibold text-text">EUR/USD</p>
-                  <p className="text-xs text-text-faint">Momentum + support bounce</p>
+                  <p className="font-mono text-sm font-semibold text-text">XAU/USD · 1H</p>
+                  <p className="text-xs text-text-faint">OTE long · bullish CHoCH</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-mono text-lg font-semibold tabular-nums text-accent-bright">87%</p>
+                <p className="font-mono text-lg font-semibold tabular-nums text-accent-bright">91%</p>
                 <p className="text-xs text-text-faint">confidence</p>
               </div>
             </div>

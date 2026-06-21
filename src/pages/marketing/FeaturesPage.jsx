@@ -71,7 +71,7 @@ export default function FeaturesPage() {
                     <div className={cn('group', reversed && 'lg:order-1')}>
                       {showChart ? (
                         <div className="accent-ring rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
-                          <LivePairChart pair="USD/JPY" height={240} />
+                          <LivePairChart symbol="NAS100" height={240} />
                         </div>
                       ) : (
                         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface/40">

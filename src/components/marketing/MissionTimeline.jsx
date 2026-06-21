@@ -7,8 +7,8 @@ import { cn } from '../../lib/cn'
 /** Company ethos beats — compliance-safe (process & roadmap, never returns). */
 const MILESTONES = [
   { icon: Compass, title: 'Built around one rule', body: 'The decision stays with the person who carries the risk. Everything else serves that.' },
-  { icon: Radar, title: '14 pairs, around the clock', body: 'Scripts watch majors, minors and exotics on every candle — coverage no manual desk can match.' },
-  { icon: ScrollText, title: 'Every signal shows its work', body: 'Side, confidence, levels and catalysts. No black boxes — you interrogate the call before you take it.' },
+  { icon: Radar, title: 'A focused universe', body: 'Gold, the indices and a tight FX watch list, read for structure on every candle — depth over breadth, coverage no manual desk can match.' },
+  { icon: ScrollText, title: 'Every signal shows its work', body: 'Structure, setup type, levels and catalysts. No black boxes — you interrogate the call before you take it.' },
   { icon: Route, title: 'Roadmap: optional execution', body: 'Broker integrations are coming as an opt-in convenience. The signal stays ours; the trigger stays yours.' },
 ]
 

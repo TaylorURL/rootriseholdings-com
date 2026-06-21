@@ -6,11 +6,11 @@ import Marquee from '../../motion/Marquee'
 import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 import { SpotlightCard } from '../../motion/Spotlight'
 import LivePairChart from '../../ui/LivePairChart'
-import { useFxQuotes } from '../../../lib/fxData'
-import { decimalsForPair } from '../../../lib/fxData/pairs'
+import { useInstrumentQuotes, TRADED_INSTRUMENTS } from '../../../data/instruments'
+import { formatInstrumentPrice } from '../../../lib/format'
 import { cn } from '../../../lib/cn'
 
-const PREVIEW_PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'EUR/JPY']
+const PREVIEW_SYMBOLS = TRADED_INSTRUMENTS.map((entry) => entry.symbol)
 
 /** One streaming quote chip for the live wall marquee. */
 function QuoteChip({ quote }) {
@@ -18,8 +18,8 @@ function QuoteChip({ quote }) {
   const Arrow = positive ? ArrowUpRight : ArrowDownRight
   return (
     <span className="flex shrink-0 items-center gap-2.5 border-r border-border px-5 py-3">
-      <span className="font-mono text-sm font-medium text-text">{quote.pair}</span>
-      <span className="font-mono text-sm tabular-nums text-text-muted">{quote.bid.toFixed(decimalsForPair(quote.pair))}</span>
+      <span className="font-mono text-sm font-medium text-text">{quote.displaySymbol}</span>
+      <span className="font-mono text-sm tabular-nums text-text-muted">{formatInstrumentPrice(quote.bid, quote.symbol)}</span>
       <span className={cn('flex items-center gap-0.5 font-mono text-xs tabular-nums', positive ? 'text-positive' : 'text-danger')}>
         <Arrow className="h-3 w-3" aria-hidden="true" />
         {positive ? '+' : ''}
@@ -29,11 +29,10 @@ function QuoteChip({ quote }) {
   )
 }
 
-/** Live FX preview wall — streaming charts + a continuously scrolling quote rail. */
+/** Live instrument preview wall — streaming charts + a continuously scrolling quote rail. */
 export default function LiveMarketSection() {
-  const { mode, quotes } = useFxQuotes()
-  const sourceLabel =
-    mode === 'live' ? 'Live market feed' : mode === 'anchored' ? 'ECB-anchored feed' : 'Simulated feed'
+  const { quotes } = useInstrumentQuotes()
+  const sourceLabel = 'Simulated feed'
 
   return (
     <Section id="live" className="border-t border-border">
@@ -41,8 +40,8 @@ export default function LiveMarketSection() {
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
           <SectionHeading
             eyebrow="Live Markets"
-            title="The tape, streaming in real time."
-            description="A glimpse of what runs behind the paywall — the same live charts the signal engine reads from."
+            title="The desk's instruments, streaming live."
+            description="A glimpse of what runs behind the paywall — the four instruments the engine reads structure on: XAUUSD, NAS100, US30, SP500."
             className="lg:max-w-2xl"
           />
           <Reveal delay={0.1} className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-text-faint">
@@ -54,11 +53,11 @@ export default function LiveMarketSection() {
           </Reveal>
         </div>
 
-        <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
-          {PREVIEW_PAIRS.map((pair) => (
-            <StaggerItem key={pair} className="h-full">
+        <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.06}>
+          {PREVIEW_SYMBOLS.map((symbol) => (
+            <StaggerItem key={symbol} className="h-full">
               <SpotlightCard className="h-full rounded-2xl border border-border bg-surface/40 p-5 transition-colors hover:border-border-hover">
-                <LivePairChart pair={pair} height={140} />
+                <LivePairChart symbol={symbol} height={140} />
               </SpotlightCard>
             </StaggerItem>
           ))}
@@ -69,7 +68,7 @@ export default function LiveMarketSection() {
       <Reveal className="mt-14 border-y border-border bg-bg-elevated/60">
         <Marquee speed={56} className="py-0">
           {quotes.map((quote) => (
-            <QuoteChip key={quote.pair} quote={quote} />
+            <QuoteChip key={quote.symbol} quote={quote} />
           ))}
         </Marquee>
       </Reveal>
