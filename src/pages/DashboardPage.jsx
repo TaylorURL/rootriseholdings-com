@@ -39,6 +39,9 @@ function PerformanceSummaryCard({ label, children }) {
 }
 
 export default function DashboardPage() {
+  const { byPair } = useFxQuotes()
+  const majorPairs = MAJOR_SEEDS.map((entry) => byPair[entry.pair]).filter(Boolean)
+
   return (
     <PageContainer>
       <PageSection>
