@@ -32,8 +32,8 @@ const MarketingButton = forwardRef(function MarketingButton(
   ref,
 ) {
   const classes = cn(
-    'group inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-tight',
-    'transition-[background-color,border-color,color,transform] duration-200 ease-out',
+    'group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full font-medium tracking-tight',
+    'transition-[background-color,border-color,color,transform,box-shadow] duration-200 ease-out',
     'active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],
