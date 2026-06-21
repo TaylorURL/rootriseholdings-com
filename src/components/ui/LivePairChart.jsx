@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
+import { useReducedMotion } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { useFxQuote } from '../../lib/fxData'
