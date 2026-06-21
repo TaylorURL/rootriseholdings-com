@@ -7,6 +7,7 @@ import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Sparkline from '../components/ui/Sparkline'
 import { ChartTooltipShell } from '../components/ui/ChartTooltip'
+import ChartInView from '../components/charts/ChartInView'
 import { account, openPositions, currencyExposure, generateSparkline } from '../data/mockData'
 import { cn } from '../lib/cn'
 import { durationBetween, formatCurrency, formatPips, formatPrice, signedColor } from '../lib/format'
@@ -183,30 +184,40 @@ export default function PositionsPage() {
           </Card>
 
           <Card title="Risk Breakdown" action={<span className="text-xs text-text-faint">Exposure by currency</span>}>
-            <ResponsiveContainer width="100%" height={196}>
-              <BarChart
-                data={currencyExposure}
-                layout="vertical"
-                margin={{ top: 0, right: 16, bottom: 0, left: 8 }}
-                barCategoryGap="28%"
-              >
-                <XAxis type="number" domain={[0, 100]} hide />
-                <YAxis
-                  type="category"
-                  dataKey="currency"
-                  tick={{ fill: 'var(--ds-text-muted)', fontSize: 12, fontFamily: 'var(--ds-font-mono)' }}
-                  tickLine={false}
-                  axisLine={false}
-                  width={44}
-                />
-                <Tooltip content={<ExposureTooltip />} cursor={{ fill: 'var(--ds-surface-2)' }} />
-                <Bar dataKey="exposure" radius={[0, 4, 4, 0]} isAnimationActive animationDuration={600}>
-                  {currencyExposure.map((entry) => (
-                    <Cell key={entry.currency} fill="var(--ds-accent-bright)" />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartInView height={196}>
+              {() => (
+                <ResponsiveContainer width="100%" height={196}>
+                  <BarChart
+                    data={currencyExposure}
+                    layout="vertical"
+                    margin={{ top: 0, right: 16, bottom: 0, left: 8 }}
+                    barCategoryGap="28%"
+                  >
+                    <defs>
+                      <linearGradient id="exposureBar" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="var(--ds-accent)" stopOpacity={0.55} />
+                        <stop offset="100%" stopColor="var(--ds-accent-bright)" stopOpacity={1} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis type="number" domain={[0, 100]} hide />
+                    <YAxis
+                      type="category"
+                      dataKey="currency"
+                      tick={{ fill: 'var(--ds-text-muted)', fontSize: 12, fontFamily: 'var(--ds-font-mono)' }}
+                      tickLine={false}
+                      axisLine={false}
+                      width={44}
+                    />
+                    <Tooltip content={<ExposureTooltip />} cursor={{ fill: 'var(--ds-accent-softer)' }} />
+                    <Bar dataKey="exposure" radius={[0, 4, 4, 0]} isAnimationActive animationDuration={700} animationEasing="ease-out">
+                      {currencyExposure.map((entry) => (
+                        <Cell key={entry.currency} fill="url(#exposureBar)" />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </ChartInView>
           </Card>
         </div>
       </PageSection>

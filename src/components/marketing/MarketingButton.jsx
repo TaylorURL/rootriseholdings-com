@@ -4,7 +4,7 @@ import { cn } from '../../lib/cn'
 
 const VARIANT_CLASSES = {
   primary:
-    'bg-[var(--ds-accent-face)] text-on-accent shadow-[0_8px_30px_-8px_var(--ds-accent-glow)] hover:bg-[var(--ds-accent-face-hover)]',
+    'sheen-sweep bg-[var(--ds-accent-face)] text-on-accent shadow-[0_8px_30px_-8px_var(--ds-accent-glow)] hover:bg-[var(--ds-accent-face-hover)] hover:shadow-[0_10px_38px_-8px_var(--ds-glow-strong)]',
   secondary:
     'border border-border-strong bg-surface/40 text-text backdrop-blur hover:border-border-hover hover:bg-surface-2',
   ghost: 'text-text-muted hover:text-text',
@@ -32,8 +32,8 @@ const MarketingButton = forwardRef(function MarketingButton(
   ref,
 ) {
   const classes = cn(
-    'group inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-tight',
-    'transition-[background-color,border-color,color,transform] duration-200 ease-out',
+    'group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full font-medium tracking-tight',
+    'transition-[background-color,border-color,color,transform,box-shadow] duration-200 ease-out',
     'active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],

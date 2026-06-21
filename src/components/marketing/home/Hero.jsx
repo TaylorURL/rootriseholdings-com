@@ -1,12 +1,13 @@
 import { useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight, Signal } from 'lucide-react'
-import { EASE_OUT } from '../../../lib/marketingMotion'
+import { EASE_OUT, SPRING_CURSOR } from '../../../lib/marketingMotion'
 import { PRODUCT } from '../../../lib/brand'
 import Eyebrow from '../Eyebrow'
 import MarketingButton from '../MarketingButton'
 import LivePairChart from '../../ui/LivePairChart'
 import FxTicker from '../FxTicker'
+import HeroSignalField from './HeroSignalField'
 
 const ENTER = {
   hidden: { opacity: 0, y: 28 },
@@ -17,7 +18,7 @@ const ENTER = {
   }),
 }
 
-/** The cinematic landing hero: mission statement, CTAs, and a live signal panel. */
+/** The cinematic landing hero: cursor-reactive signal field, mission, live panel. */
 export default function Hero() {
   const sectionRef = useRef(null)
   const reduceMotion = useReducedMotion()
@@ -26,79 +27,110 @@ export default function Hero() {
     offset: ['start start', 'end start'],
   })
   const panelY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -60])
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 40])
   const glowOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2])
 
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+  const offsetX = useSpring(rawX, SPRING_CURSOR)
+  const offsetY = useSpring(rawY, SPRING_CURSOR)
+
+  const handleMove = (event) => {
+    const node = sectionRef.current
+    if (reduceMotion || !node || event.pointerType === 'touch') return
+    const rect = node.getBoundingClientRect()
+    const px = (event.clientX - rect.left) / rect.width
+    const py = (event.clientY - rect.top) / rect.height
+    rawX.set(px - 0.5)
+    rawY.set(py - 0.5)
+    node.style.setProperty('--mx', `${px * 100}%`)
+    node.style.setProperty('--my', `${py * 100}%`)
+  }
+
+  const handleLeave = () => {
+    rawX.set(0)
+    rawY.set(0)
+  }
+
   return (
-    <section ref={sectionRef} className="relative overflow-hidden pt-32 sm:pt-40">
-      {/* Technical grid + purple key light */}
+    <section
+      ref={sectionRef}
+      onPointerMove={handleMove}
+      onPointerLeave={handleLeave}
+      className="relative overflow-hidden pt-32 sm:pt-40"
+    >
+      {/* Technical grid + reactive signal field + purple key light */}
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
+      <HeroSignalField offsetX={offsetX} offsetY={offsetY} />
       <motion.div
         style={{ opacity: glowOpacity }}
-        className="accent-glow pointer-events-none absolute -top-40 left-1/2 h-[640px] w-[640px] -translate-x-1/2"
+        className="accent-glow-strong pointer-events-none absolute -top-44 left-1/2 h-[680px] w-[680px] -translate-x-1/2"
         aria-hidden="true"
       />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-6 pb-24 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
-        <div>
-          <motion.div initial="hidden" animate="visible" custom={0} variants={ENTER}>
-            <Eyebrow>Forex Signal Intelligence</Eyebrow>
-          </motion.div>
+        <motion.div style={{ y: copyY }}>
+          <div>
+            <motion.div initial="hidden" animate="visible" custom={0} variants={ENTER}>
+              <Eyebrow>Forex Signal Intelligence</Eyebrow>
+            </motion.div>
 
-          <motion.h1
-            initial="hidden"
-            animate="visible"
-            custom={1}
-            variants={ENTER}
-            className="mt-6 text-balance text-5xl font-semibold leading-[1.02] tracking-tight text-text sm:text-6xl lg:text-7xl"
-          >
-            Trade on <span className="text-gradient-accent">signal</span>,
-            <br />
-            not on instinct.
-          </motion.h1>
+            <motion.h1
+              initial="hidden"
+              animate="visible"
+              custom={1}
+              variants={ENTER}
+              className="mt-6 text-balance text-5xl font-semibold leading-[1.02] tracking-tight text-text sm:text-6xl lg:text-7xl"
+            >
+              Trade on <span className="text-gradient-accent">signal</span>,
+              <br />
+              not on instinct.
+            </motion.h1>
 
-          <motion.p
-            initial="hidden"
-            animate="visible"
-            custom={2}
-            variants={ENTER}
-            className="mt-7 max-w-xl text-pretty text-lg leading-relaxed text-text-muted"
-          >
-            {PRODUCT.valueProp}
-          </motion.p>
+            <motion.p
+              initial="hidden"
+              animate="visible"
+              custom={2}
+              variants={ENTER}
+              className="mt-7 max-w-xl text-pretty text-lg leading-relaxed text-text-muted"
+            >
+              {PRODUCT.valueProp}
+            </motion.p>
 
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            custom={3}
-            variants={ENTER}
-            className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
-          >
-            <MarketingButton to="/signup" size="lg">
-              Get Access — ${PRODUCT.monthlyPrice}/mo
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-            </MarketingButton>
-            <MarketingButton to="/how-it-works" variant="secondary" size="lg">
-              See how it works
-            </MarketingButton>
-          </motion.div>
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              custom={3}
+              variants={ENTER}
+              className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
+            >
+              <MarketingButton to="/signup" size="lg">
+                Get Access — ${PRODUCT.monthlyPrice}/mo
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </MarketingButton>
+              <MarketingButton to="/how-it-works" variant="secondary" size="lg">
+                See how it works
+              </MarketingButton>
+            </motion.div>
 
-          <motion.p
-            initial="hidden"
-            animate="visible"
-            custom={4}
-            variants={ENTER}
-            className="mt-6 font-mono text-xs uppercase tracking-[0.18em] text-text-faint"
-          >
-            You hold the trigger · We never trade your money
-          </motion.p>
-        </div>
+            <motion.p
+              initial="hidden"
+              animate="visible"
+              custom={4}
+              variants={ENTER}
+              className="mt-6 font-mono text-xs uppercase tracking-[0.18em] text-text-faint"
+            >
+              You hold the trigger · We never trade your money
+            </motion.p>
+          </div>
+        </motion.div>
 
         <motion.div style={{ y: panelY }} className="relative">
           <motion.div
             initial={{ opacity: 0, scale: reduceMotion ? 1 : 0.96, y: reduceMotion ? 0 : 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.2 }}
-            className="relative rounded-2xl border border-border-strong bg-surface/70 p-5 shadow-lg backdrop-blur-xl"
+            className="accent-ring relative rounded-2xl border border-border-strong bg-surface/70 p-5 shadow-lg backdrop-blur-xl"
           >
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2">

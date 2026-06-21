@@ -8,12 +8,15 @@ import SegmentedTabs from '../components/ui/SegmentedTabs'
 import SearchInput from '../components/ui/SearchInput'
 import ChangeIndicator from '../components/ui/ChangeIndicator'
 import LivePairChart from '../components/ui/LivePairChart'
-import { generateSparkline, marketStatus } from '../data/mockData'
-import { useFxQuotes, FX_PAIRS } from '../lib/fxData'
+import CandlestickChart from '../components/charts/CandlestickChart'
+import ChartInView from '../components/charts/ChartInView'
+import { generateSparkline, generateCandles, marketStatus } from '../data/mockData'
+import { useFxQuotes, FX_PAIRS, decimalsForPair } from '../lib/fxData'
 import { cn } from '../lib/cn'
 import { formatPrice, signedColor } from '../lib/format'
 
 const CATEGORY_TABS = ['All', 'Majors', 'Minors', 'Exotics']
+const CHART_VIEWS = ['Area', 'Candles']
 const FEATURED_PAIR = 'EUR/USD'
 
 /** Pre-compute a deterministic 10-point sparkline per pair so the trend column is stable. */
@@ -36,8 +39,15 @@ export default function MarketsPage() {
   const { quotes, byPair } = useFxQuotes()
   const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
+  const [chartView, setChartView] = useState('Area')
 
   const featured = byPair[FEATURED_PAIR] ?? quotes[0]
+
+  /** Deterministic candle series for the featured pair (terminal-grade view). */
+  const featuredCandles = useMemo(
+    () => (featured ? generateCandles(featured.bid, 44, featured.pair.includes('JPY') ? 0.0014 : 0.0019, 57) : []),
+    [featured?.pair], // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
   const filteredPairs = useMemo(() => {
     const normalizedQuery = query.trim().toUpperCase()
@@ -141,7 +151,17 @@ export default function MarketsPage() {
 
       {featured && (
         <PageSection>
-          <Card title={`${featured.pair} — Featured`} action={<span className="text-xs text-text-faint">Live · Spot</span>}>
+          <Card
+            title={`${featured.pair} — Featured`}
+            action={
+              <SegmentedTabs
+                options={CHART_VIEWS}
+                value={chartView}
+                onChange={setChartView}
+                ariaLabel="Featured chart view"
+              />
+            }
+          >
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
               <div className="flex flex-col gap-4">
                 <div>
@@ -158,7 +178,19 @@ export default function MarketsPage() {
                 </div>
               </div>
               <div className="border-t border-border pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-                <LivePairChart pair={featured.pair} height={280} compact />
+                {chartView === 'Candles' ? (
+                  <ChartInView height={280}>
+                    {() => (
+                      <CandlestickChart
+                        data={featuredCandles}
+                        height={280}
+                        decimals={decimalsForPair(featured.pair)}
+                      />
+                    )}
+                  </ChartInView>
+                ) : (
+                  <LivePairChart pair={featured.pair} height={280} compact />
+                )}
               </div>
             </div>
           </Card>

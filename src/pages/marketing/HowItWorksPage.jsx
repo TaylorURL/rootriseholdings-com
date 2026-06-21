@@ -7,6 +7,8 @@ import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import LivePairChart from '../../components/ui/LivePairChart'
 import HowSignalAnatomy from '../../components/marketing/HowSignalAnatomy'
+import SignalFormsSequence from '../../components/marketing/SignalFormsSequence'
+import TextReveal from '../../components/motion/TextReveal'
 
 /** Deep dive on the scripts → signal → decision loop. */
 export default function HowItWorksPage() {
@@ -15,8 +17,9 @@ export default function HowItWorksPage() {
       {/* Hero */}
       <section className="relative overflow-hidden pt-32 sm:pt-40">
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
+        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
-          className="accent-glow pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[560px] -translate-x-1/2"
+          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
           aria-hidden="true"
         />
         <Container className="relative pb-20 text-center">
@@ -25,7 +28,7 @@ export default function HowItWorksPage() {
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.04] tracking-tight text-text sm:text-6xl lg:text-7xl">
               The market never sleeps.
               <br />
-              <span className="text-gradient-accent">Neither do the scripts.</span>
+              <TextReveal text="Neither do the scripts." className="text-accent-bright" />
             </h1>
             <p className="mx-auto mt-7 max-w-xl text-pretty text-lg leading-relaxed text-text-muted">
               A closed loop between live price action and your judgment: algorithms surface the
@@ -34,6 +37,9 @@ export default function HowItWorksPage() {
           </Reveal>
         </Container>
       </section>
+
+      {/* Signature: scroll-scrubbed signal-forming sequence */}
+      <SignalFormsSequence />
 
       {/* Step walkthrough with connecting accent line */}
       <Section className="border-t border-border">

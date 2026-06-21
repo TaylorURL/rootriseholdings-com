@@ -1,6 +1,9 @@
 import { Section, Container } from '../Section'
 import Eyebrow from '../Eyebrow'
 import Reveal from '../Reveal'
+import Parallax from '../../motion/Parallax'
+import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
+import { SpotlightCard } from '../../motion/Spotlight'
 
 const POINTS = [
   {
@@ -23,9 +26,12 @@ const POINTS = [
 /** Framing the problem the product solves before introducing the solution. */
 export default function ProblemSection() {
   return (
-    <Section className="border-t border-border">
+    <Section className="relative overflow-hidden border-t border-border">
+      <Parallax speed={70} className="pointer-events-none absolute -right-32 top-10 h-[420px] w-[420px]">
+        <div className="accent-glow h-full w-full opacity-50" aria-hidden="true" />
+      </Parallax>
       <Container>
-        <Reveal className="max-w-4xl">
+        <Reveal variant="blur" className="max-w-4xl">
           <Eyebrow>The Problem</Eyebrow>
           <h2 className="mt-6 text-balance text-3xl font-semibold leading-tight tracking-tight text-text sm:text-4xl lg:text-5xl">
             The edge isn't more screens. It's knowing the exact moment to act —{' '}
@@ -33,19 +39,21 @@ export default function ProblemSection() {
           </h2>
         </Reveal>
 
-        <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
-          {POINTS.map((point, index) => (
-            <Reveal key={point.label} delay={index * 0.1} className="bg-bg p-8">
-              <p className="font-mono text-4xl font-semibold tracking-tight text-accent-bright sm:text-5xl">
-                {point.stat}
-              </p>
-              <p className="mt-3 font-mono text-xs uppercase tracking-[0.2em] text-text-faint">
-                {point.label}
-              </p>
-              <p className="mt-4 text-sm leading-relaxed text-text-muted">{point.body}</p>
-            </Reveal>
+        <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
+          {POINTS.map((point) => (
+            <StaggerItem key={point.label}>
+              <SpotlightCard className="h-full bg-bg p-8">
+                <p className="font-mono text-4xl font-semibold tracking-tight text-accent-bright transition-[letter-spacing] duration-500 group-hover:tracking-tight sm:text-5xl">
+                  {point.stat}
+                </p>
+                <p className="mt-3 font-mono text-xs uppercase tracking-[0.2em] text-text-faint">
+                  {point.label}
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-text-muted">{point.body}</p>
+              </SpotlightCard>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
       </Container>
     </Section>
   )

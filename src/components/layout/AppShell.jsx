@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Outlet, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Sidebar from './Sidebar'
 import Header from './Header'
+import { EASE_OUT } from '../../lib/marketingMotion'
 
 /**
  * Gated-terminal layout: a static sidebar on desktop and an animated drawer on
@@ -12,6 +13,8 @@ import Header from './Header'
 export default function AppShell() {
   const [theme, setTheme] = useState('dark')
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { pathname } = useLocation()
+  const reduceMotion = useReducedMotion()
 
   const toggleTheme = () => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
 
@@ -51,7 +54,17 @@ export default function AppShell() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header theme={theme} onToggleTheme={toggleTheme} onOpenDrawer={() => setDrawerOpen(true)} />
         <main className="ds-scroll flex-1 overflow-y-auto bg-bg px-4 py-6 sm:px-6">
-          <Outlet />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }}
+              transition={{ duration: 0.26, ease: EASE_OUT }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>
