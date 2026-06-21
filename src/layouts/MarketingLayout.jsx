@@ -14,15 +14,15 @@ function useScrollToTopOnNavigate() {
 }
 
 /**
- * Public marketing shell. Always renders in the stark dark Anduril theme,
- * independent of the in-app theme toggle. Provides the public nav + footer
- * around routed marketing pages.
+ * Public marketing shell. Renders in the persisted light/dark theme and provides
+ * the public nav + footer around routed marketing pages.
  */
 export default function MarketingLayout() {
+  const { theme } = useTheme()
   useScrollToTopOnNavigate()
 
   return (
-    <div className="ds-root flex min-h-screen flex-col bg-bg" data-theme="dark">
+    <div className="ds-root flex min-h-screen flex-col bg-bg" data-theme={theme}>
       <ScrollProgress />
       <MarketingNav />
       <main className="flex-1">
