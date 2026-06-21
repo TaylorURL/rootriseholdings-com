@@ -13,6 +13,8 @@ import { EASE_OUT } from '../../lib/marketingMotion'
 export default function AppShell() {
   const [theme, setTheme] = useState('dark')
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { pathname } = useLocation()
+  const reduceMotion = useReducedMotion()
 
   const toggleTheme = () => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
 
