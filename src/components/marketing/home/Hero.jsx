@@ -69,8 +69,8 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-6 pb-24 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
-        <motion.div style={{ y: copyY }} className="pointer-events-none">
-          <div className="pointer-events-auto">
+        <motion.div style={{ y: copyY }}>
+          <div>
             <motion.div initial="hidden" animate="visible" custom={0} variants={ENTER}>
               <Eyebrow>Forex Signal Intelligence</Eyebrow>
             </motion.div>
