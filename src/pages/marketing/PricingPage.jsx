@@ -102,6 +102,9 @@ export default function PricingPage() {
         </Container>
       </Section>
 
+      {/* Signature: animated operational comparison */}
+      <PricingComparison />
+
       {/* Compliance disclaimer block */}
       <Section className="border-t border-border">
         <Container>
