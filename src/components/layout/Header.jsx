@@ -51,7 +51,7 @@ export default function Header({ theme, onToggleTheme, onOpenDrawer }) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-positive" />
           </span>
-          {MODE_LABEL[mode] ?? 'Live feed'}
+          Simulated feed
         </span>
 
         <button
