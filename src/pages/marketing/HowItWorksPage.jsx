@@ -28,7 +28,7 @@ export default function HowItWorksPage() {
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.04] tracking-tight text-text sm:text-6xl lg:text-7xl">
               The market never sleeps.
               <br />
-              <TextReveal text="Neither do the scripts." className="text-gradient-accent" />
+              <TextReveal text="Neither do the scripts." className="text-accent-bright" />
             </h1>
             <p className="mx-auto mt-7 max-w-xl text-pretty text-lg leading-relaxed text-text-muted">
               A closed loop between live price action and your judgment: algorithms surface the
