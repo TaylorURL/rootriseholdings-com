@@ -52,14 +52,7 @@ export default function Header({ onOpenDrawer }) {
           Simulated feed
         </span>
 
-        <button
-          type="button"
-          onClick={onToggleTheme}
-          aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-          className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-2 text-text-muted transition-colors hover:border-border-hover hover:text-text"
-        >
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </button>
+        <ThemeToggle />
 
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-sm font-semibold text-on-accent"
