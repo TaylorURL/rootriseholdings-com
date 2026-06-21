@@ -7,14 +7,14 @@ import CandlestickChart from '../charts/CandlestickChart'
 import { generateCandles } from '../../data/mockData'
 import { cn } from '../../lib/cn'
 
-const CANDLES = generateCandles(1.272, 44, 0.0022, 91)
+const CANDLES = generateCandles(2348, 44, 0.0022, 91)
 const MIN_VISIBLE = 8
 
-/** The three narrated phases of a forming signal. */
+/** The three narrated phases of a forming SMC signal. */
 const PHASES = [
-  { icon: Radar, label: 'Scanning the tape', body: 'Scripts read every candle across the pair — momentum, structure, volatility, session context.' },
-  { icon: Crosshair, label: 'Structure detected', body: 'A level holds. Momentum aligns. The setup the engine has been waiting for starts to resolve.' },
-  { icon: Sparkles, label: 'Signal fired', body: 'Conditions converge. A scored buy signal is issued with entry, target and stop — your call from here.' },
+  { icon: Radar, label: 'Mapping structure', body: 'Scripts track market structure across timeframes — Daily/4H bias, swing highs and lows, session context.' },
+  { icon: Crosshair, label: 'BOS / CHoCH detected', body: 'Price breaks structure in line with the higher-timeframe bias, then pulls back into the OTE zone (62–79%).' },
+  { icon: Sparkles, label: 'Signal fired', body: 'Conditions converge at the OTE. A scored entry is issued with stop and target — your call from here.' },
 ]
 
 /** The signal card that resolves at the end of the scrub. */
@@ -32,17 +32,17 @@ function ResolvedSignal({ visible }) {
           BUY
         </span>
         <div className="leading-tight">
-          <p className="font-mono text-sm font-semibold text-text">GBP/USD</p>
-          <p className="text-xs text-text-faint">Structure reclaim + momentum</p>
+          <p className="font-mono text-sm font-semibold text-text">XAU/USD</p>
+          <p className="text-xs text-text-faint">OTE long · bullish CHoCH</p>
         </div>
       </div>
       <div className="flex items-center gap-4">
         <div className="hidden text-right sm:block">
           <p className="font-mono text-xs text-text-faint">R / R</p>
-          <p className="font-mono text-sm font-semibold tabular-nums text-text">1 : 3.2</p>
+          <p className="font-mono text-sm font-semibold tabular-nums text-text">1 : 3.3</p>
         </div>
         <div className="text-right">
-          <p className="font-mono text-lg font-semibold tabular-nums text-accent-bright">84%</p>
+          <p className="font-mono text-lg font-semibold tabular-nums text-accent-bright">91%</p>
           <p className="text-xs text-text-faint">confidence</p>
         </div>
       </div>
@@ -135,13 +135,13 @@ export default function SignalFormsSequence() {
               <div className="mb-3 flex items-center justify-between">
                 <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
                   <Target className="h-3.5 w-3.5 text-accent-bright" aria-hidden="true" />
-                  GBP/USD · 1H
+                  XAU/USD · 1H
                 </span>
                 <span className={cn('font-mono text-[11px] uppercase tracking-[0.16em] transition-colors', signalLive ? 'text-accent-bright' : 'text-text-faint')}>
                   {signalLive ? 'Signal live' : 'Analyzing…'}
                 </span>
               </div>
-              <CandlestickChart data={visible} height={300} decimals={5} animate={false} />
+              <CandlestickChart data={visible} height={300} decimals={2} animate={false} />
               <ResolvedSignal visible={signalLive} />
             </div>
           </div>

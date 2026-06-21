@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { MARKETING_NAV } from '../../lib/brand'
 import { useAuth } from '../../context/AuthContext'
+import ThemeToggle from '../ui/ThemeToggle'
 import BrandMark from './BrandMark'
 import MarketingButton from './MarketingButton'
 
@@ -62,6 +63,7 @@ export default function MarketingNav() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           {isAuthenticated ? (
             <MarketingButton to="/app" size="sm">
               Open Terminal
@@ -78,15 +80,18 @@ export default function MarketingNav() {
           )}
         </div>
 
-        <button
-          type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors hover:text-text lg:hidden"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors hover:text-text"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </nav>
 
       {menuOpen && (

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Menu, Moon, Sun } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { titleForPath } from './navigation'
-import { useFxQuotes } from '../../lib/fxData'
+import ThemeToggle from '../ui/ThemeToggle'
 
 /** Live wall clock that re-renders every second. */
 function useClock() {
@@ -14,26 +14,16 @@ function useClock() {
   return now
 }
 
-const MODE_LABEL = {
-  live: 'Live feed',
-  anchored: 'Live feed',
-  simulated: 'Simulated',
-}
-
 /**
  * Sticky frosted top bar: mobile drawer trigger, dynamic page title, live clock,
  * data-feed status, theme toggle, and a user avatar placeholder.
  *
  * @param {object} props
- * @param {'dark'|'light'} props.theme
- * @param {() => void} props.onToggleTheme
  * @param {() => void} props.onOpenDrawer
  */
-export default function Header({ theme, onToggleTheme, onOpenDrawer }) {
+export default function Header({ onOpenDrawer }) {
   const { pathname } = useLocation()
   const now = useClock()
-  const { mode } = useFxQuotes()
-  const isDark = theme === 'dark'
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-[var(--ds-backdrop)] px-4 py-3.5 backdrop-blur-xl sm:px-6">
@@ -59,17 +49,10 @@ export default function Header({ theme, onToggleTheme, onOpenDrawer }) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-positive" />
           </span>
-          {MODE_LABEL[mode] ?? 'Live feed'}
+          Simulated feed
         </span>
 
-        <button
-          type="button"
-          onClick={onToggleTheme}
-          aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-          className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-2 text-text-muted transition-colors hover:border-border-hover hover:text-text"
-        >
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </button>
+        <ThemeToggle />
 
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-sm font-semibold text-on-accent"
