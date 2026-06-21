@@ -200,29 +200,38 @@ export default function HistoryPage() {
       <PageSection>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
           <Card title="Monthly P&L" action={<span className="text-xs text-text-faint">Jan – Jun 2026</span>}>
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={monthlyPnl} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-                <XAxis
-                  dataKey="month"
-                  tick={{ fill: 'var(--ds-text-faint)', fontSize: 11, fontFamily: 'var(--ds-font-mono)' }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  tick={{ fill: 'var(--ds-text-faint)', fontSize: 11, fontFamily: 'var(--ds-font-mono)' }}
-                  tickLine={false}
-                  axisLine={false}
-                  width={44}
-                  tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                />
-                <Tooltip content={<MonthlyTooltip />} cursor={{ fill: 'var(--ds-surface-2)' }} />
-                <Bar dataKey="pnl" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={600}>
-                  {monthlyPnl.map((entry) => (
-                    <Cell key={entry.month} fill={entry.pnl >= 0 ? 'var(--ds-accent-bright)' : 'var(--ds-danger)'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartInView height={240}>
+              {() => (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={monthlyPnl} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                    <defs>
+                      <linearGradient id="pnlUp" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--ds-accent-bright)" stopOpacity={1} />
+                        <stop offset="100%" stopColor="var(--ds-accent)" stopOpacity={0.55} />
+                      </linearGradient>
+                      <linearGradient id="pnlDown" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--ds-danger)" stopOpacity={0.95} />
+                        <stop offset="100%" stopColor="var(--ds-danger)" stopOpacity={0.45} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="month" tick={AXIS_TICK} tickLine={false} axisLine={false} />
+                    <YAxis
+                      tick={AXIS_TICK}
+                      tickLine={false}
+                      axisLine={false}
+                      width={44}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip content={<MonthlyTooltip />} cursor={{ fill: 'var(--ds-accent-softer)' }} />
+                    <Bar dataKey="pnl" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} animationEasing="ease-out">
+                      {monthlyPnl.map((entry) => (
+                        <Cell key={entry.month} fill={entry.pnl >= 0 ? 'url(#pnlUp)' : 'url(#pnlDown)'} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </ChartInView>
           </Card>
 
           <Card title="Pair Performance" action={<span className="text-xs text-text-faint">By realised pips</span>}>
