@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import MarketingNav from '../components/marketing/MarketingNav'
 import MarketingFooter from '../components/marketing/MarketingFooter'
+import ScrollProgress from '../components/motion/ScrollProgress'
 
 /** Scroll to the top whenever the marketing route changes. */
 function useScrollToTopOnNavigate() {
@@ -21,6 +22,7 @@ export default function MarketingLayout() {
 
   return (
     <div className="ds-root flex min-h-screen flex-col bg-bg" data-theme="dark">
+      <ScrollProgress />
       <MarketingNav />
       <main className="flex-1">
         <Outlet />

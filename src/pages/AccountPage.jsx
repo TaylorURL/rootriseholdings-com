@@ -5,6 +5,7 @@ import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import ChangeIndicator from '../components/ui/ChangeIndicator'
 import EquityCurveChart from '../components/ui/EquityCurveChart'
+import ChartInView from '../components/charts/ChartInView'
 import { account, activityFeed, generateEquityCurve } from '../data/mockData'
 import { cn } from '../lib/cn'
 import { formatCurrency, signedColor } from '../lib/format'
@@ -110,7 +111,9 @@ export default function AccountPage() {
 
       <PageSection>
         <Card title="Equity Curve" action={<span className="text-xs text-text-faint">Last 30 days</span>}>
-          <EquityCurveChart data={equityCurve} height={300} showYAxis />
+          <ChartInView height={300}>
+            {() => <EquityCurveChart data={equityCurve} height={300} showYAxis />}
+          </ChartInView>
         </Card>
       </PageSection>
 

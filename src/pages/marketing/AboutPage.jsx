@@ -4,6 +4,10 @@ import { Section, Container, SectionHeading } from '../../components/marketing/S
 import Eyebrow from '../../components/marketing/Eyebrow'
 import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
+import MissionTimeline from '../../components/marketing/MissionTimeline'
+import TextReveal from '../../components/motion/TextReveal'
+import { StaggerGroup, StaggerItem } from '../../components/motion/Stagger'
+import { SpotlightCard } from '../../components/motion/Spotlight'
 
 const TEAM = [
   { initials: 'QR', role: 'Quant Research', focus: 'Signal models & backtesting' },
@@ -19,8 +23,9 @@ export default function AboutPage() {
       {/* Hero — mission statement */}
       <section className="relative overflow-hidden pt-32 sm:pt-40">
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
+        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
-          className="accent-glow pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[560px] -translate-x-1/2"
+          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
           aria-hidden="true"
         />
         <Container className="relative pb-16 text-center">
@@ -29,7 +34,7 @@ export default function AboutPage() {
             <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.06] tracking-tight text-text sm:text-5xl lg:text-6xl">
               We sharpen the trader&apos;s judgment.
               <br />
-              <span className="text-gradient-accent">We never replace it.</span>
+              <TextReveal text="We never replace it." className="text-accent-bright" />
             </h1>
             <p className="mx-auto mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-text-muted">
               {PRODUCT.tagline} {PRODUCT.name} exists to put institutional-grade signal intelligence
@@ -67,6 +72,9 @@ export default function AboutPage() {
         </Container>
       </Section>
 
+      {/* Signature: scroll-driven mission timeline */}
+      <MissionTimeline />
+
       {/* Principles */}
       <Section className="border-t border-border">
         <Container>
@@ -76,17 +84,19 @@ export default function AboutPage() {
             description="Three commitments that shape every decision, every signal, and every word of copy."
             center
           />
-          <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
-            {TRUST_PILLARS.map((pillar, index) => (
-              <Reveal key={pillar.title} delay={index * 0.08} className="bg-bg p-8">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright">
-                  <pillar.icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <h3 className="mt-6 text-lg font-semibold tracking-tight text-text">{pillar.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-text-muted">{pillar.body}</p>
-              </Reveal>
+          <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3" stagger={0.08}>
+            {TRUST_PILLARS.map((pillar) => (
+              <StaggerItem key={pillar.title} className="h-full">
+                <SpotlightCard className="h-full bg-bg p-8">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright transition-transform duration-300 group-hover:-translate-y-0.5">
+                    <pillar.icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-6 text-lg font-semibold tracking-tight text-text">{pillar.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-text-muted">{pillar.body}</p>
+                </SpotlightCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </Container>
       </Section>
 
@@ -98,20 +108,22 @@ export default function AboutPage() {
             title="A small, focused crew."
             description="Quant research, engineering and market operations — building one thing, carefully."
           />
-          <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-            {TEAM.map((member, index) => (
-              <Reveal key={member.role} delay={index * 0.07} className="bg-bg p-8">
-                <span
-                  className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-base font-bold text-on-accent shadow-[0_8px_30px_-10px_var(--ds-accent-glow)]"
-                  aria-hidden="true"
-                >
-                  {member.initials}
-                </span>
-                <h3 className="mt-6 text-base font-semibold tracking-tight text-text">{member.role}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-muted">{member.focus}</p>
-              </Reveal>
+          <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4" stagger={0.07}>
+            {TEAM.map((member) => (
+              <StaggerItem key={member.role} className="h-full">
+                <SpotlightCard className="h-full bg-bg p-8">
+                  <span
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-base font-bold text-on-accent shadow-[0_8px_30px_-10px_var(--ds-accent-glow)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-105"
+                    aria-hidden="true"
+                  >
+                    {member.initials}
+                  </span>
+                  <h3 className="mt-6 text-base font-semibold tracking-tight text-text">{member.role}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-text-muted">{member.focus}</p>
+                </SpotlightCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </Container>
       </Section>
 

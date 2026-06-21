@@ -20,6 +20,8 @@
   --ds-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ds-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ds-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ds-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --ds-duration-cinematic: 720ms;
   --ds-shadow-sm: 0 1px 1px var(--ds-shadow-ambient), 0 1px 2px var(--ds-shadow-key);
   --ds-shadow-md: 0 1px 1px var(--ds-shadow-ambient), 0 2px 4px var(--ds-shadow-key), 0 6px 14px var(--ds-shadow-key);
   --ds-shadow-lg: 0 1px 1px var(--ds-shadow-ambient), 0 4px 8px var(--ds-shadow-key), 0 16px 36px var(--ds-shadow-key);
@@ -64,6 +66,13 @@
   --ds-accent-face: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 52%, #7c3aed 100%);
   --ds-accent-face-hover: linear-gradient(180deg, #c4b5fd 0%, #a78bfa 52%, #8b5cf6 100%);
   --ds-raised-face: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 50%, rgba(255, 255, 255, 0) 100%);
+  /* Cinematic accent layers — richer gradients/glows used intentionally on hero, CTA and signature surfaces. */
+  --ds-accent-conic: conic-gradient(from 210deg at 50% 50%, #7c3aed 0deg, #a78bfa 110deg, #5b3fd1 220deg, #7c3aed 360deg);
+  --ds-accent-sweep: linear-gradient(110deg, transparent 20%, var(--ds-sheen-strong) 50%, transparent 80%);
+  --ds-mesh: radial-gradient(38% 52% at 18% 18%, rgba(139, 92, 246, 0.22) 0%, transparent 60%),
+    radial-gradient(40% 44% at 82% 26%, rgba(99, 102, 241, 0.16) 0%, transparent 62%),
+    radial-gradient(50% 60% at 50% 100%, rgba(124, 58, 237, 0.14) 0%, transparent 65%);
+  --ds-glow-strong: rgba(139, 92, 246, 0.55);
   color-scheme: dark;
 }
 
@@ -106,6 +115,12 @@
   --ds-accent-face: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 52%, #6d28d9 100%);
   --ds-accent-face-hover: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 52%, #7c3aed 100%);
   --ds-raised-face: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 247, 248, 0.6) 100%);
+  --ds-accent-conic: conic-gradient(from 210deg at 50% 50%, #7c3aed 0deg, #a78bfa 110deg, #6d28d9 220deg, #7c3aed 360deg);
+  --ds-accent-sweep: linear-gradient(110deg, transparent 20%, var(--ds-sheen-strong) 50%, transparent 80%);
+  --ds-mesh: radial-gradient(38% 52% at 18% 18%, rgba(124, 58, 237, 0.16) 0%, transparent 60%),
+    radial-gradient(40% 44% at 82% 26%, rgba(99, 102, 241, 0.12) 0%, transparent 62%),
+    radial-gradient(50% 60% at 50% 100%, rgba(124, 58, 237, 0.1) 0%, transparent 65%);
+  --ds-glow-strong: rgba(124, 58, 237, 0.4);
   color-scheme: light;
 }
 

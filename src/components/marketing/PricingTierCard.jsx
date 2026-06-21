@@ -20,10 +20,14 @@ export default function PricingTierCard({ billing, className }) {
   return (
     <div className={cn('relative mx-auto w-full max-w-lg', className)}>
       <div
-        className="accent-glow pointer-events-none absolute -inset-x-12 -top-16 h-64 opacity-70"
+        className="accent-aura pointer-events-none absolute left-1/2 -top-20 h-56 w-56 -translate-x-1/2 rounded-full opacity-30"
         aria-hidden="true"
       />
-      <div className="relative overflow-hidden rounded-2xl border border-border-strong bg-surface/60 backdrop-blur-xl">
+      <div
+        className="accent-glow-strong pointer-events-none absolute -inset-x-12 -top-16 h-64 opacity-60"
+        aria-hidden="true"
+      />
+      <div className="accent-ring relative overflow-hidden rounded-2xl border border-border-strong bg-surface/60 backdrop-blur-xl">
         {/* Accent top-border */}
         <div
           className="h-1 w-full bg-[var(--ds-accent-face)] shadow-[0_0_24px_var(--ds-accent-glow)]"

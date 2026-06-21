@@ -19,12 +19,17 @@ export default function ClosingCta({
   return (
     <section className="relative overflow-hidden border-t border-border py-28 sm:py-36">
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-50" aria-hidden="true" />
+      <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
       <div
-        className="accent-glow pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2"
+        className="accent-aura pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30"
+        aria-hidden="true"
+      />
+      <div
+        className="accent-glow-strong pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2"
         aria-hidden="true"
       />
       <Container className="relative text-center">
-        <Reveal>
+        <Reveal variant="blur">
           <h2 className="mx-auto max-w-3xl text-balance text-4xl font-semibold leading-tight tracking-tight text-text sm:text-5xl lg:text-6xl">
             {title}
           </h2>
