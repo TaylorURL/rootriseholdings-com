@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Outlet, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Sidebar from './Sidebar'
 import Header from './Header'
+import { EASE_OUT } from '../../lib/marketingMotion'
 
 /**
  * Gated-terminal layout: a static sidebar on desktop and an animated drawer on
