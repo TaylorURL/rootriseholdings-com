@@ -111,7 +111,7 @@ export default function LivePairChart({ pair, height = 220, compact = false, cla
             strokeWidth={2}
             fill={`url(#${gradientId})`}
             isAnimationActive={false}
-            dot={<LiveDot dataLength={series.length} stroke={stroke} />}
+            dot={<LiveDot dataLength={series.length} stroke={stroke} reduce={reduce} />}
             activeDot={false}
           />
         </AreaChart>
