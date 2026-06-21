@@ -39,8 +39,15 @@ export default function MarketsPage() {
   const { quotes, byPair } = useFxQuotes()
   const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
+  const [chartView, setChartView] = useState('Area')
 
   const featured = byPair[FEATURED_PAIR] ?? quotes[0]
+
+  /** Deterministic candle series for the featured pair (terminal-grade view). */
+  const featuredCandles = useMemo(
+    () => (featured ? generateCandles(featured.bid, 44, featured.pair.includes('JPY') ? 0.0014 : 0.0019, 57) : []),
+    [featured?.pair], // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
   const filteredPairs = useMemo(() => {
     const normalizedQuery = query.trim().toUpperCase()
