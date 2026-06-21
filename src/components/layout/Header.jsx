@@ -55,9 +55,9 @@ export default function Header({ theme, onToggleTheme }) {
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-sm font-semibold text-on-accent"
           aria-label="Account avatar"
-          title="Miranda Capital LLC"
+          title="Rise & Root Capital"
         >
-          MC
+          RR
         </div>
       </div>
     </header>
