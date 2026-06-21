@@ -8,7 +8,6 @@ const VARIANT_CLASSES = {
   warning: 'bg-[var(--ds-warning-soft)] text-warning',
   neutral: 'bg-surface-2 text-text-muted',
   accent: 'bg-[var(--ds-accent-soft)] text-accent-bright',
-  cyan: 'bg-[var(--ds-cyan-soft)] text-cyan',
 }
 
 /** Map a known status/side string to a badge variant. */
