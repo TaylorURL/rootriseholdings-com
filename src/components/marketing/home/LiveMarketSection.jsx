@@ -2,7 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import { Section, Container, SectionHeading } from '../Section'
 import Reveal from '../Reveal'
 import MarketingButton from '../MarketingButton'
-import LivePairChart from '../LivePairChart'
+import LivePairChart from '../../ui/LivePairChart'
 import { useFxQuotes } from '../../../lib/fxData'
 
 const PREVIEW_PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'EUR/JPY']
