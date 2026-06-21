@@ -1,12 +1,22 @@
+import { cn } from '../../lib/cn'
+
 /**
- * Dark, design-token-styled shell for Recharts custom tooltips.
+ * Dark, design-token-styled shell for Recharts custom tooltips. Frosted surface
+ * with an accent edge so values read like a live terminal readout.
  *
  * @param {object} props
  * @param {React.ReactNode} props.children
+ * @param {string} [props.className]
  */
-export function ChartTooltipShell({ children }) {
+export function ChartTooltipShell({ children, className }) {
   return (
-    <div className="rounded-md border border-border bg-surface-2 px-3 py-2 text-xs text-text shadow-lg">
+    <div
+      className={cn(
+        'min-w-[8rem] overflow-hidden rounded-lg border border-border-strong bg-[var(--ds-backdrop)] px-3 py-2 text-xs text-text shadow-lg backdrop-blur-xl',
+        'before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-[var(--ds-accent-face)] relative',
+        className,
+      )}
+    >
       {children}
     </div>
   )
@@ -27,8 +37,8 @@ export function ChartTooltip({ active, payload, labelKey, valueKey, format }) {
   const point = payload[0].payload
   return (
     <ChartTooltipShell>
-      <p className="font-mono text-text-faint">{point[labelKey]}</p>
-      <p className="font-mono font-semibold tabular-nums text-text">{format(point[valueKey])}</p>
+      <p className="font-mono uppercase tracking-[0.12em] text-text-faint">{point[labelKey]}</p>
+      <p className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-text">{format(point[valueKey])}</p>
     </ChartTooltipShell>
   )
 }
