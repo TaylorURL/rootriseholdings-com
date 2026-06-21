@@ -18,14 +18,16 @@ function seedSeries(base) {
 }
 
 /** Glowing marker drawn only at the live (last) data point. */
-function LiveDot({ cx, cy, index, dataLength, stroke }) {
+function LiveDot({ cx, cy, index, dataLength, stroke, reduce }) {
   if (cx == null || cy == null || index !== dataLength - 1) return null
   return (
     <g>
-      <circle cx={cx} cy={cy} r={6} fill={stroke} opacity={0.18}>
-        <animate attributeName="r" values="5;10;5" dur="1.6s" repeatCount="indefinite" />
-        <animate attributeName="opacity" values="0.25;0;0.25" dur="1.6s" repeatCount="indefinite" />
-      </circle>
+      {!reduce && (
+        <circle cx={cx} cy={cy} r={6} fill={stroke} opacity={0.18}>
+          <animate attributeName="r" values="5;10;5" dur="1.6s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.25;0;0.25" dur="1.6s" repeatCount="indefinite" />
+        </circle>
+      )}
       <circle cx={cx} cy={cy} r={3} fill={stroke} stroke="var(--ds-bg)" strokeWidth={1.5} />
     </g>
   )
