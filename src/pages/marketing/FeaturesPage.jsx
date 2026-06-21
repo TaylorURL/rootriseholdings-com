@@ -17,8 +17,9 @@ export default function FeaturesPage() {
       {/* Hero */}
       <section className="relative overflow-hidden pt-32 sm:pt-40">
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
+        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
-          className="accent-glow pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[560px] -translate-x-1/2"
+          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
           aria-hidden="true"
         />
         <Container className="relative pb-16 text-center">
@@ -27,7 +28,7 @@ export default function FeaturesPage() {
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.04] tracking-tight text-text sm:text-6xl lg:text-7xl">
               Everything to read the market.
               <br />
-              <span className="text-gradient-accent">Nothing that trades it for you.</span>
+              <TextReveal text="Nothing that trades it for you." className="text-accent-bright" />
             </h1>
             <p className="mx-auto mt-7 max-w-xl text-pretty text-lg leading-relaxed text-text-muted">
               A signal terminal built for traders who want evidence and context — not a black box and
@@ -37,6 +38,9 @@ export default function FeaturesPage() {
         </Container>
         <FxTicker />
       </section>
+
+      {/* Signature: cursor-reactive capability matrix */}
+      <CapabilityMatrix />
 
       {/* Feature blocks — alternating large layout */}
       <Section className="border-t border-border">
