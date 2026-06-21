@@ -51,7 +51,7 @@ export default function AppShell() {
       </AnimatePresence>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header theme={theme} onToggleTheme={toggleTheme} onOpenDrawer={() => setDrawerOpen(true)} />
+        <Header onOpenDrawer={() => setDrawerOpen(true)} />
         <main className="ds-scroll flex-1 overflow-y-auto bg-bg px-4 py-6 sm:px-6">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
