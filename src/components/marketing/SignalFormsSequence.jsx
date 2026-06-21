@@ -32,17 +32,17 @@ function ResolvedSignal({ visible }) {
           BUY
         </span>
         <div className="leading-tight">
-          <p className="font-mono text-sm font-semibold text-text">GBP/USD</p>
-          <p className="text-xs text-text-faint">Structure reclaim + momentum</p>
+          <p className="font-mono text-sm font-semibold text-text">XAU/USD</p>
+          <p className="text-xs text-text-faint">OTE long · bullish CHoCH</p>
         </div>
       </div>
       <div className="flex items-center gap-4">
         <div className="hidden text-right sm:block">
           <p className="font-mono text-xs text-text-faint">R / R</p>
-          <p className="font-mono text-sm font-semibold tabular-nums text-text">1 : 3.2</p>
+          <p className="font-mono text-sm font-semibold tabular-nums text-text">1 : 3.3</p>
         </div>
         <div className="text-right">
-          <p className="font-mono text-lg font-semibold tabular-nums text-accent-bright">84%</p>
+          <p className="font-mono text-lg font-semibold tabular-nums text-accent-bright">91%</p>
           <p className="text-xs text-text-faint">confidence</p>
         </div>
       </div>
