@@ -1,4 +1,5 @@
 import { PLATFORM_FEATURES, TRUST_PILLARS } from '../../lib/content'
+import { cn } from '../../lib/cn'
 import { Section, Container, SectionHeading } from '../../components/marketing/Section'
 import Eyebrow from '../../components/marketing/Eyebrow'
 import Reveal from '../../components/marketing/Reveal'
