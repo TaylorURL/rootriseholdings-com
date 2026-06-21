@@ -40,8 +40,8 @@ export default function LiveMarketSection() {
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
           <SectionHeading
             eyebrow="Live Markets"
-            title="The tape, streaming in real time."
-            description="A glimpse of what runs behind the paywall — the same live charts the signal engine reads from."
+            title="The desk's instruments, streaming live."
+            description="A glimpse of what runs behind the paywall — the four instruments the engine reads structure on: XAUUSD, NAS100, US30, SP500."
             className="lg:max-w-2xl"
           />
           <Reveal delay={0.1} className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-text-faint">
