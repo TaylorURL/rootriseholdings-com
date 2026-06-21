@@ -30,11 +30,38 @@ export default function Hero() {
   const copyY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 40])
   const glowOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2])
 
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+  const offsetX = useSpring(rawX, SPRING_CURSOR)
+  const offsetY = useSpring(rawY, SPRING_CURSOR)
+
+  const handleMove = (event) => {
+    const node = sectionRef.current
+    if (reduceMotion || !node || event.pointerType === 'touch') return
+    const rect = node.getBoundingClientRect()
+    const px = (event.clientX - rect.left) / rect.width
+    const py = (event.clientY - rect.top) / rect.height
+    rawX.set(px - 0.5)
+    rawY.set(py - 0.5)
+    node.style.setProperty('--mx', `${px * 100}%`)
+    node.style.setProperty('--my', `${py * 100}%`)
+  }
+
+  const handleLeave = () => {
+    rawX.set(0)
+    rawY.set(0)
+  }
+
   return (
-    <section ref={sectionRef} className="relative overflow-hidden pt-32 sm:pt-40">
+    <section
+      ref={sectionRef}
+      onPointerMove={handleMove}
+      onPointerLeave={handleLeave}
+      className="relative overflow-hidden pt-32 sm:pt-40"
+    >
       {/* Technical grid + reactive signal field + purple key light */}
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
-      <HeroSignalField />
+      <HeroSignalField offsetX={offsetX} offsetY={offsetY} />
       <motion.div
         style={{ opacity: glowOpacity }}
         className="accent-glow-strong pointer-events-none absolute -top-44 left-1/2 h-[680px] w-[680px] -translate-x-1/2"
