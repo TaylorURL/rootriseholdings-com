@@ -68,7 +68,7 @@ export default function LiveMarketSection() {
       <Reveal className="mt-14 border-y border-border bg-bg-elevated/60">
         <Marquee speed={56} className="py-0">
           {quotes.map((quote) => (
-            <QuoteChip key={quote.pair} quote={quote} />
+            <QuoteChip key={quote.symbol} quote={quote} />
           ))}
         </Marquee>
       </Reveal>
