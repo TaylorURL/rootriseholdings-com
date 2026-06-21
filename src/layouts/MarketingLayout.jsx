@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import MarketingNav from '../components/marketing/MarketingNav'
 import MarketingFooter from '../components/marketing/MarketingFooter'
 import ScrollProgress from '../components/motion/ScrollProgress'
+import { useTheme } from '../context/ThemeContext'
 
 /** Scroll to the top whenever the marketing route changes. */
 function useScrollToTopOnNavigate() {
