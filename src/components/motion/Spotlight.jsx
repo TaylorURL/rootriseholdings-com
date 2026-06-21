@@ -47,7 +47,7 @@ export function SpotlightCard({ children, className, as: Tag = 'div', ...rest })
       ref={ref}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className={cn('relative overflow-hidden', className)}
+      className={cn('group relative overflow-hidden', className)}
       {...rest}
     >
       <span
