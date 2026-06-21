@@ -93,7 +93,7 @@ export default function AuthShell({ eyebrow, title, subtitle, children }) {
                 </span>
                 <div className="leading-tight">
                   <p className="font-mono text-sm font-semibold text-text">Live signal feed</p>
-                  <p className="text-xs text-text-faint">24/7 market coverage</p>
+                  <p className="text-xs text-text-faint">24/5 market coverage</p>
                 </div>
               </div>
               <span className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[11px] text-positive">
