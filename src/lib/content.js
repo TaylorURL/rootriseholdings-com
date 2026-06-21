@@ -19,18 +19,18 @@ export const HOW_IT_WORKS_STEPS = [
   {
     id: '01',
     icon: Radar,
-    title: 'Scripts watch the market',
-    summary: 'Our algorithms read every tracked pair around the clock.',
+    title: 'Scripts map market structure',
+    summary: 'Algorithms read structure across timeframes, around the clock.',
     detail:
-      'Purpose-built scripts ingest live and historical price action across majors, minors and exotics — scanning momentum, structure, volatility and session context on every candle, on every timeframe, without fatigue or bias.',
+      'Purpose-built scripts track market structure on gold, the indices and a focused FX watch list — higher-highs and higher-lows, swing points, session context. Bias is set from the Daily and 4H; entries are hunted on the 1H and 15m. No fatigue, no bias.',
   },
   {
     id: '02',
     icon: Crosshair,
-    title: 'Signals are generated',
-    summary: 'When conditions align, the system flags a buy or sell.',
+    title: 'BOS / CHoCH / OTE signals fire',
+    summary: 'When structure breaks and price taps the OTE, a setup is flagged.',
     detail:
-      'Each setup is scored for confidence and paired with a suggested entry, target and stop. You see the reasoning — the catalysts behind the call — not just an arrow. No black boxes you can’t interrogate.',
+      'The engine flags a Break of Structure (continuation) or Change of Character (reversal), waits for the pullback into the Optimal Trade Entry (62–79%), then scores the setup with entry, stop and target — every call clears a 1:2 minimum. You see the catalysts, not just an arrow.',
   },
   {
     id: '03',
@@ -46,18 +46,18 @@ export const HOW_IT_WORKS_STEPS = [
 export const PLATFORM_FEATURES = [
   {
     icon: Brain,
-    title: 'Algorithmic signal engine',
-    body: 'A library of scripts evaluates structure, momentum and volatility to surface high-conviction buy/sell setups as they form.',
+    title: 'Smart Money structure engine',
+    body: 'Scripts built on the Gemini Market Structure Pro indicator auto-detect BOS and CHoCH, mark the OTE zone, and session-filter to surface only high-conviction setups.',
   },
   {
     icon: LineChart,
-    title: 'Live charts, 14 pairs',
-    body: 'Streaming charts across majors, minors and exotics — annotated with the levels and signals that matter right now.',
+    title: 'A focused instrument set',
+    body: 'Gold (XAUUSD), the indices (NAS100, US30, SP500) and an FX watch list (USDJPY, NZDUSD, NZDJPY) — streaming charts annotated with structure and the levels that matter now.',
   },
   {
     icon: GaugeCircle,
-    title: 'Confidence scoring',
-    body: 'Every signal carries a confidence score and a clear risk/reward, so you can triage by conviction at a glance.',
+    title: 'Confidence and R:R scoring',
+    body: 'Every signal carries a confidence score and a clear reward-to-risk that already clears the 1:2 minimum, so you can triage by conviction at a glance.',
   },
   {
     icon: Bell,
@@ -66,31 +66,31 @@ export const PLATFORM_FEATURES = [
   },
   {
     icon: Activity,
-    title: 'Market context',
-    body: 'Session state, liquidity, sentiment and catalysts framed alongside each signal — the why behind the what.',
+    title: 'Daily briefing & context',
+    body: 'A nine-section daily read — economic events, DXY, gold and index structure, FX watch, sentiment and the day plan — framing the why behind each setup.',
   },
   {
     icon: Workflow,
-    title: 'Built to integrate',
-    body: 'A clean, swappable data layer today; optional broker-execution hookups on the roadmap for the traders who want them.',
+    title: 'Risk discipline, built in',
+    body: 'The journal enforces the playbook visually: 1% max risk, a 0.5% daily loss limit, a hard stop after two losses, and a two A+ setups per day cap.',
   },
 ]
 
 /** Pricing plan feature list ($99/mo single plan). */
 export const PRICING_FEATURES = [
-  'Live buy/sell signals across all 14 pairs',
-  'Algorithmic scripts running 24/5',
-  'Confidence scores and risk/reward on every signal',
-  'Streaming charts with annotated levels',
+  'Live SMC signals on gold, the indices and the FX watch list',
+  'Structure scripts running 24/5',
+  'Confidence scores and 1:2-minimum R:R on every setup',
+  'Streaming charts annotated with BOS / CHoCH / OTE',
   'Real-time signal alerts',
-  'Market sentiment and session context',
-  'Full signal history and performance breakdown',
+  'Nine-section daily briefing and market context',
+  'Full trade journal with R-multiple performance breakdown',
   'Cancel anytime — no lock-in',
 ]
 
 /** Platform metrics for the count-up strip. Operational, never return promises. */
 export const PLATFORM_STATS = [
-  { value: 14, suffix: '', label: 'Currency pairs monitored' },
+  { value: 7, suffix: '', label: 'Instruments tracked' },
   { value: 24, suffix: '/5', label: 'Market coverage', raw: true },
   { value: 99.9, suffix: '%', decimals: 1, label: 'Signal feed uptime' },
   { value: 60, prefix: '<', suffix: 's', label: 'Signal to alert' },
@@ -101,12 +101,12 @@ export const FAQS = [
   {
     question: 'Does Rise & Root trade for me or manage my money?',
     answer:
-      'No. Rise & Root is a decision-support tool. Our scripts analyze the market and generate buy and sell signals — you place every trade yourself, on your own broker. We never execute trades, hold your funds, or manage money on your behalf.',
+      'No. Rise & Root is a decision-support tool. Our scripts analyze market structure and generate buy and sell signals — you place every trade yourself, on your own broker. We never execute trades, hold your funds, or manage money on your behalf.',
   },
   {
     question: 'What exactly do I get for $99/month?',
     answer:
-      'Full access to the signal terminal: live algorithmic buy/sell signals across all 14 pairs, confidence scores and risk/reward on every setup, streaming annotated charts, real-time alerts, market context, and your complete signal history. One plan, everything included.',
+      'Full access to the signal terminal: live SMC signals on gold, the indices and the FX watch list, confidence scores and R:R on every setup, streaming charts annotated with structure, real-time alerts, the nine-section daily briefing, and a full trade journal. One plan, everything included.',
   },
   {
     question: 'Will you ever place trades automatically?',
@@ -116,7 +116,7 @@ export const FAQS = [
   {
     question: 'Do you guarantee profits?',
     answer:
-      'No, and we never will. No honest tool can. Forex trading carries substantial risk of loss. Our signals are designed to support better-informed decisions — not to promise returns.',
+      'No, and we never will. No honest tool can. Trading carries substantial risk of loss. Our signals are designed to support better-informed decisions — not to promise returns.',
   },
   {
     question: 'Can I cancel anytime?',
@@ -124,9 +124,9 @@ export const FAQS = [
       'Yes. The plan is month-to-month with no lock-in. Cancel whenever you like and you keep access through the end of your billing period.',
   },
   {
-    question: 'Which currency pairs are covered?',
+    question: 'Which instruments are covered?',
     answer:
-      'Fourteen pairs spanning majors (EUR/USD, GBP/USD, USD/JPY and more), minors, and select exotics — with live charts and signals for each.',
+      'A deliberately focused set: gold (XAUUSD), the indices (NAS100, US30, SP500), and an FX watch list (USDJPY, NZDUSD, NZDJPY) read for context — with live charts and structure-based signals for each.',
   },
 ]
 
