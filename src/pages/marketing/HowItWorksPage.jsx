@@ -91,7 +91,7 @@ export default function HowItWorksPage() {
                                 LIVE
                               </span>
                             </div>
-                            <LivePairChart pair="GBP/USD" height={220} />
+                            <LivePairChart symbol="XAUUSD" height={220} />
                           </div>
                         ) : index === 1 ? (
                           <HowSignalAnatomy />
