@@ -9,6 +9,8 @@ import Reveal from '../../components/marketing/Reveal'
 import Accordion from '../../components/marketing/Accordion'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import PricingTierCard from '../../components/marketing/PricingTierCard'
+import PricingComparison from '../../components/marketing/PricingComparison'
+import TextReveal from '../../components/motion/TextReveal'
 
 const BILLING_OPTIONS = [
   { id: 'monthly', label: 'Monthly' },
