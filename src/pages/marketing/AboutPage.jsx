@@ -23,8 +23,9 @@ export default function AboutPage() {
       {/* Hero — mission statement */}
       <section className="relative overflow-hidden pt-32 sm:pt-40">
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
+        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
-          className="accent-glow pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[560px] -translate-x-1/2"
+          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
           aria-hidden="true"
         />
         <Container className="relative pb-16 text-center">
@@ -33,7 +34,7 @@ export default function AboutPage() {
             <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.06] tracking-tight text-text sm:text-5xl lg:text-6xl">
               We sharpen the trader&apos;s judgment.
               <br />
-              <span className="text-gradient-accent">We never replace it.</span>
+              <TextReveal text="We never replace it." className="text-accent-bright" />
             </h1>
             <p className="mx-auto mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-text-muted">
               {PRODUCT.tagline} {PRODUCT.name} exists to put institutional-grade signal intelligence
