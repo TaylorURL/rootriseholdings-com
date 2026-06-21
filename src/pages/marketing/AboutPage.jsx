@@ -4,6 +4,10 @@ import { Section, Container, SectionHeading } from '../../components/marketing/S
 import Eyebrow from '../../components/marketing/Eyebrow'
 import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
+import MissionTimeline from '../../components/marketing/MissionTimeline'
+import TextReveal from '../../components/motion/TextReveal'
+import { StaggerGroup, StaggerItem } from '../../components/motion/Stagger'
+import { SpotlightCard } from '../../components/motion/Spotlight'
 
 const TEAM = [
   { initials: 'QR', role: 'Quant Research', focus: 'Signal models & backtesting' },
