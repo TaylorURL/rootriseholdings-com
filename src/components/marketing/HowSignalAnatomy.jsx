@@ -1,5 +1,8 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import { Crosshair, Flag, GaugeCircle, ShieldAlert, Target } from 'lucide-react'
 import { cn } from '../../lib/cn'
+import { EASE_OUT } from '../../lib/marketingMotion'
+import CountUp from './CountUp'
 
 /** Illustrative sample signal — clearly labelled, not live or real. */
 const SAMPLE = {
