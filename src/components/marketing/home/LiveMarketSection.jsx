@@ -53,11 +53,11 @@ export default function LiveMarketSection() {
           </Reveal>
         </div>
 
-        <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
-          {PREVIEW_PAIRS.map((pair) => (
-            <StaggerItem key={pair} className="h-full">
+        <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.06}>
+          {PREVIEW_SYMBOLS.map((symbol) => (
+            <StaggerItem key={symbol} className="h-full">
               <SpotlightCard className="h-full rounded-2xl border border-border bg-surface/40 p-5 transition-colors hover:border-border-hover">
-                <LivePairChart pair={pair} height={140} />
+                <LivePairChart symbol={symbol} height={140} />
               </SpotlightCard>
             </StaggerItem>
           ))}
