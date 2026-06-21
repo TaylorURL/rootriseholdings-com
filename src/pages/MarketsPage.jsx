@@ -8,12 +8,15 @@ import SegmentedTabs from '../components/ui/SegmentedTabs'
 import SearchInput from '../components/ui/SearchInput'
 import ChangeIndicator from '../components/ui/ChangeIndicator'
 import LivePairChart from '../components/ui/LivePairChart'
-import { generateSparkline, marketStatus } from '../data/mockData'
-import { useFxQuotes, FX_PAIRS } from '../lib/fxData'
+import CandlestickChart from '../components/charts/CandlestickChart'
+import ChartInView from '../components/charts/ChartInView'
+import { generateSparkline, generateCandles, marketStatus } from '../data/mockData'
+import { useFxQuotes, FX_PAIRS, decimalsForPair } from '../lib/fxData'
 import { cn } from '../lib/cn'
 import { formatPrice, signedColor } from '../lib/format'
 
 const CATEGORY_TABS = ['All', 'Majors', 'Minors', 'Exotics']
+const CHART_VIEWS = ['Area', 'Candles']
 const FEATURED_PAIR = 'EUR/USD'
 
 /** Pre-compute a deterministic 10-point sparkline per pair so the trend column is stable. */
