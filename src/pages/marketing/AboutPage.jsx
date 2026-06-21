@@ -72,6 +72,9 @@ export default function AboutPage() {
         </Container>
       </Section>
 
+      {/* Signature: scroll-driven mission timeline */}
+      <MissionTimeline />
+
       {/* Principles */}
       <Section className="border-t border-border">
         <Container>
@@ -81,17 +84,19 @@ export default function AboutPage() {
             description="Three commitments that shape every decision, every signal, and every word of copy."
             center
           />
-          <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
-            {TRUST_PILLARS.map((pillar, index) => (
-              <Reveal key={pillar.title} delay={index * 0.08} className="bg-bg p-8">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright">
-                  <pillar.icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <h3 className="mt-6 text-lg font-semibold tracking-tight text-text">{pillar.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-text-muted">{pillar.body}</p>
-              </Reveal>
+          <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3" stagger={0.08}>
+            {TRUST_PILLARS.map((pillar) => (
+              <StaggerItem key={pillar.title} className="h-full">
+                <SpotlightCard className="h-full bg-bg p-8">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright transition-transform duration-300 group-hover:-translate-y-0.5">
+                    <pillar.icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-6 text-lg font-semibold tracking-tight text-text">{pillar.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-text-muted">{pillar.body}</p>
+                </SpotlightCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </Container>
       </Section>
 
