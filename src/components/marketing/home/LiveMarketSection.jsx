@@ -6,11 +6,11 @@ import Marquee from '../../motion/Marquee'
 import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 import { SpotlightCard } from '../../motion/Spotlight'
 import LivePairChart from '../../ui/LivePairChart'
-import { useFxQuotes } from '../../../lib/fxData'
-import { decimalsForPair } from '../../../lib/fxData/pairs'
+import { useInstrumentQuotes, TRADED_INSTRUMENTS } from '../../../data/instruments'
+import { formatInstrumentPrice } from '../../../lib/format'
 import { cn } from '../../../lib/cn'
 
-const PREVIEW_PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'EUR/JPY']
+const PREVIEW_SYMBOLS = TRADED_INSTRUMENTS.map((entry) => entry.symbol)
 
 /** One streaming quote chip for the live wall marquee. */
 function QuoteChip({ quote }) {
@@ -18,8 +18,8 @@ function QuoteChip({ quote }) {
   const Arrow = positive ? ArrowUpRight : ArrowDownRight
   return (
     <span className="flex shrink-0 items-center gap-2.5 border-r border-border px-5 py-3">
-      <span className="font-mono text-sm font-medium text-text">{quote.pair}</span>
-      <span className="font-mono text-sm tabular-nums text-text-muted">{quote.bid.toFixed(decimalsForPair(quote.pair))}</span>
+      <span className="font-mono text-sm font-medium text-text">{quote.displaySymbol}</span>
+      <span className="font-mono text-sm tabular-nums text-text-muted">{formatInstrumentPrice(quote.bid, quote.symbol)}</span>
       <span className={cn('flex items-center gap-0.5 font-mono text-xs tabular-nums', positive ? 'text-positive' : 'text-danger')}>
         <Arrow className="h-3 w-3" aria-hidden="true" />
         {positive ? '+' : ''}
@@ -29,11 +29,10 @@ function QuoteChip({ quote }) {
   )
 }
 
-/** Live FX preview wall — streaming charts + a continuously scrolling quote rail. */
+/** Live instrument preview wall — streaming charts + a continuously scrolling quote rail. */
 export default function LiveMarketSection() {
-  const { mode, quotes } = useFxQuotes()
-  const sourceLabel =
-    mode === 'live' ? 'Live market feed' : mode === 'anchored' ? 'ECB-anchored feed' : 'Simulated feed'
+  const { quotes } = useInstrumentQuotes()
+  const sourceLabel = 'Simulated feed'
 
   return (
     <Section id="live" className="border-t border-border">
