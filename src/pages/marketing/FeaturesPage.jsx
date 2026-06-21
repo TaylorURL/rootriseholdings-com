@@ -3,7 +3,7 @@ import { Section, Container, SectionHeading } from '../../components/marketing/S
 import Eyebrow from '../../components/marketing/Eyebrow'
 import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
-import LivePairChart from '../../components/marketing/LivePairChart'
+import LivePairChart from '../../components/ui/LivePairChart'
 import FxTicker from '../../components/marketing/FxTicker'
 
 /** Comprehensive capability tour with alternating feature blocks. */
