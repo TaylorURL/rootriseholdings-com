@@ -1,24 +1,36 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { ArrowLeft, LogOut } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { NAV_ITEMS } from './navigation'
+import { useAuth } from '../../context/AuthContext'
+import BrandMark from '../marketing/BrandMark'
 
-const APP_VERSION = 'v1.0.0'
+/**
+ * Gated-terminal navigation. Renders the brand lockup, primary nav, and a
+ * footer with the demo-mode notice plus sign-out / back-to-site actions.
+ *
+ * @param {object} props
+ * @param {() => void} [props.onNavigate] - called after a nav action (closes the mobile drawer)
+ */
+export default function Sidebar({ onNavigate }) {
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
 
-/** Fixed left navigation sidebar with brand mark and version footer. */
-export default function Sidebar() {
+  const handleSignOut = () => {
+    signOut()
+    onNavigate?.()
+    navigate('/')
+  }
+
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-bg-elevated">
-      <div className="flex items-center gap-2.5 px-5 py-5">
-        <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--ds-accent-face)] font-mono text-sm font-bold text-on-accent shadow-sm">
-          R
+    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-bg-elevated">
+      <div className="flex items-center justify-between px-5 py-5">
+        <Link to="/app" onClick={onNavigate} aria-label="Terminal home">
+          <BrandMark />
+        </Link>
+        <span className="rounded-full border border-[var(--ds-accent-soft)] bg-[var(--ds-accent-softer)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-accent-bright">
+          Terminal
         </span>
-        <div className="leading-tight">
-          <p className="text-sm font-semibold text-text">Rise &amp; Root</p>
-          <p className="flex items-center gap-1 text-[11px] text-text-faint">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-bright" aria-hidden="true" />
-            Grow &amp; ground your wealth
-          </p>
-        </div>
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2" aria-label="Primary">
@@ -27,6 +39,7 @@ export default function Sidebar() {
             key={to}
             to={to}
             end={end}
+            onClick={onNavigate}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
@@ -42,8 +55,26 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-border px-5 py-4">
-        <p className="font-mono text-xs text-text-faint">{APP_VERSION}</p>
+      <div className="space-y-3 border-t border-border px-3 py-4">
+        <p className="px-2 font-mono text-[11px] leading-relaxed text-text-faint">
+          Demo session · signals are illustrative, not financial advice.
+        </p>
+        <Link
+          to="/"
+          onClick={onNavigate}
+          className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to site
+        </Link>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-2 hover:text-danger"
+        >
+          <LogOut className="h-4 w-4" aria-hidden="true" />
+          Sign out
+        </button>
       </div>
     </aside>
   )

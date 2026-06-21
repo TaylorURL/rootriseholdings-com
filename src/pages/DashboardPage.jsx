@@ -8,23 +8,23 @@ import Sparkline from '../components/ui/Sparkline'
 import EquityCurveChart from '../components/ui/EquityCurveChart'
 import {
   account,
-  currencyPairs,
   openPositions,
   tradeHistory,
   performance,
   generateEquityCurve,
   generateSparkline,
 } from '../data/mockData'
+import { useFxQuotes, FX_PAIRS } from '../lib/fxData'
 import { cn } from '../lib/cn'
 import { formatCurrency, formatPercent, formatPips, formatPrice, signedColor } from '../lib/format'
 
 const equityCurve = generateEquityCurve()
-const majorPairs = currencyPairs.filter((entry) => entry.category === 'Majors')
 const recentTrades = tradeHistory.slice(0, 4)
+const MAJOR_SEEDS = FX_PAIRS.filter((entry) => entry.category === 'Majors')
 
 /** Deterministic 10-point sparkline per major pair for the market pulse strip. */
-const PULSE_SPARKLINES = majorPairs.reduce((accumulator, pair, index) => {
-  accumulator[pair.pair] = generateSparkline(pair.bid, 10, 0.005, index + 11)
+const PULSE_SPARKLINES = MAJOR_SEEDS.reduce((accumulator, entry, index) => {
+  accumulator[entry.pair] = generateSparkline(entry.seed, 10, 0.005, index + 11)
   return accumulator
 }, {})
 
@@ -39,6 +39,9 @@ function PerformanceSummaryCard({ label, children }) {
 }
 
 export default function DashboardPage() {
+  const { byPair } = useFxQuotes()
+  const majorPairs = MAJOR_SEEDS.map((entry) => byPair[entry.pair]).filter(Boolean)
+
   return (
     <PageContainer>
       <PageSection>
