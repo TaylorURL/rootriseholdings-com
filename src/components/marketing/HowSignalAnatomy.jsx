@@ -6,16 +6,16 @@ import CountUp from './CountUp'
 
 /** Illustrative sample signal — clearly labelled, not live or real. */
 const SAMPLE = {
-  pair: 'GBP/USD',
+  pair: 'XAU/USD · 1H',
   side: 'BUY',
-  confidence: 84,
+  confidence: 91,
   rows: [
-    { icon: Crosshair, label: 'Entry', value: '1.2734', note: 'on retest of broken structure' },
-    { icon: Target, label: 'Target', value: '1.2862', note: '+128 pips · prior swing high' },
-    { icon: ShieldAlert, label: 'Stop', value: '1.2698', note: '−36 pips · below the bounce' },
-    { icon: GaugeCircle, label: 'Risk / reward', value: '1 : 3.5', note: 'before fees and slippage' },
+    { icon: Crosshair, label: 'Entry', value: '2356.40', note: 'OTE tap · 62–79% retracement' },
+    { icon: Target, label: 'Target', value: '2385.00', note: 'prior 1H swing high (HH)' },
+    { icon: ShieldAlert, label: 'Stop', value: '2347.80', note: 'below the 1H structure low' },
+    { icon: GaugeCircle, label: 'Risk / reward', value: '1 : 3.3', note: 'clears the 1:2 minimum' },
   ],
-  catalysts: ['Bullish momentum divergence', 'London session liquidity sweep', 'Hold above daily support'],
+  catalysts: ['Daily HH/HL bias bullish', '1H bullish CHoCH at 2,354', 'DXY rolling over'],
 }
 
 /**
