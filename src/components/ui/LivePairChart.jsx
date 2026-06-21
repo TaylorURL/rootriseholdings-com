@@ -4,6 +4,7 @@ import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { useFxQuote } from '../../lib/fxData'
 import { decimalsForPair } from '../../lib/fxData/pairs'
+import { AREA_STOPS } from '../charts/chartTheme'
 
 const BUFFER = 48
 
@@ -15,10 +16,24 @@ function seedSeries(base) {
   }))
 }
 
+/** Glowing marker drawn only at the live (last) data point. */
+function LiveDot({ cx, cy, index, dataLength, stroke }) {
+  if (cx == null || cy == null || index !== dataLength - 1) return null
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={6} fill={stroke} opacity={0.18}>
+        <animate attributeName="r" values="5;10;5" dur="1.6s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.25;0;0.25" dur="1.6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx={cx} cy={cy} r={3} fill={stroke} stroke="var(--ds-bg)" strokeWidth={1.5} />
+    </g>
+  )
+}
+
 /**
- * A self-updating area chart bound to a single live FX pair. Each tick from the
- * data layer shifts the rolling window, producing a genuinely live preview on
- * the marketing site. Animates only transform/opacity-friendly SVG paint.
+ * A self-updating gradient area chart bound to a single live FX pair. Each tick
+ * from the data layer shifts the rolling window, producing a genuinely live
+ * preview with a pulsing endpoint marker.
  *
  * @param {object} props
  * @param {string} props.pair - e.g. 'EUR/USD'
@@ -76,11 +91,12 @@ export default function LivePairChart({ pair, height = 220, compact = false, cla
         </div>
       )}
       <ResponsiveContainer width="100%" height={height}>
-        <AreaChart data={series} margin={{ top: 6, right: 0, bottom: 0, left: 0 }}>
+        <AreaChart data={series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={stroke} stopOpacity={0.26} />
-              <stop offset="100%" stopColor={stroke} stopOpacity={0} />
+              {AREA_STOPS.map((stop) => (
+                <stop key={stop.offset} offset={stop.offset} stopColor={stroke} stopOpacity={stop.opacity} />
+              ))}
             </linearGradient>
           </defs>
           <YAxis hide domain={['dataMin', 'dataMax']} />
@@ -91,7 +107,8 @@ export default function LivePairChart({ pair, height = 220, compact = false, cla
             strokeWidth={2}
             fill={`url(#${gradientId})`}
             isAnimationActive={false}
-            dot={false}
+            dot={<LiveDot dataLength={series.length} stroke={stroke} />}
+            activeDot={false}
           />
         </AreaChart>
       </ResponsiveContainer>
