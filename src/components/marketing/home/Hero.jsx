@@ -72,7 +72,7 @@ export default function Hero() {
         <motion.div style={{ y: copyY }}>
           <div>
             <motion.div initial="hidden" animate="visible" custom={0} variants={ENTER}>
-              <Eyebrow>Forex Signal Intelligence</Eyebrow>
+              <Eyebrow>Smart Money Concepts Signal Intelligence</Eyebrow>
             </motion.div>
 
             <motion.h1
