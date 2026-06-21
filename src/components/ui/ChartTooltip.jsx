@@ -12,8 +12,8 @@ export function ChartTooltipShell({ children, className }) {
   return (
     <div
       className={cn(
-        'min-w-[8rem] overflow-hidden rounded-lg border border-border-strong bg-[var(--ds-backdrop)] px-3 py-2 text-xs text-text shadow-lg backdrop-blur-xl',
-        'before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-[var(--ds-accent-face)] relative',
+        'relative min-w-[8rem] overflow-hidden rounded-lg border border-border-strong bg-[var(--ds-backdrop)] px-3 py-2 text-xs text-text shadow-lg backdrop-blur-xl',
+        "before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-[var(--ds-accent-face)] before:content-['']",
         className,
       )}
     >
