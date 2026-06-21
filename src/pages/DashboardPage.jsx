@@ -105,7 +105,9 @@ export default function DashboardPage() {
           title="Equity Curve"
           action={<span className="text-xs text-text-faint">Last 30 days · Balance growth</span>}
         >
-          <EquityCurveChart data={equityCurve} height={300} xTickInterval={4} />
+          <ChartInView height={300}>
+            {() => <EquityCurveChart data={equityCurve} height={300} xTickInterval={4} />}
+          </ChartInView>
         </Card>
       </PageSection>
 
