@@ -10,13 +10,13 @@ export default function Sidebar() {
     <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-bg-elevated">
       <div className="flex items-center gap-2.5 px-5 py-5">
         <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--ds-accent-face)] font-mono text-sm font-bold text-on-accent shadow-sm">
-          M
+          R
         </span>
         <div className="leading-tight">
-          <p className="text-sm font-semibold text-text">Miranda FX</p>
+          <p className="text-sm font-semibold text-text">Rise &amp; Root</p>
           <p className="flex items-center gap-1 text-[11px] text-text-faint">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-bright" aria-hidden="true" />
-            Trading Platform
+            Grow &amp; ground your wealth
           </p>
         </div>
       </div>

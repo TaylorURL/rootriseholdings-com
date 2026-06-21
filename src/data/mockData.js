@@ -14,9 +14,9 @@ export const account = {
   accountNumber: '8042157',
   leverage: '1:100',
   currency: 'USD',
-  server: 'Miranda-Live-03',
+  server: 'RR-Live-01',
   accountType: 'ECN Pro',
-  holder: 'Miranda Capital LLC',
+  holder: 'Rise & Root Capital',
 }
 
 export const currencyPairs = [
