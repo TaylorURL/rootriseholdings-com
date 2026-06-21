@@ -63,6 +63,101 @@
     background: radial-gradient(closest-side, var(--ds-accent-glow), transparent 72%);
   }
 
+  /* Stronger, more saturated key light for signature/hero moments. */
+  .accent-glow-strong {
+    background: radial-gradient(closest-side, var(--ds-glow-strong), transparent 70%);
+  }
+
+  /* Layered purple mesh wash for cinematic section backdrops. */
+  .bg-mesh {
+    background-image: var(--ds-mesh);
+  }
+
+  /* Slowly rotating conic aura — sits behind hero panels and badges. */
+  .accent-aura {
+    background: var(--ds-accent-conic);
+    filter: blur(46px);
+    animation: aura-spin 22s linear infinite;
+  }
+
+  @keyframes aura-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Cursor-reactive spotlight. Drive --mx/--my (0–100%) from JS. */
+  .spotlight {
+    background: radial-gradient(
+      260px circle at var(--mx, 50%) var(--my, 50%),
+      var(--ds-accent-soft),
+      transparent 70%
+    );
+  }
+
+  /* One-shot light sweep across a surface (used on cards/CTAs on hover). */
+  .sheen-sweep::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ds-accent-sweep);
+    background-size: 220% 100%;
+    background-position: 180% 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--ds-duration-base) var(--ds-ease-out);
+  }
+
+  .sheen-sweep:hover::after {
+    opacity: 0.9;
+    animation: sheen-pan 0.9s var(--ds-ease-out);
+  }
+
+  @keyframes sheen-pan {
+    from {
+      background-position: 180% 0;
+    }
+    to {
+      background-position: -80% 0;
+    }
+  }
+
+  /* Animated conic gradient border ring for premium framed surfaces. */
+  .accent-ring {
+    position: relative;
+  }
+
+  .accent-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--ds-accent-conic);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
+    animation: aura-spin 14s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Vertical accent draw-line for stepper / storytelling spines. */
+  .text-gradient-sweep {
+    background-image: linear-gradient(110deg, var(--ds-text-muted) 0%, var(--ds-accent-bright) 45%, var(--ds-text) 75%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: sweep-text 7s linear infinite;
+  }
+
+  @keyframes sweep-text {
+    to {
+      background-position: -220% 0;
+    }
+  }
+
   /* Purple → white gradient text for display headlines. */
   .text-gradient {
     background-image: linear-gradient(180deg, var(--ds-text) 0%, var(--ds-text-muted) 130%);
