@@ -1,6 +1,4 @@
-import { useRef } from 'react'
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
-import { SPRING_CURSOR } from '../../../lib/marketingMotion'
+import { motion, useTransform } from 'framer-motion'
 
 /** Constellation of signal nodes; each drifts toward the cursor by its depth. */
 const NODES = [
@@ -43,42 +41,18 @@ function FieldNode({ node, offsetX, offsetY }) {
 
 /**
  * Cursor-reactive hero backdrop — Home's signature interactive section. A graph
- * of signal nodes parallaxes toward the pointer while a spotlight tracks it,
- * suggesting the engine "watching" the market. Pure transform/opacity motion;
- * reduced-motion renders a still constellation.
+ * of signal nodes parallaxes toward the pointer while a spotlight tracks it.
+ * Driven by motion values lifted to the hero section (so pointer moves over the
+ * copy/panel still register). Pure transform/opacity motion; reduced-motion is
+ * handled upstream by freezing the offset values.
+ *
+ * @param {object} props
+ * @param {import('framer-motion').MotionValue<number>} props.offsetX
+ * @param {import('framer-motion').MotionValue<number>} props.offsetY
  */
-export default function HeroSignalField() {
-  const ref = useRef(null)
-  const reduce = useReducedMotion()
-  const rawX = useMotionValue(0)
-  const rawY = useMotionValue(0)
-  const offsetX = useSpring(rawX, SPRING_CURSOR)
-  const offsetY = useSpring(rawY, SPRING_CURSOR)
-
-  const handleMove = (event) => {
-    if (reduce) return
-    const node = ref.current
-    if (!node || event.pointerType === 'touch') return
-    const rect = node.getBoundingClientRect()
-    rawX.set((event.clientX - rect.left) / rect.width - 0.5)
-    rawY.set((event.clientY - rect.top) / rect.height - 0.5)
-    node.style.setProperty('--mx', `${((event.clientX - rect.left) / rect.width) * 100}%`)
-    node.style.setProperty('--my', `${((event.clientY - rect.top) / rect.height) * 100}%`)
-  }
-
-  const handleLeave = () => {
-    rawX.set(0)
-    rawY.set(0)
-  }
-
+export default function HeroSignalField({ offsetX, offsetY }) {
   return (
-    <div
-      ref={ref}
-      onPointerMove={handleMove}
-      onPointerLeave={handleLeave}
-      className="pointer-events-auto absolute inset-0 overflow-hidden"
-      aria-hidden="true"
-    >
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <span className="spotlight absolute inset-0 opacity-70" />
       <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
         {EDGES.map(([a, b]) => (
