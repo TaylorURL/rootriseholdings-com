@@ -22,6 +22,7 @@ export default function MarketingLayout() {
 
   return (
     <div className="ds-root flex min-h-screen flex-col bg-bg" data-theme="dark">
+      <ScrollProgress />
       <MarketingNav />
       <main className="flex-1">
         <Outlet />
