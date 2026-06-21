@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import MarketingLayout from './layouts/MarketingLayout'
 import HomePage from './pages/marketing/HomePage'
 import PricingPage from './pages/marketing/PricingPage'
