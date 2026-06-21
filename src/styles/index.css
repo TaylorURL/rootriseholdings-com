@@ -44,4 +44,67 @@
   .ds-scroll::-webkit-scrollbar-track {
     background: transparent;
   }
+
+  /* Technical hairline grid used behind cinematic marketing sections. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--ds-border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--ds-border) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .bg-grid-fade {
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 35%, transparent 78%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 35%, transparent 78%);
+  }
+
+  /* Soft purple key light for hero / CTA backdrops. */
+  .accent-glow {
+    background: radial-gradient(closest-side, var(--ds-accent-glow), transparent 72%);
+  }
+
+  /* Purple → white gradient text for display headlines. */
+  .text-gradient {
+    background-image: linear-gradient(180deg, var(--ds-text) 0%, var(--ds-text-muted) 130%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gradient-accent {
+    background-image: linear-gradient(110deg, var(--ds-accent-bright) 0%, var(--ds-text) 60%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .ticker-track {
+    animation: ticker-scroll 48s linear infinite;
+  }
+
+  @keyframes ticker-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+}
+
+/* Honor reduced-motion globally: kill marquees and dampen transitions, while
+   leaving opacity/colour cues that aid comprehension. */
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
