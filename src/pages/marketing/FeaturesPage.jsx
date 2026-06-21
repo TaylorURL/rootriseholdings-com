@@ -67,7 +67,7 @@ export default function FeaturesPage() {
                       </p>
                     </div>
 
-                    <div className={reversed ? 'lg:order-1' : ''}>
+                    <div className={cn('group', reversed && 'lg:order-1')}>
                       {showChart ? (
                         <div className="accent-ring rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
                           <LivePairChart pair="USD/JPY" height={240} />
