@@ -26,30 +26,44 @@ const SAMPLE = {
  * @param {string} [props.className]
  */
 export default function HowSignalAnatomy({ className }) {
+  const reduce = useReducedMotion()
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-2xl border border-border-strong bg-surface/60 p-6 backdrop-blur-xl sm:p-8',
+        'accent-ring relative overflow-hidden rounded-2xl border border-border-strong bg-surface/60 p-6 backdrop-blur-xl sm:p-8',
         className,
       )}
     >
-      <div className="flex items-center justify-between border-b border-border pb-5">
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--ds-accent-soft)] font-mono text-xs font-bold text-accent-bright">
-            {SAMPLE.side}
-          </span>
-          <div className="leading-tight">
-            <p className="font-mono text-base font-semibold text-text">{SAMPLE.pair}</p>
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">
-              Illustrative sample
+      <div className="border-b border-border pb-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--ds-accent-soft)] font-mono text-xs font-bold text-accent-bright">
+              {SAMPLE.side}
+            </span>
+            <div className="leading-tight">
+              <p className="font-mono text-base font-semibold text-text">{SAMPLE.pair}</p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint">
+                Illustrative sample
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="font-mono text-2xl font-semibold tabular-nums text-accent-bright">
+              <CountUp value={SAMPLE.confidence} suffix="%" />
             </p>
+            <p className="text-xs text-text-faint">confidence</p>
           </div>
         </div>
-        <div className="text-right">
-          <p className="font-mono text-2xl font-semibold tabular-nums text-accent-bright">
-            {SAMPLE.confidence}%
-          </p>
-          <p className="text-xs text-text-faint">confidence</p>
+        {/* Confidence meter — draws in on scroll into view */}
+        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+          <motion.div
+            className="h-full origin-left rounded-full bg-[var(--ds-accent-face)]"
+            initial={{ scaleX: reduce ? SAMPLE.confidence / 100 : 0 }}
+            whileInView={{ scaleX: SAMPLE.confidence / 100 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.9, ease: EASE_OUT }}
+            style={{ width: '100%' }}
+          />
         </div>
       </div>
 
