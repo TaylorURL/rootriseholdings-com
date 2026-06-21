@@ -5,7 +5,7 @@ import { EASE_OUT } from '../../../lib/marketingMotion'
 import { PRODUCT } from '../../../lib/brand'
 import Eyebrow from '../Eyebrow'
 import MarketingButton from '../MarketingButton'
-import LivePairChart from '../LivePairChart'
+import LivePairChart from '../../ui/LivePairChart'
 import FxTicker from '../FxTicker'
 
 const ENTER = {
