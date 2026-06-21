@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Menu, Moon, Sun } from 'lucide-react'
 import { titleForPath } from './navigation'
-import { useFxQuotes } from '../../lib/fxData'
 
 /** Live wall clock that re-renders every second. */
 function useClock() {
@@ -12,12 +11,6 @@ function useClock() {
     return () => clearInterval(intervalId)
   }, [])
   return now
-}
-
-const MODE_LABEL = {
-  live: 'Live feed',
-  anchored: 'Live feed',
-  simulated: 'Simulated',
 }
 
 /**
