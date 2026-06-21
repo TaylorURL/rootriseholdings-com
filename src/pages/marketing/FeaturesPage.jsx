@@ -69,19 +69,19 @@ export default function FeaturesPage() {
 
                     <div className={reversed ? 'lg:order-1' : ''}>
                       {showChart ? (
-                        <div className="rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
+                        <div className="accent-ring rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
                           <LivePairChart pair="USD/JPY" height={240} />
                         </div>
                       ) : (
                         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface/40">
                           <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-40" aria-hidden="true" />
                           <div
-                            className="accent-glow pointer-events-none absolute right-0 top-0 h-72 w-72 opacity-50"
+                            className="accent-aura pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full opacity-25"
                             aria-hidden="true"
                           />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <feature.icon
-                              className="h-20 w-20 text-accent-bright/30"
+                              className="h-20 w-20 text-accent-bright/40 transition-transform duration-500 group-hover:scale-105"
                               strokeWidth={1}
                               aria-hidden="true"
                             />
