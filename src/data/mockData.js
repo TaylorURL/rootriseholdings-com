@@ -206,6 +206,38 @@ export function generateSparkline(baseValue, points = 20, volatility = 0.003, se
 }
 
 /**
+ * Generate deterministic OHLC candles for a candlestick chart. Produces a
+ * believable intraday walk with wicks, suitable for the terminal-grade preview.
+ * @param {number} baseValue - opening anchor price
+ * @param {number} [count=40] - number of candles
+ * @param {number} [volatility=0.0016] - per-candle volatility factor
+ * @param {number} [seed=7] - deterministic seed
+ * @returns {Array<{label:number, open:number, high:number, low:number, close:number, range:[number,number]}>}
+ */
+export function generateCandles(baseValue, count = 40, volatility = 0.0016, seed = 7) {
+  const random = seededRandom(seed)
+  const candles = []
+  let open = baseValue
+  for (let i = 0; i < count; i++) {
+    const drift = (random() - 0.5) * 2 * volatility
+    const close = open * (1 + drift)
+    const wick = Math.abs(open) * volatility * (0.4 + random())
+    const high = Math.max(open, close) + wick * random()
+    const low = Math.min(open, close) - wick * random()
+    candles.push({
+      label: i,
+      open: +open.toFixed(5),
+      high: +high.toFixed(5),
+      low: +low.toFixed(5),
+      close: +close.toFixed(5),
+      range: [+low.toFixed(5), +high.toFixed(5)],
+    })
+    open = close
+  }
+  return candles
+}
+
+/**
  * Generate a 30-day equity curve with a gentle upward drift.
  * @param {number} [startEquity=112000] - equity 30 days ago
  * @param {number} [days=30] - number of days
