@@ -7,6 +7,8 @@ import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import LivePairChart from '../../components/ui/LivePairChart'
 import HowSignalAnatomy from '../../components/marketing/HowSignalAnatomy'
+import SignalFormsSequence from '../../components/marketing/SignalFormsSequence'
+import TextReveal from '../../components/motion/TextReveal'
 
 /** Deep dive on the scripts → signal → decision loop. */
 export default function HowItWorksPage() {
