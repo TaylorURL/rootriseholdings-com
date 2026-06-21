@@ -7,14 +7,14 @@ import CandlestickChart from '../charts/CandlestickChart'
 import { generateCandles } from '../../data/mockData'
 import { cn } from '../../lib/cn'
 
-const CANDLES = generateCandles(1.272, 44, 0.0022, 91)
+const CANDLES = generateCandles(2348, 44, 0.0022, 91)
 const MIN_VISIBLE = 8
 
-/** The three narrated phases of a forming signal. */
+/** The three narrated phases of a forming SMC signal. */
 const PHASES = [
-  { icon: Radar, label: 'Scanning the tape', body: 'Scripts read every candle across the pair — momentum, structure, volatility, session context.' },
-  { icon: Crosshair, label: 'Structure detected', body: 'A level holds. Momentum aligns. The setup the engine has been waiting for starts to resolve.' },
-  { icon: Sparkles, label: 'Signal fired', body: 'Conditions converge. A scored buy signal is issued with entry, target and stop — your call from here.' },
+  { icon: Radar, label: 'Mapping structure', body: 'Scripts track market structure across timeframes — Daily/4H bias, swing highs and lows, session context.' },
+  { icon: Crosshair, label: 'BOS / CHoCH detected', body: 'Price breaks structure in line with the higher-timeframe bias, then pulls back into the OTE zone (62–79%).' },
+  { icon: Sparkles, label: 'Signal fired', body: 'Conditions converge at the OTE. A scored entry is issued with stop and target — your call from here.' },
 ]
 
 /** The signal card that resolves at the end of the scrub. */
