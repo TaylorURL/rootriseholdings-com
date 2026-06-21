@@ -19,14 +19,11 @@ function useClock() {
  * data-feed status, theme toggle, and a user avatar placeholder.
  *
  * @param {object} props
- * @param {'dark'|'light'} props.theme
- * @param {() => void} props.onToggleTheme
  * @param {() => void} props.onOpenDrawer
  */
-export default function Header({ theme, onToggleTheme, onOpenDrawer }) {
+export default function Header({ onOpenDrawer }) {
   const { pathname } = useLocation()
   const now = useClock()
-  const isDark = theme === 'dark'
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-[var(--ds-backdrop)] px-4 py-3.5 backdrop-blur-xl sm:px-6">
