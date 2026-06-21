@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Hash, Trophy, Percent, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import ChartInView from '../components/charts/ChartInView'
+import { AXIS_TICK } from '../components/charts/chartTheme'
 import { PageContainer, PageSection } from '../components/layout/PageContainer'
 import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
