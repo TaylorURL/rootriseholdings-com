@@ -19,23 +19,6 @@ export const account = {
   holder: 'Rise & Root Capital',
 }
 
-export const currencyPairs = [
-  { pair: 'EUR/USD', bid: 1.08423, ask: 1.08431, spread: 0.8, change: +0.0034, changePct: +0.31, high: 1.08712, low: 1.08201, volume: '82.4B', category: 'Majors' },
-  { pair: 'GBP/USD', bid: 1.27156, ask: 1.27168, spread: 1.2, change: -0.0021, changePct: -0.17, high: 1.27489, low: 1.27022, volume: '41.2B', category: 'Majors' },
-  { pair: 'USD/JPY', bid: 149.823, ask: 149.831, spread: 0.8, change: +0.412, changePct: +0.28, high: 150.112, low: 149.401, volume: '68.7B', category: 'Majors' },
-  { pair: 'USD/CHF', bid: 0.90134, ask: 0.90144, spread: 1.0, change: -0.00089, changePct: -0.1, high: 0.90312, low: 0.89988, volume: '22.1B', category: 'Majors' },
-  { pair: 'AUD/USD', bid: 0.64892, ask: 0.64902, spread: 1.0, change: +0.00156, changePct: +0.24, high: 0.65034, low: 0.64721, volume: '18.9B', category: 'Majors' },
-  { pair: 'USD/CAD', bid: 1.36421, ask: 1.36433, spread: 1.2, change: -0.00234, changePct: -0.17, high: 1.36789, low: 1.36312, volume: '25.3B', category: 'Majors' },
-  { pair: 'NZD/USD', bid: 0.60123, ask: 0.60135, spread: 1.2, change: +0.00089, changePct: +0.15, high: 0.60287, low: 0.59934, volume: '8.4B', category: 'Minors' },
-  { pair: 'EUR/GBP', bid: 0.85234, ask: 0.85246, spread: 1.2, change: +0.00178, changePct: +0.21, high: 0.85412, low: 0.85089, volume: '15.6B', category: 'Minors' },
-  { pair: 'EUR/JPY', bid: 162.451, ask: 162.466, spread: 1.5, change: +0.298, changePct: +0.18, high: 162.733, low: 161.902, volume: '19.4B', category: 'Minors' },
-  { pair: 'GBP/JPY', bid: 190.512, ask: 190.534, spread: 2.2, change: -0.184, changePct: -0.1, high: 191.045, low: 190.213, volume: '12.7B', category: 'Minors' },
-  { pair: 'USD/TRY', bid: 32.4187, ask: 32.4512, spread: 32.5, change: +0.1843, changePct: +0.57, high: 32.512, low: 32.118, volume: '3.1B', category: 'Exotics' },
-  { pair: 'USD/MXN', bid: 18.7124, ask: 18.7256, spread: 13.2, change: -0.0421, changePct: -0.22, high: 18.789, low: 18.654, volume: '4.8B', category: 'Exotics' },
-  { pair: 'USD/ZAR', bid: 18.2341, ask: 18.2489, spread: 14.8, change: +0.0612, changePct: +0.34, high: 18.301, low: 18.142, volume: '2.3B', category: 'Exotics' },
-  { pair: 'USD/SGD', bid: 1.34812, ask: 1.34829, spread: 1.7, change: -0.00098, changePct: -0.07, high: 1.34987, low: 1.34701, volume: '5.6B', category: 'Exotics' },
-]
-
 export const openPositions = [
   { id: 'P001', pair: 'EUR/USD', type: 'BUY', lots: 2.0, entryPrice: 1.08156, currentPrice: 1.08423, sl: 1.078, tp: 1.09, openTime: '2026-06-14 06:32', pnl: +534.0, pips: +26.7 },
   { id: 'P002', pair: 'GBP/USD', type: 'SELL', lots: 1.5, entryPrice: 1.27389, currentPrice: 1.27156, sl: 1.278, tp: 1.265, openTime: '2026-06-14 07:15', pnl: +349.5, pips: +23.3 },
@@ -218,37 +201,6 @@ export function generateSparkline(baseValue, points = 20, volatility = 0.003, se
   for (let i = 0; i < points; i++) {
     current = current * (1 + (random() - 0.48) * volatility)
     data.push({ value: +current.toFixed(5) })
-  }
-  return data
-}
-
-/**
- * Generate hourly OHLC data for the main price chart.
- * @param {number} baseValue - starting price
- * @param {number} [hours=48] - hours of history
- * @param {number} [seed=7] - deterministic seed
- */
-export function generatePriceHistory(baseValue, hours = 48, seed = 7) {
-  const random = seededRandom(seed)
-  const data = []
-  let current = baseValue
-  const now = new Date('2026-06-14T14:00:00Z')
-  for (let i = hours; i >= 0; i--) {
-    const open = current
-    const change = (random() - 0.48) * 0.003
-    const high = open * (1 + random() * 0.0015)
-    const low = open * (1 - random() * 0.0015)
-    const close = open * (1 + change)
-    current = close
-    const time = new Date(now.getTime() - i * 3600000)
-    data.push({
-      time: time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-      open: +open.toFixed(5),
-      high: +high.toFixed(5),
-      low: +low.toFixed(5),
-      close: +close.toFixed(5),
-      value: +close.toFixed(5),
-    })
   }
   return data
 }

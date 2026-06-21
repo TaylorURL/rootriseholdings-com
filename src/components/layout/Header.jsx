@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Moon, Sun } from 'lucide-react'
+import { Menu, Moon, Sun } from 'lucide-react'
 import { titleForPath } from './navigation'
+import { useFxQuotes } from '../../lib/fxData'
 
 /** Live wall clock that re-renders every second. */
 function useClock() {
@@ -13,22 +14,40 @@ function useClock() {
   return now
 }
 
+const MODE_LABEL = {
+  live: 'Live feed',
+  anchored: 'Live feed',
+  simulated: 'Simulated',
+}
+
 /**
- * Sticky frosted top bar: dynamic page title, live clock, connection status,
- * theme toggle, and a user avatar placeholder.
+ * Sticky frosted top bar: mobile drawer trigger, dynamic page title, live clock,
+ * data-feed status, theme toggle, and a user avatar placeholder.
  *
  * @param {object} props
  * @param {'dark'|'light'} props.theme
  * @param {() => void} props.onToggleTheme
+ * @param {() => void} props.onOpenDrawer
  */
-export default function Header({ theme, onToggleTheme }) {
+export default function Header({ theme, onToggleTheme, onOpenDrawer }) {
   const { pathname } = useLocation()
   const now = useClock()
+  const { mode } = useFxQuotes()
   const isDark = theme === 'dark'
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-[var(--ds-backdrop)] px-6 py-3.5 backdrop-blur-xl">
-      <h1 className="text-lg font-semibold tracking-tight text-text">{titleForPath(pathname)}</h1>
+    <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-[var(--ds-backdrop)] px-4 py-3.5 backdrop-blur-xl sm:px-6">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onOpenDrawer}
+          aria-label="Open navigation"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-2 text-text-muted transition-colors hover:text-text lg:hidden"
+        >
+          <Menu className="h-4 w-4" />
+        </button>
+        <h1 className="text-lg font-semibold tracking-tight text-text">{titleForPath(pathname)}</h1>
+      </div>
 
       <div className="flex items-center gap-3">
         <time className="hidden font-mono text-sm tabular-nums text-text-muted sm:block">
@@ -40,7 +59,7 @@ export default function Header({ theme, onToggleTheme }) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-positive" />
           </span>
-          Live
+          {MODE_LABEL[mode] ?? 'Live feed'}
         </span>
 
         <button
@@ -55,7 +74,7 @@ export default function Header({ theme, onToggleTheme }) {
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-sm font-semibold text-on-accent"
           aria-label="Account avatar"
-          title="Rise & Root Capital"
+          title="Rise & Root"
         >
           RR
         </div>

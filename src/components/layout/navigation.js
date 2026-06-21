@@ -2,12 +2,12 @@ import { LayoutDashboard, TrendingUp, Layers, History, Lightbulb, User } from 'l
 
 /** Primary navigation items shared by the sidebar and header title resolver. */
 export const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/markets', label: 'Markets', icon: TrendingUp },
-  { to: '/positions', label: 'Positions', icon: Layers },
-  { to: '/history', label: 'History', icon: History },
-  { to: '/insights', label: 'Insights', icon: Lightbulb },
-  { to: '/account', label: 'Account', icon: User },
+  { to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/app/markets', label: 'Markets', icon: TrendingUp },
+  { to: '/app/positions', label: 'Positions', icon: Layers },
+  { to: '/app/history', label: 'History', icon: History },
+  { to: '/app/insights', label: 'Insights', icon: Lightbulb },
+  { to: '/app/account', label: 'Account', icon: User },
 ]
 
 /** Resolve the page title for a given pathname. */
