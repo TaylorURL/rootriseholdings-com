@@ -127,6 +127,7 @@ export default function FeaturesPage() {
       </Section>
 
       <ClosingCta
+        tone="dark"
         title="See the terminal in motion."
         subtitle="Full access to every capability above for $99/month. Cancel anytime."
       />
