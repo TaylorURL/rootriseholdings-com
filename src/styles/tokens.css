@@ -21,6 +21,10 @@
   --ds-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ds-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ds-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Ergonomic aliases — short names for inline arbitrary-value Tailwind use. */
+  --ease-out: var(--ds-ease-out);
+  --ease-in-out: var(--ds-ease-in-out);
+  --ease-drawer: var(--ds-ease-drawer);
   --ds-duration-cinematic: 720ms;
   --ds-shadow-sm: 0 1px 1px var(--ds-shadow-ambient), 0 1px 2px var(--ds-shadow-key);
   --ds-shadow-md: 0 1px 1px var(--ds-shadow-ambient), 0 2px 4px var(--ds-shadow-key), 0 6px 14px var(--ds-shadow-key);
