@@ -32,7 +32,7 @@ export default function MarketingFooter() {
                   <li key={`${link.to}-${index}`}>
                     <Link
                       to={link.to}
-                      className="text-sm text-text-muted transition-colors hover:text-text"
+                      className="rounded-sm text-sm text-text-muted transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)] [@media(hover:hover)]:hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       {link.label}
                     </Link>
