@@ -111,7 +111,7 @@ export const FAQS = [
   {
     question: 'Will you ever place trades automatically?',
     answer:
-      'Automated execution through optional third-party broker integrations is on our roadmap. It is not part of the platform today, and it will always be opt-in. Rise & Root’s core remains decision-support — the signal is ours, the decision is yours.',
+      'Automated execution through optional third-party broker integrations is on our roadmap. It is not part of the platform today, and it will always be opt-in. Root & Rise’s core remains decision-support — the signal is ours, the decision is yours.',
   },
   {
     question: 'Do you guarantee profits?',
