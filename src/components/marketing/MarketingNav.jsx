@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { MARKETING_NAV } from '../../lib/brand'
 import { useAuth } from '../../context/AuthContext'
-import ThemeToggle from '../ui/ThemeToggle'
 import BrandMark from './BrandMark'
 import MarketingButton from './MarketingButton'
 
@@ -20,17 +19,73 @@ function useScrolled(threshold = 12) {
   return scrolled
 }
 
+const NAVBAR_TONES = new Set(['dark', 'light'])
+
+/**
+ * useNavbarTone — resolves the tone of whatever toned section currently sits
+ * under the fixed navbar by hit-testing every `[data-theme]` element against a
+ * probe line through the middle of the navbar's height band. Reuses the same
+ * source of truth the page already declares (the alternating dark/light bands)
+ * so we never re-detect colors from pixels. Re-runs on scroll, resize, and
+ * route change.
+ */
+function useNavbarTone(defaultTone, pathname) {
+  const [tone, setTone] = useState(defaultTone)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    let pending = false
+    const probe = () => {
+      pending = false
+      const navbar = document.querySelector('[data-marketing-nav]')
+      if (!navbar) return
+      const navRect = navbar.getBoundingClientRect()
+      const probeY = navRect.top + navRect.height / 2
+      const sections = document.querySelectorAll('[data-theme]')
+      let next = defaultTone
+      for (const el of sections) {
+        if (navbar.contains(el) || el === navbar) continue
+        const rect = el.getBoundingClientRect()
+        if (rect.top <= probeY && rect.bottom > probeY) {
+          const value = el.getAttribute('data-theme')
+          if (NAVBAR_TONES.has(value)) next = value
+        }
+      }
+      setTone((prev) => (prev === next ? prev : next))
+    }
+    const onScroll = () => {
+      if (pending) return
+      pending = true
+      requestAnimationFrame(probe)
+    }
+    probe()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [defaultTone, pathname])
+  return tone
+}
+
 const linkClass = ({ isActive }) =>
   cn(
     'text-sm font-medium transition-colors',
     isActive ? 'text-text' : 'text-text-muted hover:text-text',
   )
 
-/** Public marketing top navigation: sticky, frosts on scroll, responsive menu. */
+/**
+ * Public marketing top navigation: sticky, frosts on scroll, responsive menu.
+ * Adaptive tone — flips its own `data-theme` to match whichever band currently
+ * sits under it so the BrandMark and links stay legible over both dark and
+ * light sections with a smooth color transition at boundaries.
+ */
 export default function MarketingNav() {
   const scrolled = useScrolled()
   const [menuOpen, setMenuOpen] = useState(false)
   const { isAuthenticated } = useAuth()
+  const { pathname } = useLocation()
+  const navbarTone = useNavbarTone('dark', pathname)
 
   // Lock body scroll while the mobile menu is open.
   useEffect(() => {
@@ -40,10 +95,19 @@ export default function MarketingNav() {
     }
   }, [menuOpen])
 
+  // Close the mobile drawer automatically when the route changes.
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
+
   return (
     <header
+      data-marketing-nav
+      data-theme={navbarTone}
       className={cn(
-        'fixed inset-x-0 top-0 z-50 transition-colors duration-300',
+        // `color` is in the transition list so descendant text smoothly fades
+        // between tones as `data-theme` flips at section boundaries.
+        'fixed inset-x-0 top-0 z-50 transition-[background-color,color,border-color,backdrop-filter] duration-300',
         scrolled || menuOpen
           ? 'border-b border-border bg-[var(--ds-backdrop)] backdrop-blur-xl'
           : 'border-b border-transparent',
@@ -63,7 +127,6 @@ export default function MarketingNav() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <ThemeToggle />
           {isAuthenticated ? (
             <MarketingButton to="/app" size="sm">
               Open Terminal
@@ -80,18 +143,15 @@ export default function MarketingNav() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
-          <ThemeToggle />
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors hover:text-text"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
+        <button
+          type="button"
+          className="flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors hover:text-text lg:hidden"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </nav>
 
       {menuOpen && (
