@@ -38,7 +38,7 @@ export const HOW_IT_WORKS_STEPS = [
     title: 'You decide and act',
     summary: 'You place the trade on your own broker. Always your call.',
     detail:
-      'Rise & Root never touches your funds or your broker. Signals are decision-support — you weigh them, size them, and execute on your own terms. Optional automated execution via third-party brokers is on our roadmap.',
+      'Root & Rise never touches your funds or your broker. Signals are decision-support — you weigh them, size them, and execute on your own terms. Optional automated execution via third-party brokers is on our roadmap.',
   },
 ]
 
@@ -99,9 +99,9 @@ export const PLATFORM_STATS = [
 /** Pricing & product FAQs. */
 export const FAQS = [
   {
-    question: 'Does Rise & Root trade for me or manage my money?',
+    question: 'Does Root & Rise trade for me or manage my money?',
     answer:
-      'No. Rise & Root is a decision-support tool. Our scripts analyze market structure and generate buy and sell signals — you place every trade yourself, on your own broker. We never execute trades, hold your funds, or manage money on your behalf.',
+      'No. Root & Rise is a decision-support tool. Our scripts analyze market structure and generate buy and sell signals — you place every trade yourself, on your own broker. We never execute trades, hold your funds, or manage money on your behalf.',
   },
   {
     question: 'What exactly do I get for $99/month?',
@@ -111,7 +111,7 @@ export const FAQS = [
   {
     question: 'Will you ever place trades automatically?',
     answer:
-      'Automated execution through optional third-party broker integrations is on our roadmap. It is not part of the platform today, and it will always be opt-in. Rise & Root’s core remains decision-support — the signal is ours, the decision is yours.',
+      'Automated execution through optional third-party broker integrations is on our roadmap. It is not part of the platform today, and it will always be opt-in. Root & Rise’s core remains decision-support — the signal is ours, the decision is yours.',
   },
   {
     question: 'Do you guarantee profits?',

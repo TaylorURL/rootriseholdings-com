@@ -28,7 +28,7 @@ export const account = {
   currency: 'USD',
   server: 'RR-Live-01',
   accountType: 'Prop Firm — Funded',
-  holder: 'Rise & Root Capital',
+  holder: 'Root & Rise Capital',
 }
 
 /**
