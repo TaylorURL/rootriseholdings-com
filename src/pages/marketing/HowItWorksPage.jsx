@@ -126,7 +126,7 @@ export default function HowItWorksPage() {
       </Section>
 
       {/* What a signal contains */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <SectionHeading
