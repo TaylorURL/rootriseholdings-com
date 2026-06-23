@@ -10,6 +10,7 @@ import Accordion from '../../components/marketing/Accordion'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import PricingTierCard from '../../components/marketing/PricingTierCard'
 import PricingComparison from '../../components/marketing/PricingComparison'
+import MarketingHero from '../../components/marketing/MarketingHero'
 import TextReveal from '../../components/motion/TextReveal'
 
 const BILLING_OPTIONS = [
