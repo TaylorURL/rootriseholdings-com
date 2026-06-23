@@ -72,7 +72,7 @@ export default function HowItWorksPage() {
                       {/* Visual column */}
                       <div className={index % 2 === 1 ? 'lg:order-1' : ''}>
                         {isChart ? (
-                          <div className="rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
+                          <div className="card-elevated rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
                             <div className="mb-1 flex items-center justify-between">
                               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
                                 Scripts watching
@@ -90,7 +90,7 @@ export default function HowItWorksPage() {
                         ) : index === 1 ? (
                           <HowSignalAnatomy />
                         ) : (
-                          <div className="relative overflow-hidden rounded-2xl border border-[var(--ds-accent-soft)] bg-[var(--ds-accent-softer)] p-8 sm:p-10">
+                          <div className="card-elevated relative overflow-hidden rounded-2xl border border-[var(--ds-accent-soft)] bg-[var(--ds-accent-softer)] p-8 sm:p-10">
                             <span
                               className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--ds-accent-soft)] text-accent-bright"
                               aria-hidden="true"
