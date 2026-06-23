@@ -24,7 +24,10 @@ export default function PricingPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden pt-32 sm:pt-40">
+      <section
+        data-theme="dark"
+        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
+      >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
         <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
