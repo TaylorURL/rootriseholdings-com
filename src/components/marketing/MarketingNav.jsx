@@ -130,7 +130,20 @@ export default function MarketingNav() {
         <div className="hidden items-center gap-8 lg:flex">
           {MARKETING_NAV.map((item) => (
             <NavLink key={item.to} to={item.to} className={linkClass}>
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  {item.label}
+                  {/* Active-route accent underline — small, branded, never
+                      jumps in width because the dot is the indicator. */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'absolute left-1/2 -bottom-0.5 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-accent-bright transition-opacity duration-200 [transition-timing-function:var(--ds-ease-out)]',
+                      isActive ? 'opacity-100 shadow-[0_0_6px_var(--ds-accent-glow)]' : 'opacity-0',
+                    )}
+                  />
+                </>
+              )}
             </NavLink>
           ))}
         </div>
