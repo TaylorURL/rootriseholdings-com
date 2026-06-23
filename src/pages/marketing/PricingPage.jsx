@@ -151,7 +151,7 @@ export default function PricingPage() {
         </Container>
       </Section>
 
-      <ClosingCta />
+      <ClosingCta tone="light" />
     </>
   )
 }
