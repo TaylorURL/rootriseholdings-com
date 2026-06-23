@@ -106,10 +106,10 @@ export default function PricingPage() {
       </Section>
 
       {/* Signature: animated operational comparison */}
-      <PricingComparison />
+      <PricingComparison tone="dark" />
 
       {/* Compliance disclaimer block */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <Reveal className="mx-auto max-w-3xl">
             <div className="relative overflow-hidden rounded-2xl border border-border bg-surface/40 p-8 sm:p-10">
