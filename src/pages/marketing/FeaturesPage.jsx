@@ -102,7 +102,7 @@ export default function FeaturesPage() {
       </Section>
 
       {/* Trust pillars */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="Built on trust"
