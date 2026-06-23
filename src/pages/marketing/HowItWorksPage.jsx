@@ -142,7 +142,7 @@ export default function HowItWorksPage() {
       </Section>
 
       {/* Roadmap / user-decides reiteration */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <Reveal className="mx-auto max-w-3xl text-center">
             <Eyebrow className="justify-center">Where this goes</Eyebrow>
