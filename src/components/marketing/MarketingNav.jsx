@@ -154,7 +154,11 @@ export default function MarketingNav() {
 
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors hover:text-text lg:hidden"
+          className={cn(
+            'press flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)] lg:hidden',
+            '[@media(hover:hover)]:hover:text-text',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+          )}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
