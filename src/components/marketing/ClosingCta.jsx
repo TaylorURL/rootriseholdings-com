@@ -11,13 +11,18 @@ import { PRODUCT, COMPLIANCE } from '../../lib/brand'
  * @param {object} props
  * @param {string} [props.title]
  * @param {string} [props.subtitle]
+ * @param {'dark'|'light'} [props.tone='light']
  */
 export default function ClosingCta({
   title = 'Stop guessing. Start trading on signal.',
   subtitle = `Full access to the signal terminal for $${PRODUCT.monthlyPrice}/month. Cancel anytime.`,
+  tone = 'light',
 }) {
   return (
-    <section className="relative overflow-hidden border-t border-border py-28 sm:py-36">
+    <section
+      data-theme={tone}
+      className="relative overflow-hidden border-t border-border bg-bg py-28 text-text sm:py-36"
+    >
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-50" aria-hidden="true" />
       <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
       <div
