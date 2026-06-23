@@ -7,6 +7,7 @@ import ClosingCta from '../../components/marketing/ClosingCta'
 import LivePairChart from '../../components/ui/LivePairChart'
 import FxTicker from '../../components/marketing/FxTicker'
 import CapabilityMatrix from '../../components/marketing/CapabilityMatrix'
+import MarketingHero from '../../components/marketing/MarketingHero'
 import TextReveal from '../../components/motion/TextReveal'
 import { StaggerGroup, StaggerItem } from '../../components/motion/Stagger'
 import { SpotlightCard } from '../../components/motion/Spotlight'
@@ -15,18 +16,8 @@ import { SpotlightCard } from '../../components/motion/Spotlight'
 export default function FeaturesPage() {
   return (
     <>
-      {/* Hero */}
-      <section
-        data-theme="dark"
-        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
-        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
-        <div
-          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
-          aria-hidden="true"
-        />
-        <Container className="relative pb-16 text-center">
+      <MarketingHero>
+        <Container className="relative pb-20 text-center sm:pb-24">
           <Reveal className="mx-auto max-w-3xl">
             <Eyebrow className="justify-center">Features</Eyebrow>
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.04] tracking-tight text-text sm:text-6xl lg:text-7xl">
@@ -41,7 +32,7 @@ export default function FeaturesPage() {
           </Reveal>
         </Container>
         <FxTicker />
-      </section>
+      </MarketingHero>
 
       {/* Signature: cursor-reactive capability matrix */}
       <CapabilityMatrix tone="light" />
