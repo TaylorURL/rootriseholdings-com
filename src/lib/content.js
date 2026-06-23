@@ -38,7 +38,7 @@ export const HOW_IT_WORKS_STEPS = [
     title: 'You decide and act',
     summary: 'You place the trade on your own broker. Always your call.',
     detail:
-      'Rise & Root never touches your funds or your broker. Signals are decision-support — you weigh them, size them, and execute on your own terms. Optional automated execution via third-party brokers is on our roadmap.',
+      'Root & Rise never touches your funds or your broker. Signals are decision-support — you weigh them, size them, and execute on your own terms. Optional automated execution via third-party brokers is on our roadmap.',
   },
 ]
 
