@@ -77,7 +77,12 @@ export default function SignalFormsSequence({ tone = 'dark' }) {
   const signalLive = phase === 2
 
   return (
-    <section ref={ref} className="relative border-t border-border" style={{ height: reduce ? 'auto' : '320vh' }}>
+    <section
+      ref={ref}
+      data-theme={tone}
+      className="relative border-t border-border bg-bg text-text"
+      style={{ height: reduce ? 'auto' : '320vh' }}
+    >
       <div className={cn('top-0 flex min-h-screen items-center py-20', reduce ? '' : 'sticky')}>
         <Container>
           <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
