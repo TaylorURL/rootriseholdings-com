@@ -6,10 +6,15 @@ import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 import { SpotlightCard } from '../../motion/Spotlight'
 import { HOW_IT_WORKS_STEPS } from '../../../lib/content'
 
-/** Home overview of the three-step decision loop. Deeper dive lives on its page. */
-export default function HowItWorksSection() {
+/**
+ * Home overview of the three-step decision loop. Deeper dive lives on its page.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
+ */
+export default function HowItWorksSection({ tone = 'dark' }) {
   return (
-    <Section id="how-it-works" className="border-t border-border">
+    <Section id="how-it-works" tone={tone} className="border-t border-border">
       <Container>
         <SectionHeading
           eyebrow="How It Works"
