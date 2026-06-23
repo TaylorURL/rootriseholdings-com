@@ -54,8 +54,11 @@ function ResolvedSignal({ visible }) {
  * HowItWorks signature section: a pinned, scroll-scrubbed candlestick sequence
  * that builds a signal candle-by-candle as the user scrolls, narrating the three
  * phases beside it. Reduced-motion renders the finished state statically.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
  */
-export default function SignalFormsSequence() {
+export default function SignalFormsSequence({ tone = 'dark' }) {
   const ref = useRef(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
