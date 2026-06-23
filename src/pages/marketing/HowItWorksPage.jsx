@@ -42,10 +42,10 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Signature: scroll-scrubbed signal-forming sequence */}
-      <SignalFormsSequence />
+      <SignalFormsSequence tone="light" />
 
       {/* Step walkthrough with connecting accent line */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <div className="relative">
             {/* Connecting vertical accent line */}
