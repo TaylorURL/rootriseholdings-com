@@ -3,10 +3,15 @@ import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 import { SpotlightCard } from '../../motion/Spotlight'
 import { PLATFORM_FEATURES } from '../../../lib/content'
 
-/** Capability grid — the platform's headline features. */
-export default function FeaturesSection() {
+/**
+ * Capability grid — the platform's headline features.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
+ */
+export default function FeaturesSection({ tone = 'dark' }) {
   return (
-    <Section id="features" className="border-t border-border">
+    <Section id="features" tone={tone} className="border-t border-border">
       <Container>
         <SectionHeading
           eyebrow="Capabilities"
