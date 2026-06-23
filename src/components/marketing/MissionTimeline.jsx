@@ -16,8 +16,11 @@ const MILESTONES = [
  * About signature section: a vertical timeline whose accent spine draws in with
  * scroll, lighting each milestone as the line reaches it. Reduced-motion shows a
  * fully-drawn spine with all milestones active.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
  */
-export default function MissionTimeline() {
+export default function MissionTimeline({ tone = 'dark' }) {
   const ref = useRef(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 70%', 'end 60%'] })
