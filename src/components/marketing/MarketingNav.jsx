@@ -73,8 +73,9 @@ function useNavbarTone(defaultTone, pathname) {
 
 const linkClass = ({ isActive }) =>
   cn(
-    'text-sm font-medium transition-colors',
-    isActive ? 'text-text' : 'text-text-muted hover:text-text',
+    'relative -mx-2 rounded-md px-2 py-1 text-sm font-medium transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)]',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+    isActive ? 'text-text' : 'text-text-muted [@media(hover:hover)]:hover:text-text',
   )
 
 /**
