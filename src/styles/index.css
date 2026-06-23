@@ -235,19 +235,23 @@
   }
 }
 
-/* Honor reduced-motion globally: kill marquees and dampen transitions, while
-   leaving opacity/colour cues that aid comprehension. */
+/* Honor reduced-motion globally. Kill marquees and infinite decorative loops,
+   collapse positional/parallax transforms (handled in motion primitives), but
+   KEEP gentle opacity/colour/border transitions — those carry comprehension
+   (focus rings, hover affordances, the adaptive navbar's tone fade between
+   bands). Wholesale `transition-duration: 0` strips that signal away. */
 @media (prefers-reduced-motion: reduce) {
-  .ticker-track {
-    animation: none;
+  .ticker-track,
+  .accent-aura,
+  .accent-ring::before,
+  .text-gradient-sweep {
+    animation: none !important;
   }
 
   *,
   *::before,
   *::after {
-    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
 }
