@@ -177,6 +177,54 @@
     animation: ticker-scroll 48s linear infinite;
   }
 
+  /* Press feedback — tactile micro-interaction shared by every button, brand
+     lockup, and card-as-link. Transform-only so it stays GPU-friendly. */
+  .press {
+    transition: transform 140ms var(--ds-ease-out);
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  /* Token-aware focus ring legible against either tone. Sits ON the bg via a
+     2px halo so it doesn't get cropped by parent overflow:hidden surfaces. */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ds-bg), 0 0 0 4px var(--ds-accent-bright);
+    border-radius: inherit;
+  }
+  .focus-ring-inset:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ds-accent-bright);
+  }
+
+  /* Card with REAL elevation in both tones — token swaps with the data-theme
+     band so a card on a light section actually reads as lifted off the surface
+     (dark-mode shadows vanish against white). Transitions tuned for hover lift. */
+  .card-elevated {
+    box-shadow: var(--ds-shadow-card);
+    transition:
+      box-shadow 240ms var(--ds-ease-out),
+      border-color 240ms var(--ds-ease-out),
+      transform 240ms var(--ds-ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card-elevated:hover {
+      box-shadow: var(--ds-shadow-card-hover);
+    }
+  }
+
+  /* Hairline tonal seam at dark↔light band boundaries — used as a 1px overlay
+     at the top of toned sections to soften the slab transition. */
+  .band-seam::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: var(--ds-seam);
+    pointer-events: none;
+  }
+
   @keyframes ticker-scroll {
     from {
       transform: translate3d(0, 0, 0);
