@@ -274,7 +274,7 @@ export default function InsightsPage() {
         <Card title="Signal overview" padded={false}>
           <Table columns={overviewColumns} rows={sortedSignals} empty="No signals available." />
           <p className="border-t border-border px-5 py-3 text-xs text-text-faint">
-            Setups are decision-support only — Rise &amp; Root does not execute trades or manage capital.
+            Setups are decision-support only — Root &amp; Rise does not execute trades or manage capital.
             A+ tickets are capped at {RISK_RULES.maxAPlusSetupsPerDay} per session to prevent overtrading.
           </p>
         </Card>
