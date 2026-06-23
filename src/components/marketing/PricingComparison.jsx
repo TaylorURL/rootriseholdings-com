@@ -14,18 +14,18 @@ const ROWS = [
   { metric: 'Time from setup to alert', manual: 'Minutes–hours', system: 'Under 60s', manualPct: 40, systemPct: 100 },
 ]
 
-/** Animated bar — scaleX from 0 to its target on scroll into view (GPU-only). */
-function Meter({ pct, tone }) {
+/** Scroll-scrubbed bar — width tracks the parent section's scroll progress so
+    the chart actually fills as the user reads, not in a one-shot reveal. */
+function Meter({ pct, tone, progress }) {
   const reduce = useReducedMotion()
+  // Map shared section progress (0→1) onto each meter's target percentage.
+  // Reduce-motion users get the final state immediately.
+  const scaleX = useTransform(progress, [0, 1], [0, pct / 100])
   return (
     <div className="h-2 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
       <motion.div
         className={cn('h-full origin-left rounded-full', tone)}
-        initial={{ scaleX: reduce ? pct / 100 : 0 }}
-        whileInView={{ scaleX: pct / 100 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.9, ease: EASE_OUT }}
-        style={{ width: '100%' }}
+        style={reduce ? { width: '100%', transform: `scaleX(${pct / 100})` } : { width: '100%', scaleX }}
       />
     </div>
   )
