@@ -72,7 +72,7 @@ real auth and no Supabase. Search for `TODO(auth)` to find every seam where a re
 
 - **Vite + React 18** — fast ES-module dev server and build
 - **React Router v6** — separate marketing and gated `/app` route groups with their own layouts
-- **Tailwind CSS** — utility styling wired to the Rise & Root design-system tokens
+- **Tailwind CSS** — utility styling wired to the Root & Rise design-system tokens
 - **Framer Motion** — scroll-driven reveals, parallax, count-ups, and micro-interactions
   (GPU-friendly transform/opacity; respects `prefers-reduced-motion`)
 - **Recharts** — live FX area charts, equity curves, and sparklines
