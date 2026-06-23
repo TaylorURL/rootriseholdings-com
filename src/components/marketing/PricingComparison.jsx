@@ -32,15 +32,28 @@ function Meter({ pct, tone }) {
 }
 
 /**
- * Pricing signature section: an animated, hover-reactive comparison of the manual
- * workflow against the terminal. Bars draw in on scroll; rows lift on hover. All
- * claims are operational (coverage/speed), never performance.
+ * Pricing signature section: a scroll-driven comparison of the manual workflow
+ * against the terminal. Bars fill on scroll (the section's scrubbed moment),
+ * rows lift on hover. All claims are operational (coverage/speed), never
+ * performance.
  *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */
 export default function PricingComparison({ tone = 'dark' }) {
+  const ref = useRef(null)
   const [active, setActive] = useState(null)
+  const reduce = useReducedMotion()
+  // Scroll-driven progress for the bar fills — they actually track the user's
+  // scroll position rather than firing once and stopping. Spring-smoothed so
+  // the lag reads as deliberate craft.
+  const sectionProgress = useScrollLerp(
+    ref,
+    [0.05, 0.55],
+    [0, 1],
+    { offset: ['start end', 'end center'] },
+    { stiffness: 120, damping: 30, mass: 0.5 },
+  )
 
   return (
     <Section tone={tone} className="border-t border-border">
@@ -52,7 +65,7 @@ export default function PricingComparison({ tone = 'dark' }) {
           center
         />
 
-        <div className="card-elevated mx-auto mt-14 max-w-4xl overflow-hidden rounded-2xl border border-border-strong bg-surface/40 backdrop-blur-sm">
+        <div ref={ref} className="card-elevated mx-auto mt-14 max-w-4xl overflow-hidden rounded-2xl border border-border-strong bg-surface/40 backdrop-blur-sm">
           <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-4 border-b border-border px-6 py-4 font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint sm:px-8">
             <span>Capability</span>
             <span>Trading manually</span>
