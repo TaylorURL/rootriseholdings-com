@@ -11,7 +11,7 @@ const CURRENT_YEAR = new Date().getFullYear()
  */
 export default function MarketingFooter() {
   return (
-    <footer data-theme="dark" className="border-t border-border bg-bg text-text">
+    <footer data-theme="dark" className="band-seam relative border-t border-border bg-bg text-text">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
           <div className="max-w-sm">
