@@ -4,10 +4,18 @@ import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 import { SpotlightCard } from '../../motion/Spotlight'
 import { PLATFORM_STATS } from '../../../lib/content'
 
-/** Operational metric strip with scroll-triggered count-ups. */
-export default function StatsStrip() {
+/**
+ * Operational metric strip with scroll-triggered count-ups.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
+ */
+export default function StatsStrip({ tone = 'dark' }) {
   return (
-    <section className="relative overflow-hidden border-t border-border bg-bg-elevated/40">
+    <section
+      data-theme={tone}
+      className="relative overflow-hidden border-t border-border bg-bg text-text"
+    >
       <div className="bg-mesh pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
       <Container className="relative py-16">
         <StaggerGroup className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:grid-cols-4" stagger={0.07}>
