@@ -104,7 +104,7 @@ export default function AboutPage() {
       </Section>
 
       {/* Team strip */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="Team"
