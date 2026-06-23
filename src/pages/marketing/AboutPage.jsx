@@ -21,18 +21,8 @@ const TEAM = [
 export default function AboutPage() {
   return (
     <>
-      {/* Hero — mission statement */}
-      <section
-        data-theme="dark"
-        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
-        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
-        <div
-          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
-          aria-hidden="true"
-        />
-        <Container className="relative pb-16 text-center">
+      <MarketingHero>
+        <Container className="relative pb-20 text-center sm:pb-24">
           <Reveal className="mx-auto max-w-4xl">
             <Eyebrow className="justify-center">About</Eyebrow>
             <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.06] tracking-tight text-text sm:text-5xl lg:text-6xl">
@@ -46,7 +36,7 @@ export default function AboutPage() {
             </p>
           </Reveal>
         </Container>
-      </section>
+      </MarketingHero>
 
       {/* Mission / story */}
       <Section tone="light" className="border-t border-border">
