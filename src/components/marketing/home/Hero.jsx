@@ -26,9 +26,14 @@ export default function Hero() {
     target: sectionRef,
     offset: ['start start', 'end start'],
   })
-  const panelY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -60])
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 40])
-  const glowOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2])
+  // Spring-smooth each scroll-driven value so the columns lag the user's
+  // scroll slightly instead of tracking 1:1 — the lag is what makes the
+  // parallax feel composed rather than glued. Stiffness/damping tuned for
+  // a gentle, marketing-pace drift.
+  const panelSpring = { stiffness: 120, damping: 30, mass: 0.6 }
+  const panelY = useSpring(useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -60]), panelSpring)
+  const copyY = useSpring(useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 40]), panelSpring)
+  const glowOpacity = useSpring(useTransform(scrollYProgress, [0, 1], [1, 0.2]), panelSpring)
 
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
@@ -131,7 +136,7 @@ export default function Hero() {
             initial={{ opacity: 0, scale: reduceMotion ? 1 : 0.96, y: reduceMotion ? 0 : 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.2 }}
-            className="accent-ring relative rounded-2xl border border-border-strong bg-surface/70 p-5 shadow-lg backdrop-blur-xl"
+            className="accent-ring card-elevated relative rounded-2xl border border-border-strong bg-surface/70 p-5 backdrop-blur-xl"
           >
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2">

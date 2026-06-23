@@ -33,8 +33,8 @@ export default function TrustSection({ tone = 'dark' }) {
         <StaggerGroup className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3" stagger={0.1}>
           {TRUST_PILLARS.map((pillar) => (
             <StaggerItem key={pillar.title} className="h-full">
-              <SpotlightCard className="h-full rounded-2xl border border-border bg-surface/40 p-7 transition-colors hover:border-border-hover">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface-2 text-accent-bright transition-transform duration-300 group-hover:-translate-y-0.5">
+              <SpotlightCard className="card-elevated h-full rounded-2xl border border-border bg-surface/40 p-7 [@media(hover:hover)]:hover:border-border-hover">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface-2 text-accent-bright transition-transform duration-300 [transition-timing-function:var(--ds-ease-out)] [@media(hover:hover)]:group-hover:-translate-y-0.5">
                   <pillar.icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <h3 className="mt-5 text-base font-semibold tracking-tight text-text">{pillar.title}</h3>

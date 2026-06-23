@@ -44,11 +44,11 @@ export default function ProblemSection({ tone = 'dark' }) {
           </h2>
         </Reveal>
 
-        <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
+        <StaggerGroup className="card-elevated mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
           {POINTS.map((point) => (
             <StaggerItem key={point.label}>
               <SpotlightCard className="h-full bg-bg p-8">
-                <p className="font-mono text-4xl font-semibold tracking-tight text-accent-bright transition-[letter-spacing] duration-500 group-hover:tracking-tight sm:text-5xl">
+                <p className="font-mono text-4xl font-semibold tracking-tight text-accent-bright sm:text-5xl">
                   {point.stat}
                 </p>
                 <p className="mt-3 font-mono text-xs uppercase tracking-[0.2em] text-text-faint">

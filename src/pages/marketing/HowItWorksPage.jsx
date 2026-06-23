@@ -8,24 +8,15 @@ import ClosingCta from '../../components/marketing/ClosingCta'
 import LivePairChart from '../../components/ui/LivePairChart'
 import HowSignalAnatomy from '../../components/marketing/HowSignalAnatomy'
 import SignalFormsSequence from '../../components/marketing/SignalFormsSequence'
+import MarketingHero from '../../components/marketing/MarketingHero'
 import TextReveal from '../../components/motion/TextReveal'
 
 /** Deep dive on the scripts → signal → decision loop. */
 export default function HowItWorksPage() {
   return (
     <>
-      {/* Hero */}
-      <section
-        data-theme="dark"
-        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
-        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
-        <div
-          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
-          aria-hidden="true"
-        />
-        <Container className="relative pb-20 text-center">
+      <MarketingHero>
+        <Container className="relative pb-24 text-center sm:pb-28">
           <Reveal className="mx-auto max-w-3xl">
             <Eyebrow className="justify-center">How It Works</Eyebrow>
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.04] tracking-tight text-text sm:text-6xl lg:text-7xl">
@@ -39,7 +30,7 @@ export default function HowItWorksPage() {
             </p>
           </Reveal>
         </Container>
-      </section>
+      </MarketingHero>
 
       {/* Signature: scroll-scrubbed signal-forming sequence */}
       <SignalFormsSequence tone="light" />
@@ -81,7 +72,7 @@ export default function HowItWorksPage() {
                       {/* Visual column */}
                       <div className={index % 2 === 1 ? 'lg:order-1' : ''}>
                         {isChart ? (
-                          <div className="rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
+                          <div className="card-elevated rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
                             <div className="mb-1 flex items-center justify-between">
                               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
                                 Scripts watching
@@ -99,7 +90,7 @@ export default function HowItWorksPage() {
                         ) : index === 1 ? (
                           <HowSignalAnatomy />
                         ) : (
-                          <div className="relative overflow-hidden rounded-2xl border border-[var(--ds-accent-soft)] bg-[var(--ds-accent-softer)] p-8 sm:p-10">
+                          <div className="card-elevated relative overflow-hidden rounded-2xl border border-[var(--ds-accent-soft)] bg-[var(--ds-accent-softer)] p-8 sm:p-10">
                             <span
                               className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--ds-accent-soft)] text-accent-bright"
                               aria-hidden="true"

@@ -24,7 +24,7 @@ export default function CapabilityMatrix({ tone = 'dark' }) {
         <StaggerGroup className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
           {PLATFORM_FEATURES.map((feature, index) => (
             <StaggerItem key={feature.title} className="h-full">
-              <TiltCard className="h-full rounded-2xl border border-border-strong bg-surface/50 p-7 backdrop-blur-sm transition-colors hover:border-border-hover">
+              <TiltCard className="card-elevated h-full rounded-2xl border border-border-strong bg-surface/50 p-7 backdrop-blur-sm [@media(hover:hover)]:hover:border-border-hover">
                 <div className="flex items-center justify-between [transform:translateZ(28px)]">
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright">
                     <feature.icon className="h-5 w-5" aria-hidden="true" />

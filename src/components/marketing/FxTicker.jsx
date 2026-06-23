@@ -42,13 +42,15 @@ export default function FxTicker({ className }) {
   return (
     <div
       className={cn(
-        'relative flex overflow-hidden border-y border-border bg-bg-elevated/60',
+        'group relative flex overflow-hidden border-y border-border bg-bg-elevated/60',
         '[mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]',
         className,
       )}
       aria-label="Live instrument rates"
     >
-      <div className="ticker-track flex w-max">
+      {/* Pause the marquee on hover so users can scan a specific quote without
+          chasing it across the screen — a small premium-feel detail. */}
+      <div className="ticker-track flex w-max [@media(hover:hover)]:group-hover:[animation-play-state:paused]">
         {[0, 1].map((copy) => (
           <div key={copy} className="flex divide-x divide-border" aria-hidden={copy === 1}>
             {quotes.map((quote) => (

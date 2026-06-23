@@ -30,7 +30,7 @@ export default function HowSignalAnatomy({ className }) {
   return (
     <div
       className={cn(
-        'accent-ring relative overflow-hidden rounded-2xl border border-border-strong bg-surface/60 p-6 backdrop-blur-xl sm:p-8',
+        'accent-ring card-elevated relative overflow-hidden rounded-2xl border border-border-strong bg-surface/60 p-6 backdrop-blur-xl sm:p-8',
         className,
       )}
     >
