@@ -177,8 +177,9 @@ export default function MarketingNav() {
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-md px-3 py-3 text-base font-medium transition-colors',
-                    isActive ? 'bg-surface-2 text-text' : 'text-text-muted hover:bg-surface-2 hover:text-text',
+                    'press rounded-md px-3 py-3 text-base font-medium transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+                    isActive ? 'bg-surface-2 text-text' : 'text-text-muted [@media(hover:hover)]:hover:bg-surface-2 [@media(hover:hover)]:hover:text-text',
                   )
                 }
               >
