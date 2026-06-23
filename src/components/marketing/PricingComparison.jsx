@@ -85,11 +85,11 @@ export default function PricingComparison({ tone = 'dark' }) {
                   <span className="text-sm font-medium text-text">{row.metric}</span>
                   <div>
                     <p className="mb-2 text-xs text-text-muted">{row.manual}</p>
-                    <Meter pct={row.manualPct} tone="bg-surface-3" />
+                    <Meter pct={row.manualPct} tone="bg-surface-3" progress={sectionProgress} />
                   </div>
                   <div>
                     <p className="mb-2 text-xs font-medium text-accent-bright">{row.system}</p>
-                    <Meter pct={row.systemPct} tone="bg-[var(--ds-accent-face)]" />
+                    <Meter pct={row.systemPct} tone="bg-[var(--ds-accent-face)]" progress={sectionProgress} />
                   </div>
                 </div>
               </StaggerItem>
