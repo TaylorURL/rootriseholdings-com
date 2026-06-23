@@ -1,6 +1,6 @@
-# Rise & Root
+# Root & Rise
 
-**Forex signal intelligence.** Rise & Root is a decision-support SaaS for the FX markets: a
+**Forex signal intelligence.** Root & Rise is a decision-support SaaS for the FX markets: a
 system of live charts and algorithmic scripts that watch the market around the clock and
 signal when to buy and when to sell. It is **not** a fund and **not** an auto-trader — it does
 not manage money or execute trades. The signal is ours; the decision is yours.
