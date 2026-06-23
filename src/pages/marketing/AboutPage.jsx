@@ -76,10 +76,10 @@ export default function AboutPage() {
       </Section>
 
       {/* Signature: scroll-driven mission timeline */}
-      <MissionTimeline />
+      <MissionTimeline tone="dark" />
 
       {/* Principles */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="Principles"
