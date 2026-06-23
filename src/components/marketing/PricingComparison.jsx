@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Section, Container, SectionHeading } from './Section'
 import { StaggerGroup, StaggerItem } from '../motion/Stagger'
 import { EASE_OUT } from '../../lib/marketingMotion'
+import { useScrollLerp } from '../../lib/useScrollLerp'
 import { cn } from '../../lib/cn'
 
 /** Operational reach, manual workflow vs the terminal. Factual, not performance. */
