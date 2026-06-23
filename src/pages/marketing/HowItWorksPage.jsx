@@ -157,7 +157,7 @@ export default function HowItWorksPage() {
         </Container>
       </Section>
 
-      <ClosingCta />
+      <ClosingCta tone="light" />
     </>
   )
 }
