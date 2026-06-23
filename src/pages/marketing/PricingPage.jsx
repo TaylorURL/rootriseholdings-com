@@ -138,7 +138,7 @@ export default function PricingPage() {
       </Section>
 
       {/* FAQ */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="FAQ"
