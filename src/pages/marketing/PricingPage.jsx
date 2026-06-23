@@ -90,7 +90,7 @@ export default function PricingPage() {
       </section>
 
       {/* Plan card */}
-      <Section className="pt-4 sm:pt-6">
+      <Section tone="light" className="pt-4 sm:pt-6">
         <Container>
           <Reveal>
             <PricingTierCard billing={billing} />
