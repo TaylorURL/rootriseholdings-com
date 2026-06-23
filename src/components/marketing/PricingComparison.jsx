@@ -51,7 +51,7 @@ export default function PricingComparison({ tone = 'dark' }) {
           center
         />
 
-        <div className="mx-auto mt-14 max-w-4xl overflow-hidden rounded-2xl border border-border-strong bg-surface/40 backdrop-blur-sm">
+        <div className="card-elevated mx-auto mt-14 max-w-4xl overflow-hidden rounded-2xl border border-border-strong bg-surface/40 backdrop-blur-sm">
           <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-4 border-b border-border px-6 py-4 font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint sm:px-8">
             <span>Capability</span>
             <span>Trading manually</span>
