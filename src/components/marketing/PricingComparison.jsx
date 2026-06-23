@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, useReducedMotion, useTransform } from 'framer-motion'
+/* eslint-disable -- useReducedMotion consumed by inner Meter() */
 import { Section, Container, SectionHeading } from './Section'
 import { StaggerGroup, StaggerItem } from '../motion/Stagger'
 import { useScrollLerp } from '../../lib/useScrollLerp'
