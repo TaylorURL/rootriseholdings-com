@@ -35,7 +35,10 @@ const MarketingButton = forwardRef(function MarketingButton(
 ) {
   const classes = cn(
     'group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full font-medium tracking-tight',
-    'transition-[background-color,border-color,color,transform,box-shadow] duration-200 ease-out',
+    // Explicit prop list — never `transition: all`. Token easing so the curve
+    // matches the rest of the motion system instead of the browser default.
+    'transition-[background-color,border-color,color,transform,box-shadow] duration-200 [transition-timing-function:var(--ds-ease-out)] will-change-transform',
+    // Press feedback + tokenized focus ring legible against either band tone.
     'active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],
