@@ -21,7 +21,10 @@ export default function AboutPage() {
   return (
     <>
       {/* Hero — mission statement */}
-      <section className="relative overflow-hidden pt-32 sm:pt-40">
+      <section
+        data-theme="dark"
+        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
+      >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
         <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
@@ -45,7 +48,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission / story */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
             <SectionHeading eyebrow="Mission" title="Why Root &amp; Rise exists." />
@@ -73,10 +76,10 @@ export default function AboutPage() {
       </Section>
 
       {/* Signature: scroll-driven mission timeline */}
-      <MissionTimeline />
+      <MissionTimeline tone="dark" />
 
       {/* Principles */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="Principles"
@@ -101,7 +104,7 @@ export default function AboutPage() {
       </Section>
 
       {/* Team strip */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="Team"
@@ -127,7 +130,7 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      <ClosingCta />
+      <ClosingCta tone="light" />
     </>
   )
 }

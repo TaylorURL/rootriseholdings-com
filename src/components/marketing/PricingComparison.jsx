@@ -34,12 +34,15 @@ function Meter({ pct, tone }) {
  * Pricing signature section: an animated, hover-reactive comparison of the manual
  * workflow against the terminal. Bars draw in on scroll; rows lift on hover. All
  * claims are operational (coverage/speed), never performance.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
  */
-export default function PricingComparison() {
+export default function PricingComparison({ tone = 'dark' }) {
   const [active, setActive] = useState(null)
 
   return (
-    <Section className="border-t border-border">
+    <Section tone={tone} className="border-t border-border">
       <Container>
         <SectionHeading
           eyebrow="Why it's worth it"

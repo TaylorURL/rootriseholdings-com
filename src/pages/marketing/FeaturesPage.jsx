@@ -16,7 +16,10 @@ export default function FeaturesPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden pt-32 sm:pt-40">
+      <section
+        data-theme="dark"
+        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
+      >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
         <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
@@ -41,10 +44,10 @@ export default function FeaturesPage() {
       </section>
 
       {/* Signature: cursor-reactive capability matrix */}
-      <CapabilityMatrix />
+      <CapabilityMatrix tone="light" />
 
       {/* Feature blocks — alternating large layout */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <div className="space-y-16 lg:space-y-24">
             {PLATFORM_FEATURES.map((feature, index) => {
@@ -99,7 +102,7 @@ export default function FeaturesPage() {
       </Section>
 
       {/* Trust pillars */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="Built on trust"
@@ -124,6 +127,7 @@ export default function FeaturesPage() {
       </Section>
 
       <ClosingCta
+        tone="dark"
         title="See the terminal in motion."
         subtitle="Full access to every capability above for $99/month. Cancel anytime."
       />

@@ -7,18 +7,24 @@ import StatsStrip from '../../components/marketing/home/StatsStrip'
 import TrustSection from '../../components/marketing/home/TrustSection'
 import ClosingCta from '../../components/marketing/ClosingCta'
 
-/** Cinematic landing page assembling the scroll-driven marketing sections. */
+/**
+ * Cinematic landing page assembling the scroll-driven marketing sections.
+ *
+ * Rhythm: dark hero anchors the brand, then bands alternate down the page —
+ * light "problem" → dark "how it works" → light "features" → dark "live charts"
+ * → light "stats" → dark "trust" → light "closing CTA" → dark footer bookend.
+ */
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <ProblemSection />
-      <HowItWorksSection />
-      <FeaturesSection />
-      <LiveMarketSection />
-      <StatsStrip />
-      <TrustSection />
-      <ClosingCta />
+      <ProblemSection tone="light" />
+      <HowItWorksSection tone="dark" />
+      <FeaturesSection tone="light" />
+      <LiveMarketSection tone="dark" />
+      <StatsStrip tone="light" />
+      <TrustSection tone="dark" />
+      <ClosingCta tone="light" />
     </>
   )
 }

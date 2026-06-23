@@ -7,10 +7,13 @@ import { PLATFORM_FEATURES } from '../../lib/content'
  * Features signature section: a cursor-reactive capability matrix. Each tile
  * tilts toward the pointer with a tracking spotlight, turning the capability
  * overview into something you can feel. Behavior-free, transform-only motion.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
  */
-export default function CapabilityMatrix() {
+export default function CapabilityMatrix({ tone = 'dark' }) {
   return (
-    <Section className="border-t border-border">
+    <Section tone={tone} className="border-t border-border">
       <Container>
         <SectionHeading
           eyebrow="The matrix"

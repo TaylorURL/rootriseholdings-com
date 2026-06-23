@@ -23,10 +23,15 @@ const POINTS = [
   },
 ]
 
-/** Framing the problem the product solves before introducing the solution. */
-export default function ProblemSection() {
+/**
+ * Framing the problem the product solves before introducing the solution.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
+ */
+export default function ProblemSection({ tone = 'dark' }) {
   return (
-    <Section className="relative overflow-hidden border-t border-border">
+    <Section tone={tone} className="overflow-hidden border-t border-border">
       <Parallax speed={70} className="pointer-events-none absolute -right-32 top-10 h-[420px] w-[420px]">
         <div className="accent-glow h-full w-full opacity-50" aria-hidden="true" />
       </Parallax>

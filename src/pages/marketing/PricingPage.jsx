@@ -24,7 +24,10 @@ export default function PricingPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden pt-32 sm:pt-40">
+      <section
+        data-theme="dark"
+        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
+      >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
         <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
@@ -87,7 +90,7 @@ export default function PricingPage() {
       </section>
 
       {/* Plan card */}
-      <Section className="pt-4 sm:pt-6">
+      <Section tone="light" className="pt-4 sm:pt-6">
         <Container>
           <Reveal>
             <PricingTierCard billing={billing} />
@@ -103,10 +106,10 @@ export default function PricingPage() {
       </Section>
 
       {/* Signature: animated operational comparison */}
-      <PricingComparison />
+      <PricingComparison tone="dark" />
 
       {/* Compliance disclaimer block */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <Reveal className="mx-auto max-w-3xl">
             <div className="relative overflow-hidden rounded-2xl border border-border bg-surface/40 p-8 sm:p-10">
@@ -135,7 +138,7 @@ export default function PricingPage() {
       </Section>
 
       {/* FAQ */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <SectionHeading
             eyebrow="FAQ"
@@ -148,7 +151,7 @@ export default function PricingPage() {
         </Container>
       </Section>
 
-      <ClosingCta />
+      <ClosingCta tone="light" />
     </>
   )
 }

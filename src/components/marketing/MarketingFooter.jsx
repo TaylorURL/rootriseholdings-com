@@ -4,10 +4,14 @@ import BrandMark from './BrandMark'
 
 const CURRENT_YEAR = new Date().getFullYear()
 
-/** Public marketing footer with link columns and the compliance disclaimer. */
+/**
+ * Public marketing footer with link columns and the compliance disclaimer. Pinned
+ * to the dark tone so it closes every page as a deliberate brand anchor and gives
+ * the adaptive navbar a stable resting tone at the bottom of the scroll.
+ */
 export default function MarketingFooter() {
   return (
-    <footer className="border-t border-border bg-bg">
+    <footer data-theme="dark" className="border-t border-border bg-bg text-text">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
           <div className="max-w-sm">
