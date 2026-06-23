@@ -17,8 +17,8 @@ export default function StatsStrip({ tone = 'dark' }) {
       className="relative overflow-hidden border-t border-border bg-bg text-text"
     >
       <div className="bg-mesh pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
-      <Container className="relative py-16">
-        <StaggerGroup className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:grid-cols-4" stagger={0.07}>
+      <Container className="relative py-20 sm:py-24">
+        <StaggerGroup className="card-elevated grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:grid-cols-4" stagger={0.07}>
           {PLATFORM_STATS.map((stat) => (
             <StaggerItem key={stat.label} className="h-full">
               <SpotlightCard className="h-full bg-bg px-6 py-10 text-center">
