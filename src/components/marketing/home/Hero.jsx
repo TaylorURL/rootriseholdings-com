@@ -55,9 +55,10 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
+      data-theme="dark"
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      className="relative overflow-hidden pt-32 sm:pt-40"
+      className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
     >
       {/* Technical grid + reactive signal field + purple key light */}
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
