@@ -21,7 +21,7 @@ export default function TrustSection() {
             sharper read on the market — the decision stays yours.”
           </blockquote>
           <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-text-faint">
-            — The Rise &amp; Root team
+            — The Root &amp; Rise team
           </p>
         </Reveal>
 
