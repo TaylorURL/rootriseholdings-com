@@ -99,9 +99,9 @@ export const PLATFORM_STATS = [
 /** Pricing & product FAQs. */
 export const FAQS = [
   {
-    question: 'Does Rise & Root trade for me or manage my money?',
+    question: 'Does Root & Rise trade for me or manage my money?',
     answer:
-      'No. Rise & Root is a decision-support tool. Our scripts analyze market structure and generate buy and sell signals — you place every trade yourself, on your own broker. We never execute trades, hold your funds, or manage money on your behalf.',
+      'No. Root & Rise is a decision-support tool. Our scripts analyze market structure and generate buy and sell signals — you place every trade yourself, on your own broker. We never execute trades, hold your funds, or manage money on your behalf.',
   },
   {
     question: 'What exactly do I get for $99/month?',
