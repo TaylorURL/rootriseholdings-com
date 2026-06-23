@@ -1,7 +1,7 @@
 /** Single source of truth for product facts and marketing-site navigation. */
 
 export const PRODUCT = {
-  name: 'Rise & Root',
+  name: 'Root & Rise',
   shortName: 'R&R',
   tagline: 'Smart Money Concepts signal intelligence for gold, indices and FX.',
   valueProp:
