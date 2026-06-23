@@ -77,7 +77,7 @@ export default function PricingComparison({ tone = 'dark' }) {
                   onPointerEnter={() => setActive(index)}
                   onPointerLeave={() => setActive(null)}
                   className={cn(
-                    'grid grid-cols-[1.2fr_1fr_1fr] items-center gap-4 border-b border-border/60 px-6 py-5 transition-colors last:border-b-0 sm:px-8',
+                    'grid grid-cols-[1.2fr_1fr_1fr] items-center gap-4 border-b border-border/60 px-6 py-5 transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)] last:border-b-0 sm:px-8',
                     active === index && 'bg-[var(--ds-accent-softer)]',
                   )}
                 >
