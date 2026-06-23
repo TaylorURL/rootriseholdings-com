@@ -44,10 +44,10 @@ export default function FeaturesPage() {
       </section>
 
       {/* Signature: cursor-reactive capability matrix */}
-      <CapabilityMatrix />
+      <CapabilityMatrix tone="light" />
 
       {/* Feature blocks — alternating large layout */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <div className="space-y-16 lg:space-y-24">
             {PLATFORM_FEATURES.map((feature, index) => {
