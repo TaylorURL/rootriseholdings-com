@@ -42,7 +42,6 @@ function Meter({ pct, tone, progress }) {
 export default function PricingComparison({ tone = 'dark' }) {
   const ref = useRef(null)
   const [active, setActive] = useState(null)
-  const reduce = useReducedMotion()
   // Scroll-driven progress for the bar fills — they actually track the user's
   // scroll position rather than firing once and stopping. Spring-smoothed so
   // the lag reads as deliberate craft.
