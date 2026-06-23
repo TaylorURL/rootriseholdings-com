@@ -21,7 +21,7 @@ export default function ClosingCta({
   return (
     <section
       data-theme={tone}
-      className="relative overflow-hidden border-t border-border bg-bg py-28 text-text sm:py-36"
+      className="band-seam relative overflow-hidden border-t border-border bg-bg py-24 text-text sm:py-32"
     >
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-50" aria-hidden="true" />
       <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
