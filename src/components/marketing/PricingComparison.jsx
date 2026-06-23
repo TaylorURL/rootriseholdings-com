@@ -1,8 +1,7 @@
 import { useRef, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion, useTransform } from 'framer-motion'
 import { Section, Container, SectionHeading } from './Section'
 import { StaggerGroup, StaggerItem } from '../motion/Stagger'
-import { EASE_OUT } from '../../lib/marketingMotion'
 import { useScrollLerp } from '../../lib/useScrollLerp'
 import { cn } from '../../lib/cn'
 
