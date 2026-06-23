@@ -43,7 +43,10 @@ function useNavbarTone(defaultTone, pathname) {
       const sections = document.querySelectorAll('[data-theme]')
       let next = defaultTone
       for (const el of sections) {
-        if (navbar.contains(el) || el === navbar) continue
+        // Skip the navbar, its descendants, and any ancestor wrapper (e.g. the
+        // MarketingLayout root which carries the user's persisted theme). Only
+        // sibling sections under the navbar count as bands.
+        if (el === navbar || navbar.contains(el) || el.contains(navbar)) continue
         const rect = el.getBoundingClientRect()
         if (rect.top <= probeY && rect.bottom > probeY) {
           const value = el.getAttribute('data-theme')
