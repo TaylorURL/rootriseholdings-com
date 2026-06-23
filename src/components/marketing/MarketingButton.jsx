@@ -2,12 +2,14 @@ import { forwardRef } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 
+/* Hover effects gated on hover-capable pointers so touch devices don't get a
+   stuck hover state after tap. Only animate transform + opacity + paint props. */
 const VARIANT_CLASSES = {
   primary:
-    'sheen-sweep bg-[var(--ds-accent-face)] text-on-accent shadow-[0_8px_30px_-8px_var(--ds-accent-glow)] hover:bg-[var(--ds-accent-face-hover)] hover:shadow-[0_10px_38px_-8px_var(--ds-glow-strong)]',
+    'sheen-sweep bg-[var(--ds-accent-face)] text-on-accent shadow-[0_8px_30px_-8px_var(--ds-accent-glow)] [@media(hover:hover)]:hover:bg-[var(--ds-accent-face-hover)] [@media(hover:hover)]:hover:shadow-[0_12px_44px_-8px_var(--ds-glow-strong)] [@media(hover:hover)]:hover:-translate-y-[1px]',
   secondary:
-    'border border-border-strong bg-surface/40 text-text backdrop-blur hover:border-border-hover hover:bg-surface-2',
-  ghost: 'text-text-muted hover:text-text',
+    'border border-border-strong bg-surface/40 text-text backdrop-blur [@media(hover:hover)]:hover:border-border-hover [@media(hover:hover)]:hover:bg-surface-2 [@media(hover:hover)]:hover:-translate-y-[1px]',
+  ghost: 'text-text-muted [@media(hover:hover)]:hover:text-text',
 }
 
 const SIZE_CLASSES = {
