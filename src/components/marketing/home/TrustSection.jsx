@@ -5,10 +5,15 @@ import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 import { SpotlightCard } from '../../motion/Spotlight'
 import { TRUST_PILLARS } from '../../../lib/content'
 
-/** Compliance-forward trust strip standing in for traditional social proof. */
-export default function TrustSection() {
+/**
+ * Compliance-forward trust strip standing in for traditional social proof.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
+ */
+export default function TrustSection({ tone = 'dark' }) {
   return (
-    <Section className="relative overflow-hidden border-t border-border">
+    <Section tone={tone} className="overflow-hidden border-t border-border">
       <div
         className="accent-glow pointer-events-none absolute left-1/2 top-0 h-[360px] w-[680px] -translate-x-1/2 opacity-40"
         aria-hidden="true"

@@ -8,16 +8,23 @@ export function Container({ children, className }) {
 }
 
 /**
- * Vertical section rhythm wrapper with generous negative space.
+ * Vertical section rhythm wrapper. Pins its own theme tone so each section paints
+ * a deliberate dark or light band — consumed by the adaptive marketing navbar via
+ * `data-theme` hit-testing.
  *
  * @param {object} props
  * @param {string} [props.id]
  * @param {React.ReactNode} props.children
  * @param {string} [props.className]
+ * @param {'dark'|'light'} [props.tone='dark']
  */
-export function Section({ id, children, className }) {
+export function Section({ id, children, className, tone = 'dark' }) {
   return (
-    <section id={id} className={cn('relative py-24 sm:py-32', className)}>
+    <section
+      id={id}
+      data-theme={tone}
+      className={cn('relative bg-bg py-24 text-text sm:py-32', className)}
+    >
       {children}
     </section>
   )

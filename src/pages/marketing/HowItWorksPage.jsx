@@ -15,7 +15,10 @@ export default function HowItWorksPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden pt-32 sm:pt-40">
+      <section
+        data-theme="dark"
+        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
+      >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
         <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
         <div
@@ -39,10 +42,10 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Signature: scroll-scrubbed signal-forming sequence */}
-      <SignalFormsSequence />
+      <SignalFormsSequence tone="light" />
 
       {/* Step walkthrough with connecting accent line */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <div className="relative">
             {/* Connecting vertical accent line */}
@@ -123,7 +126,7 @@ export default function HowItWorksPage() {
       </Section>
 
       {/* What a signal contains */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <SectionHeading
@@ -139,7 +142,7 @@ export default function HowItWorksPage() {
       </Section>
 
       {/* Roadmap / user-decides reiteration */}
-      <Section className="border-t border-border">
+      <Section tone="dark" className="border-t border-border">
         <Container>
           <Reveal className="mx-auto max-w-3xl text-center">
             <Eyebrow className="justify-center">Where this goes</Eyebrow>
@@ -154,7 +157,7 @@ export default function HowItWorksPage() {
         </Container>
       </Section>
 
-      <ClosingCta />
+      <ClosingCta tone="light" />
     </>
   )
 }

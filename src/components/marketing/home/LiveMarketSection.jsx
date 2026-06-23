@@ -29,13 +29,18 @@ function QuoteChip({ quote }) {
   )
 }
 
-/** Live instrument preview wall — streaming charts + a continuously scrolling quote rail. */
-export default function LiveMarketSection() {
+/**
+ * Live instrument preview wall — streaming charts + a continuously scrolling quote rail.
+ *
+ * @param {object} props
+ * @param {'dark'|'light'} [props.tone='dark']
+ */
+export default function LiveMarketSection({ tone = 'dark' }) {
   const { quotes } = useInstrumentQuotes()
   const sourceLabel = 'Simulated feed'
 
   return (
-    <Section id="live" className="border-t border-border">
+    <Section id="live" tone={tone} className="border-t border-border">
       <Container>
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
           <SectionHeading
