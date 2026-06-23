@@ -33,7 +33,7 @@ export default function MissionTimeline({ tone = 'dark' }) {
   })
 
   return (
-    <Section className="border-t border-border">
+    <Section tone={tone} className="border-t border-border">
       <Container>
         <SectionHeading
           eyebrow="The throughline"
