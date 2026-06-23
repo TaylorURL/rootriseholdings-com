@@ -50,7 +50,7 @@ export default function MarketingNav() {
       )}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
-        <Link to="/" aria-label="Rise & Root home" onClick={() => setMenuOpen(false)}>
+        <Link to="/" aria-label="Root & Rise home" onClick={() => setMenuOpen(false)}>
           <BrandMark />
         </Link>
 
