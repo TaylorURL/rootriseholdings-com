@@ -118,7 +118,12 @@ export default function MarketingNav() {
       )}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
-        <Link to="/" aria-label="Root & Rise home" onClick={() => setMenuOpen(false)}>
+        <Link
+          to="/"
+          aria-label="Root & Rise home"
+          onClick={() => setMenuOpen(false)}
+          className="press -m-1 rounded-md p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+        >
           <BrandMark />
         </Link>
 
