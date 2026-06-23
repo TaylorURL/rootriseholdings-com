@@ -208,7 +208,7 @@ export default function AccountPage() {
               <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--ds-accent-soft)] text-accent-bright">
                 <ShieldCheck className="h-5 w-5" aria-hidden="true" />
               </span>
-              <Badge variant="accent">Rise &amp; Root · $99/mo</Badge>
+              <Badge variant="accent">Root &amp; Rise · $99/mo</Badge>
             </div>
             <ul className="mt-4 space-y-2.5">
               {TIER_FEATURES.map((feature) => (

@@ -307,7 +307,7 @@ export default function PositionsPage() {
             ))}
           </ul>
           <p className="mt-3 border-t border-border pt-3 text-xs text-text-faint">
-            Rules are enforced visually in the journal UI — Rise &amp; Root never blocks or executes orders.
+            Rules are enforced visually in the journal UI — Root &amp; Rise never blocks or executes orders.
           </p>
         </Card>
       </PageSection>

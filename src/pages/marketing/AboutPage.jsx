@@ -48,7 +48,7 @@ export default function AboutPage() {
       <Section className="border-t border-border">
         <Container>
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-            <SectionHeading eyebrow="Mission" title="Why Rise &amp; Root exists." />
+            <SectionHeading eyebrow="Mission" title="Why Root &amp; Rise exists." />
             <Reveal delay={0.1} className="max-w-2xl space-y-6 text-pretty text-lg leading-relaxed text-text-muted">
               <p>
                 Most traders don&apos;t lose because they lack information. They lose because the

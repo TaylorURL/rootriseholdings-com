@@ -8,7 +8,7 @@ const MARK_SIZES = {
 }
 
 /**
- * The Rise & Root brand lockup: a gradient "R" mark with optional wordmark.
+ * The Root & Rise brand lockup: a gradient "R" mark with optional wordmark.
  *
  * @param {object} props
  * @param {'sm'|'md'|'lg'} [props.size='md']
