@@ -52,7 +52,7 @@ export default function PricingComparison() {
           <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-4 border-b border-border px-6 py-4 font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint sm:px-8">
             <span>Capability</span>
             <span>Trading manually</span>
-            <span className="text-accent-bright">With Rise &amp; Root</span>
+            <span className="text-accent-bright">With Root &amp; Rise</span>
           </div>
 
           <StaggerGroup>
