@@ -48,7 +48,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission / story */}
-      <Section className="border-t border-border">
+      <Section tone="light" className="border-t border-border">
         <Container>
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
             <SectionHeading eyebrow="Mission" title="Why Root &amp; Rise exists." />
