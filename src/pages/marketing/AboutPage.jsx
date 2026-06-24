@@ -5,6 +5,7 @@ import Eyebrow from '../../components/marketing/Eyebrow'
 import Reveal from '../../components/marketing/Reveal'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import MissionTimeline from '../../components/marketing/MissionTimeline'
+import MarketingHero from '../../components/marketing/MarketingHero'
 import TextReveal from '../../components/motion/TextReveal'
 import { StaggerGroup, StaggerItem } from '../../components/motion/Stagger'
 import { SpotlightCard } from '../../components/motion/Spotlight'
@@ -20,18 +21,8 @@ const TEAM = [
 export default function AboutPage() {
   return (
     <>
-      {/* Hero — mission statement */}
-      <section
-        data-theme="dark"
-        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
-        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
-        <div
-          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
-          aria-hidden="true"
-        />
-        <Container className="relative pb-16 text-center">
+      <MarketingHero>
+        <Container className="relative pb-20 text-center sm:pb-24">
           <Reveal className="mx-auto max-w-4xl">
             <Eyebrow className="justify-center">About</Eyebrow>
             <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.06] tracking-tight text-text sm:text-5xl lg:text-6xl">
@@ -45,7 +36,7 @@ export default function AboutPage() {
             </p>
           </Reveal>
         </Container>
-      </section>
+      </MarketingHero>
 
       {/* Mission / story */}
       <Section tone="light" className="border-t border-border">
@@ -87,11 +78,11 @@ export default function AboutPage() {
             description="Three commitments that shape every decision, every signal, and every word of copy."
             center
           />
-          <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3" stagger={0.08}>
+          <StaggerGroup className="card-elevated mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3" stagger={0.08}>
             {TRUST_PILLARS.map((pillar) => (
               <StaggerItem key={pillar.title} className="h-full">
                 <SpotlightCard className="h-full bg-bg p-8">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright transition-transform duration-300 group-hover:-translate-y-0.5">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright transition-transform duration-300 [transition-timing-function:var(--ds-ease-out)] [@media(hover:hover)]:group-hover:-translate-y-0.5">
                     <pillar.icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <h3 className="mt-6 text-lg font-semibold tracking-tight text-text">{pillar.title}</h3>
@@ -111,12 +102,12 @@ export default function AboutPage() {
             title="A small, focused crew."
             description="Quant research, engineering and market operations — building one thing, carefully."
           />
-          <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4" stagger={0.07}>
+          <StaggerGroup className="card-elevated mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4" stagger={0.07}>
             {TEAM.map((member) => (
               <StaggerItem key={member.role} className="h-full">
                 <SpotlightCard className="h-full bg-bg p-8">
                   <span
-                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-base font-bold text-on-accent shadow-[0_8px_30px_-10px_var(--ds-accent-glow)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-105"
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-accent-face)] font-mono text-base font-bold text-on-accent shadow-[0_8px_30px_-10px_var(--ds-accent-glow)] transition-transform duration-300 [transition-timing-function:var(--ds-ease-out)] [@media(hover:hover)]:group-hover:-translate-y-0.5 [@media(hover:hover)]:group-hover:scale-[1.04]"
                     aria-hidden="true"
                   >
                     {member.initials}

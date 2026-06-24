@@ -13,12 +13,16 @@ function AccordionItem({ item, isOpen, onToggle, reduceMotion }) {
           type="button"
           onClick={onToggle}
           aria-expanded={isOpen}
-          className="flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:text-text"
+          className={cn(
+            'group flex w-full items-center justify-between gap-6 rounded-md py-6 text-left transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)]',
+            '[@media(hover:hover)]:hover:text-text',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-4 focus-visible:ring-offset-bg',
+          )}
         >
           <span className="text-base font-medium text-text sm:text-lg">{item.question}</span>
           <Plus
             className={cn(
-              'h-5 w-5 shrink-0 text-text-muted transition-transform duration-300 ease-out',
+              'h-5 w-5 shrink-0 text-text-muted transition-transform duration-300 [transition-timing-function:var(--ds-ease-out)]',
               isOpen && 'rotate-45 text-accent-bright',
             )}
             aria-hidden="true"
@@ -31,7 +35,7 @@ function AccordionItem({ item, isOpen, onToggle, reduceMotion }) {
             initial={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
             animate={reduceMotion ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
             exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: EASE_OUT }}
+            transition={{ duration: 0.32, ease: EASE_OUT }}
             className="overflow-hidden"
           >
             <p className="max-w-2xl pb-6 text-pretty leading-relaxed text-text-muted">{item.answer}</p>

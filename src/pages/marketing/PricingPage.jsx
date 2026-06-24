@@ -10,6 +10,7 @@ import Accordion from '../../components/marketing/Accordion'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import PricingTierCard from '../../components/marketing/PricingTierCard'
 import PricingComparison from '../../components/marketing/PricingComparison'
+import MarketingHero from '../../components/marketing/MarketingHero'
 import TextReveal from '../../components/motion/TextReveal'
 
 const BILLING_OPTIONS = [
@@ -23,18 +24,8 @@ export default function PricingPage() {
 
   return (
     <>
-      {/* Hero */}
-      <section
-        data-theme="dark"
-        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
-        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
-        <div
-          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
-          aria-hidden="true"
-        />
-        <Container className="relative pb-16 text-center sm:pb-20">
+      <MarketingHero>
+        <Container className="relative pb-20 text-center sm:pb-24">
           <Reveal className="mx-auto max-w-3xl">
             <Eyebrow className="justify-center">Pricing</Eyebrow>
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.04] tracking-tight text-text sm:text-6xl lg:text-7xl">
@@ -63,18 +54,19 @@ export default function PricingPage() {
                     aria-checked={active}
                     onClick={() => setBilling(option.id)}
                     className={cn(
-                      'relative rounded-full px-5 py-2 font-mono text-xs uppercase tracking-[0.14em] transition-colors',
+                      'press relative rounded-full px-5 py-2 font-mono text-xs uppercase tracking-[0.14em]',
+                      'transition-[background-color,color] duration-200 [transition-timing-function:var(--ds-ease-out)]',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
                       active
-                        ? 'bg-[var(--ds-accent-face)] text-on-accent'
-                        : 'text-text-muted hover:text-text',
+                        ? 'bg-[var(--ds-accent-face)] text-on-accent shadow-[0_6px_22px_-8px_var(--ds-accent-glow)]'
+                        : 'text-text-muted [@media(hover:hover)]:hover:text-text',
                     )}
                   >
                     {option.label}
                     {option.id === 'annual' && (
                       <span
                         className={cn(
-                          'ml-2 rounded-full px-1.5 py-0.5 text-[10px]',
+                          'ml-2 rounded-full px-1.5 py-0.5 text-[10px] transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)]',
                           active ? 'bg-black/20 text-on-accent' : 'bg-[var(--ds-accent-softer)] text-accent-bright',
                         )}
                       >
@@ -87,7 +79,7 @@ export default function PricingPage() {
             </div>
           </Reveal>
         </Container>
-      </section>
+      </MarketingHero>
 
       {/* Plan card */}
       <Section tone="light" className="pt-4 sm:pt-6">

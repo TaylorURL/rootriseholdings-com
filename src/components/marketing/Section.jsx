@@ -12,18 +12,22 @@ export function Container({ children, className }) {
  * a deliberate dark or light band — consumed by the adaptive marketing navbar via
  * `data-theme` hit-testing.
  *
+ * Renders a subtle tonal seam at the top so adjacent dark↔light bands read as
+ * deliberate composition instead of slabs. Caller can opt out with `seam={false}`.
+ *
  * @param {object} props
  * @param {string} [props.id]
  * @param {React.ReactNode} props.children
  * @param {string} [props.className]
  * @param {'dark'|'light'} [props.tone='dark']
+ * @param {boolean} [props.seam=true]
  */
-export function Section({ id, children, className, tone = 'dark' }) {
+export function Section({ id, children, className, tone = 'dark', seam = true }) {
   return (
     <section
       id={id}
       data-theme={tone}
-      className={cn('relative bg-bg py-24 text-text sm:py-32', className)}
+      className={cn('relative bg-bg py-24 text-text sm:py-32', seam && 'band-seam', className)}
     >
       {children}
     </section>

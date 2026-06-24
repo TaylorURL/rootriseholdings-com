@@ -7,6 +7,7 @@ import ClosingCta from '../../components/marketing/ClosingCta'
 import LivePairChart from '../../components/ui/LivePairChart'
 import FxTicker from '../../components/marketing/FxTicker'
 import CapabilityMatrix from '../../components/marketing/CapabilityMatrix'
+import MarketingHero from '../../components/marketing/MarketingHero'
 import TextReveal from '../../components/motion/TextReveal'
 import { StaggerGroup, StaggerItem } from '../../components/motion/Stagger'
 import { SpotlightCard } from '../../components/motion/Spotlight'
@@ -15,18 +16,8 @@ import { SpotlightCard } from '../../components/motion/Spotlight'
 export default function FeaturesPage() {
   return (
     <>
-      {/* Hero */}
-      <section
-        data-theme="dark"
-        className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
-        <div className="bg-mesh pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
-        <div
-          className="accent-glow-strong pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2"
-          aria-hidden="true"
-        />
-        <Container className="relative pb-16 text-center">
+      <MarketingHero>
+        <Container className="relative pb-20 text-center sm:pb-24">
           <Reveal className="mx-auto max-w-3xl">
             <Eyebrow className="justify-center">Features</Eyebrow>
             <h1 className="mt-6 text-balance text-5xl font-semibold leading-[1.04] tracking-tight text-text sm:text-6xl lg:text-7xl">
@@ -41,7 +32,7 @@ export default function FeaturesPage() {
           </Reveal>
         </Container>
         <FxTicker />
-      </section>
+      </MarketingHero>
 
       {/* Signature: cursor-reactive capability matrix */}
       <CapabilityMatrix tone="light" />
@@ -73,11 +64,11 @@ export default function FeaturesPage() {
 
                     <div className={cn('group', reversed && 'lg:order-1')}>
                       {showChart ? (
-                        <div className="accent-ring rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
+                        <div className="accent-ring card-elevated rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
                           <LivePairChart symbol="NAS100" height={240} />
                         </div>
                       ) : (
-                        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface/40">
+                        <div className="card-elevated relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface/40">
                           <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-40" aria-hidden="true" />
                           <div
                             className="accent-aura pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full opacity-25"
@@ -85,7 +76,7 @@ export default function FeaturesPage() {
                           />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <feature.icon
-                              className="h-20 w-20 text-accent-bright/40 transition-transform duration-500 group-hover:scale-105"
+                              className="h-20 w-20 text-accent-bright/40 transition-transform duration-500 [transition-timing-function:var(--ds-ease-out)] [@media(hover:hover)]:group-hover:scale-105"
                               strokeWidth={1}
                               aria-hidden="true"
                             />
@@ -110,11 +101,11 @@ export default function FeaturesPage() {
             description="The capabilities matter, but so does how we talk about them. These principles hold across every screen."
             center
           />
-          <StaggerGroup className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3" stagger={0.08}>
+          <StaggerGroup className="card-elevated mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3" stagger={0.08}>
             {TRUST_PILLARS.map((pillar) => (
               <StaggerItem key={pillar.title} className="h-full">
                 <SpotlightCard className="h-full bg-bg p-8">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright transition-transform duration-300 group-hover:-translate-y-0.5">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright transition-transform duration-300 [transition-timing-function:var(--ds-ease-out)] [@media(hover:hover)]:group-hover:-translate-y-0.5">
                     <pillar.icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <h3 className="mt-6 text-lg font-semibold tracking-tight text-text">{pillar.title}</h3>

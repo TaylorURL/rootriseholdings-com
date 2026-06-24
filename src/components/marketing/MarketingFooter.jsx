@@ -11,7 +11,7 @@ const CURRENT_YEAR = new Date().getFullYear()
  */
 export default function MarketingFooter() {
   return (
-    <footer data-theme="dark" className="border-t border-border bg-bg text-text">
+    <footer data-theme="dark" className="band-seam relative border-t border-border bg-bg text-text">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
           <div className="max-w-sm">
@@ -32,7 +32,7 @@ export default function MarketingFooter() {
                   <li key={`${link.to}-${index}`}>
                     <Link
                       to={link.to}
-                      className="text-sm text-text-muted transition-colors hover:text-text"
+                      className="rounded-sm text-sm text-text-muted transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)] [@media(hover:hover)]:hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       {link.label}
                     </Link>

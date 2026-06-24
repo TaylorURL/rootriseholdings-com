@@ -73,8 +73,9 @@ function useNavbarTone(defaultTone, pathname) {
 
 const linkClass = ({ isActive }) =>
   cn(
-    'text-sm font-medium transition-colors',
-    isActive ? 'text-text' : 'text-text-muted hover:text-text',
+    'relative -mx-2 rounded-md px-2 py-1 text-sm font-medium transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)]',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+    isActive ? 'text-text' : 'text-text-muted [@media(hover:hover)]:hover:text-text',
   )
 
 /**
@@ -117,14 +118,32 @@ export default function MarketingNav() {
       )}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
-        <Link to="/" aria-label="Root & Rise home" onClick={() => setMenuOpen(false)}>
+        <Link
+          to="/"
+          aria-label="Root & Rise home"
+          onClick={() => setMenuOpen(false)}
+          className="press -m-1 rounded-md p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+        >
           <BrandMark />
         </Link>
 
         <div className="hidden items-center gap-8 lg:flex">
           {MARKETING_NAV.map((item) => (
             <NavLink key={item.to} to={item.to} className={linkClass}>
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  {item.label}
+                  {/* Active-route accent underline — small, branded, never
+                      jumps in width because the dot is the indicator. */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'absolute left-1/2 -bottom-0.5 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-accent-bright transition-opacity duration-200 [transition-timing-function:var(--ds-ease-out)]',
+                      isActive ? 'opacity-100 shadow-[0_0_6px_var(--ds-accent-glow)]' : 'opacity-0',
+                    )}
+                  />
+                </>
+              )}
             </NavLink>
           ))}
         </div>
@@ -148,7 +167,11 @@ export default function MarketingNav() {
 
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors hover:text-text lg:hidden"
+          className={cn(
+            'press flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)] lg:hidden',
+            '[@media(hover:hover)]:hover:text-text',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+          )}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
@@ -167,8 +190,9 @@ export default function MarketingNav() {
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-md px-3 py-3 text-base font-medium transition-colors',
-                    isActive ? 'bg-surface-2 text-text' : 'text-text-muted hover:bg-surface-2 hover:text-text',
+                    'press rounded-md px-3 py-3 text-base font-medium transition-colors duration-200 [transition-timing-function:var(--ds-ease-out)]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+                    isActive ? 'bg-surface-2 text-text' : 'text-text-muted [@media(hover:hover)]:hover:bg-surface-2 [@media(hover:hover)]:hover:text-text',
                   )
                 }
               >
