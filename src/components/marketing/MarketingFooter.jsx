@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PRODUCT, COMPLIANCE, FOOTER_LINKS } from '../../lib/brand'
 import BrandMark from './BrandMark'
+import BuiltByBadge from './BuiltByBadge'
 
 const CURRENT_YEAR = new Date().getFullYear()
 
@@ -52,6 +53,8 @@ export default function MarketingFooter() {
             <p className="font-mono text-xs text-text-faint">Built for traders, not for autopilot.</p>
           </div>
         </div>
+
+        <BuiltByBadge />
       </div>
     </footer>
   )
