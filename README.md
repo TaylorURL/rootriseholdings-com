@@ -1,20 +1,21 @@
-<p align="center"><img src="docs/logo.svg" alt="Root & Rise" width="200"></p>
+<p align="center"><img src="docs/logo.svg" width="200" alt="Root & Rise" /></p>
 
 <h1 align="center">Root & Rise</h1>
 
+<p align="center"><b>Smart Money Concepts signal intelligence for gold, indices and FX.</b></p>
 <p align="center">
-  Smart Money Concepts signal intelligence for gold, indices and FX — a decision-support terminal, not a fund.<br>
+  A decision-support terminal, not a fund.<br />
   Live at <a href="https://rootriseholdings-com.vercel.app">rootriseholdings-com.vercel.app</a>.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 18">
-  <img src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 5">
-  <img src="https://img.shields.io/badge/React_Router-6-CA4245?style=flat-square&logo=reactrouter&logoColor=white" alt="React Router 6">
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3">
-  <img src="https://img.shields.io/badge/Recharts-2-8b5cf6?style=flat-square" alt="Recharts 2">
-  <img src="https://img.shields.io/badge/Framer_Motion-11-0055FF?style=flat-square&logo=framer&logoColor=white" alt="Framer Motion 11">
-  <img src="https://img.shields.io/badge/Vercel-deployed-000000?style=flat-square&logo=vercel&logoColor=white" alt="Deployed on Vercel">
+  <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
+  <img src="https://img.shields.io/badge/Vite-5-8b5cf6?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5" />
+  <img src="https://img.shields.io/badge/React_Router-6-8b5cf6?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router 6" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3-8b5cf6?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
+  <img src="https://img.shields.io/badge/Recharts-2-8b5cf6?style=for-the-badge" alt="Recharts 2" />
+  <img src="https://img.shields.io/badge/Framer_Motion-11-8b5cf6?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion 11" />
+  <img src="https://img.shields.io/badge/Vercel-deployed-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Deployed on Vercel" />
 </p>
 
 - **Signal, not execution** — scripts read market structure (BOS, CHoCH, OTE) across timeframes and flag high-conviction setups; every trade is placed by you, on your own broker.
