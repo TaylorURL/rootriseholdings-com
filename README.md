@@ -14,12 +14,12 @@
 
 <p align="center">
   <a href="https://rootriseholdings-com.vercel.app"><img src="https://img.shields.io/badge/Live-rootriseholdings-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Live site" /></a>
-  <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
+  <img src="https://img.shields.io/badge/React-18-7c3aed?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
   <img src="https://img.shields.io/badge/Vite-5-8b5cf6?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5" />
-  <img src="https://img.shields.io/badge/React_Router-6-8b5cf6?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router 6" />
+  <img src="https://img.shields.io/badge/React_Router-6-a78bfa?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router 6" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-8b5cf6?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
-  <img src="https://img.shields.io/badge/Recharts-2-8b5cf6?style=for-the-badge" alt="Recharts 2" />
-  <img src="https://img.shields.io/badge/Framer_Motion-11-8b5cf6?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion 11" />
+  <img src="https://img.shields.io/badge/Recharts-2-7c3aed?style=for-the-badge" alt="Recharts 2" />
+  <img src="https://img.shields.io/badge/Framer_Motion-11-a78bfa?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion 11" />
 </p>
 
 <br />
