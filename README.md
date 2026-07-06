@@ -1,42 +1,67 @@
-<p align="center"><img src="docs/logo.svg" width="200" alt="Root & Rise" /></p>
-
-<h1 align="center">Root & Rise</h1>
-
-<p align="center"><b>Smart Money Concepts signal intelligence for gold, indices and FX.</b></p>
 <p align="center">
-  A decision-support terminal, not a fund.<br />
-  Live at <a href="https://rootriseholdings-com.vercel.app">rootriseholdings-com.vercel.app</a>.
+  <img src="docs/logo.svg" width="200" alt="Root & Rise" />
+</p>
+
+<h1 align="center">Root &amp; Rise</h1>
+
+<p align="center">
+  <b>Smart Money Concepts signal intelligence for gold, indices and FX.</b>
+</p>
+<p align="center">
+  A decision-support terminal, not a fund — scripts read market structure and flag<br />
+  high-conviction setups, and you place every trade on your own broker.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
-  <img src="https://img.shields.io/badge/Vite-5-8b5cf6?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5" />
-  <img src="https://img.shields.io/badge/React_Router-6-8b5cf6?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router 6" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3-8b5cf6?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
-  <img src="https://img.shields.io/badge/Recharts-2-8b5cf6?style=for-the-badge" alt="Recharts 2" />
-  <img src="https://img.shields.io/badge/Framer_Motion-11-8b5cf6?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion 11" />
-  <img src="https://img.shields.io/badge/Vercel-deployed-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Deployed on Vercel" />
+  <a href="https://rootriseholdings-com.vercel.app"><img src="https://img.shields.io/badge/Live-Vercel-2563eb?style=for-the-badge&logo=vercel&logoColor=white" alt="Live site" /></a>
+  <img src="https://img.shields.io/badge/React-18-2563eb?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
+  <img src="https://img.shields.io/badge/Vite-5-1f56cf?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5" />
+  <img src="https://img.shields.io/badge/React_Router-6-3b82f6?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router 6" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3-2563eb?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
+  <img src="https://img.shields.io/badge/Recharts-2-1f56cf?style=for-the-badge" alt="Recharts 2" />
+  <img src="https://img.shields.io/badge/Framer_Motion-11-3b82f6?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion 11" />
 </p>
 
-- **Signal, not execution** — scripts read market structure (BOS, CHoCH, OTE) across timeframes and flag high-conviction setups; every trade is placed by you, on your own broker.
-- **Live FX with no key required** — a swappable data layer streams real ECB reference rates out of the box, upgrades to Twelve Data near-realtime quotes when a key is present, and degrades to synthetic ticks if a provider is unreachable.
-- **Two surfaces, one design system** — a cinematic public marketing site and a gated `/app` terminal (Dashboard, Markets, Positions, History, Insights, Account) share one black/white-plus-purple token set with dark and light themes.
+<br />
+
+## Why Root &amp; Rise
+
+Retail traders drown in indicators but have no clean read on *structure* — where price broke, where it shifted, where the discount sits. Root &amp; Rise is a static React SPA that reads Smart Money Concepts (BOS, CHoCH, OTE) across timeframes on gold, the indices and a focused FX watch list, then surfaces the high-conviction setups as they form. It never executes, custodies funds, or promises returns: it is a decision-support terminal, and you hold the trigger.
+
+<table width="100%">
+  <tr>
+    <td width="33%" valign="top">
+      <h3 align="center">Signal, not execution</h3>
+      <p align="center">Scripts read market structure — BOS, CHoCH, OTE — and flag conviction setups. Every trade is placed by you, on your own broker.</p>
+    </td>
+    <td width="33%" valign="top">
+      <h3 align="center">Live FX, no key required</h3>
+      <p align="center">A swappable data layer streams free ECB reference rates out of the box, upgrades to Twelve Data when a key is present, and never throws.</p>
+    </td>
+    <td width="33%" valign="top">
+      <h3 align="center">Two surfaces, one system</h3>
+      <p align="center">A cinematic marketing site and a gated <code>/app</code> terminal share one black/white-plus-purple token set with dark and light themes.</p>
+    </td>
+  </tr>
+</table>
+
+<br />
 
 ## Stack
 
-| Layer | Choice |
-| --- | --- |
-| Framework | React 18 + Vite 5 |
-| Routing | React Router 6 (`react-router-dom`) |
-| Styling | Tailwind CSS 3, PostCSS, autoprefixer |
-| Charts | Recharts 2 |
-| Motion | Framer Motion 11 |
-| Icons | lucide-react |
-| Class utils | `clsx` + `tailwind-merge` (the `cn()` helper) |
-| FX data | Twelve Data / Frankfurter (ECB) providers — no backend |
-| Hosting | Vercel (SPA rewrites) |
+There is no backend and no database. The app is a static single-page app that talks directly to public FX endpoints from the browser and deploys to Vercel with SPA rewrites.
 
-There is no server of its own and no database — the app is a static SPA that talks directly to public FX endpoints from the browser.
+| Layer       | Choice                                                            |
+| :---------- | :--------------------------------------------------------------- |
+| Framework   | React 18 + Vite 5                                                |
+| Routing     | React Router 6 (`react-router-dom`)                             |
+| Styling     | Tailwind CSS 3, PostCSS, autoprefixer                           |
+| Charts      | Recharts 2                                                       |
+| Motion      | Framer Motion 11                                                |
+| Icons       | `lucide-react`                                                  |
+| Class utils | `clsx` + `tailwind-merge` (the `cn()` helper)                   |
+| FX data     | Twelve Data / Frankfurter (ECB) providers — no backend         |
+| Hosting     | Vercel (SPA rewrites)                                           |
 
 ## Getting started
 
@@ -51,11 +76,11 @@ No secret is required to build or run. To enable the keyed live FX provider, cop
 
 ## Routes
 
-| Group | Paths | Notes |
-| --- | --- | --- |
-| Marketing | `/`, `/how-it-works`, `/features`, `/pricing`, `/about` | Public, dark cinematic theme (`MarketingLayout`) |
-| Auth (design-only) | `/login`, `/signup` | Standalone, stubbed — no backend |
-| Gated terminal | `/app`, `/app/markets`, `/app/positions`, `/app/history`, `/app/insights`, `/app/account` | Behind `RequireAuth` + `AppShell`; `/app` is the Dashboard |
+| Group              | Paths                                                                                        | Notes                                                        |
+| :----------------- | :------------------------------------------------------------------------------------------- | :---------------------------------------------------------- |
+| Marketing          | `/`, `/how-it-works`, `/features`, `/pricing`, `/about`                                       | Public, dark cinematic theme (`MarketingLayout`)            |
+| Auth (design-only) | `/login`, `/signup`                                                                          | Standalone, stubbed — no backend                            |
+| Gated terminal     | `/app`, `/app/markets`, `/app/positions`, `/app/history`, `/app/insights`, `/app/account`    | Behind `RequireAuth` + `AppShell`; `/app` is the Dashboard  |
 
 Any unknown path redirects to `/`.
 
@@ -63,11 +88,11 @@ Any unknown path redirects to `/`.
 
 Quotes flow through one swappable service in `src/lib/fxData` (`fxService`). A single tick loop random-walks every tracked pair every ~1.2s for smooth motion and periodically re-anchors to real provider prices; it never throws on a missing key or a network failure. Components subscribe with the `useFxQuotes` / `useFxQuote` hooks, and the quotes drive the marketing `FxTicker` plus the Recharts charts on Markets and the Dashboard.
 
-| Mode | When | Source |
-| --- | --- | --- |
-| `live` | `VITE_FX_API_KEY` is set | [Twelve Data](https://twelvedata.com) near-realtime quotes, re-anchored every 15s |
-| `anchored` | no key (default) | [Frankfurter](https://www.frankfurter.app) ECB reference rates (no key), re-anchored every 5 min with simulated intraday ticks |
-| `simulated` | a provider is unreachable | fully synthetic ticks from the last known anchor |
+| Mode        | When                        | Source                                                                                                   |
+| :---------- | :-------------------------- | :------------------------------------------------------------------------------------------------------- |
+| `live`      | `VITE_FX_API_KEY` is set    | [Twelve Data](https://twelvedata.com) near-realtime quotes, re-anchored every 15s                        |
+| `anchored`  | no key (default)            | [Frankfurter](https://www.frankfurter.app) ECB reference rates, re-anchored every 5 min with sim ticks   |
+| `simulated` | a provider is unreachable   | fully synthetic ticks from the last known anchor                                                         |
 
 Fourteen pairs are tracked (majors, minors, exotics) in `pairs.js`. To add a provider, drop a fetcher alongside `frankfurterProvider.js` / `twelveDataProvider.js` and wire it into `createFxService.js` — nothing else changes.
 
@@ -91,13 +116,18 @@ flowchart LR
   HOOK --> RC
 ```
 
-## Auth (design-only)
+## Environment
 
-Login and Signup are UI only. They flip a `localStorage`-persisted session (`rr.demo.session`) via `src/context/AuthContext.jsx`, and `RequireAuth` gates `/app` on that flag. No credentials are validated, stored securely, or sent anywhere, and there is no backend or Supabase dependency. Search for `TODO(auth)` to find every seam where a real provider (Supabase) would plug in.
+| Variable          | Required | Purpose                                                                                          |
+| :---------------- | :------- | :----------------------------------------------------------------------------------------------- |
+| `VITE_FX_API_KEY` | —        | Twelve Data key for live near-realtime FX. When unset, the app anchors to free ECB rates.        |
 
-## Design tokens
+## How it works
 
-The design system is inlined in `src/styles/tokens.css` (dark default + light) and exposed to Tailwind as semantic color, radius, and shadow utilities in `tailwind.config.js` (the `--ds-*` variables). It is a pure black/white base with a single purple accent (`--ds-accent` `#8b5cf6`, bright `#a78bfa`) and lightly desaturated gain/loss colors for P&L; type is Geist / Geist Mono. The marketing site renders dark; the gated terminal adds a light theme via the header `ThemeToggle`. The file's header notes these values mirror a sibling design-system source of truth.
+- **Two cleanly separated route groups.** `App.jsx` mounts a public `MarketingLayout` at `/`, standalone auth pages at `/login` and `/signup`, and a gated `AppShell` terminal at `/app`, all wrapped in `ThemeProvider` + `AuthProvider`.
+- **The FX service never throws.** Missing key or network failure degrades to synthetic ticks and surfaces the active mode for the UI; the tick loop runs only while a subscriber is attached.
+- **One inlined design system.** Tokens live in `src/styles/tokens.css` (dark default + light) and are exposed to Tailwind as semantic `--ds-*` color, radius, and shadow utilities — a black/white base with a single purple accent (`#8b5cf6`, bright `#a78bfa`) and Geist / Geist Mono type.
+- **Auth is design-only.** Login and Signup flip a `localStorage`-persisted session (`rr.demo.session`) via `src/context/AuthContext.jsx`; `RequireAuth` gates `/app` on that flag. No credentials are validated or sent anywhere — search `TODO(auth)` for every seam where a real provider (Supabase) would plug in.
 
 ## Project structure
 
@@ -110,15 +140,8 @@ rootriseholdings-com/
 ├─ src/
 │  ├─ App.jsx                # route groups: marketing, auth, gated /app
 │  ├─ main.jsx
-│  ├─ components/
-│  │  ├─ marketing/          # hero, sections, nav, footer, FX ticker
-│  │  ├─ layout/             # AppShell, Header, Sidebar (terminal)
-│  │  ├─ charts/             # Recharts candlestick + chart theme
-│  │  ├─ ui/                 # cards, tables, KPI, live/mini charts
-│  │  └─ motion/             # Framer Motion primitives
-│  ├─ pages/
-│  │  ├─ marketing/          # Home, HowItWorks, Features, Pricing, About, Login, Signup
-│  │  └─ *.jsx               # Dashboard, Markets, Positions, History, Insights, Account
+│  ├─ components/            # marketing, layout, charts, ui, motion
+│  ├─ pages/                 # marketing/* + Dashboard, Markets, Positions, History, Insights, Account
 │  ├─ context/              # AuthContext (stub), ThemeContext
 │  ├─ lib/
 │  │  ├─ fxData/             # swappable FX service + providers
@@ -134,3 +157,9 @@ rootriseholdings-com/
 ## License
 
 Proprietary — all rights reserved. Built by [TaylorURL](https://www.taylorurl.com).
+
+<br />
+
+<p align="center">
+  <sub>Read the structure. Flag the setup. You hold the trigger.</sub>
+</p>
