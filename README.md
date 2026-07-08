@@ -134,7 +134,7 @@ flowchart LR
 ```
 rootriseholdings-com/
 ├─ public/
-│  └─ favicon.svg            # R monogram (purple on black square)
+│  └─ favicon.svg            # R monogram (purple on a rounded black square)
 ├─ docs/
 │  └─ logo.svg               # README mark (purple R, transparent)
 ├─ src/
