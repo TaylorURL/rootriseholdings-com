@@ -16,8 +16,6 @@ const SYMBOLS = [...new Set(FX_PAIRS.flatMap((entry) => splitPair(entry.pair)))]
 )
 
 /**
- * Fetch real mid prices for every tracked pair, derived from USD-based ECB rates.
- *
  * @param {AbortSignal} [signal] - optional fetch abort signal
  * @returns {Promise<Record<string, number>>} map of pair → mid price
  * @throws when the network request fails or returns no rates

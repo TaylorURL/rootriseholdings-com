@@ -1,8 +1,6 @@
 import { cn } from '../../lib/cn'
 
 /**
- * Surface container matching the design-system card treatment.
- *
  * @param {object} props
  * @param {React.ReactNode} [props.title] - optional header title
  * @param {React.ReactNode} [props.action] - optional header-right content

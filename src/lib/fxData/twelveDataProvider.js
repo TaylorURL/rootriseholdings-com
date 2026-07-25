@@ -12,8 +12,6 @@ const TWELVE_DATA_BASE = 'https://api.twelvedata.com/price'
 const SYMBOLS = FX_PAIRS.map((entry) => entry.pair).join(',')
 
 /**
- * Fetch the latest real prices for every tracked pair in a single batched call.
- *
  * @param {string} apiKey - Twelve Data API key from VITE_FX_API_KEY
  * @param {AbortSignal} [signal]
  * @returns {Promise<Record<string, number>>} map of pair → price

@@ -24,8 +24,6 @@ const POINTS = [
 ]
 
 /**
- * Framing the problem the product solves before introducing the solution.
- *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */

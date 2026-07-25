@@ -6,8 +6,6 @@ import { SpotlightCard } from '../../motion/Spotlight'
 import { TRUST_PILLARS } from '../../../lib/content'
 
 /**
- * Compliance-forward trust strip standing in for traditional social proof.
- *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */

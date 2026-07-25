@@ -6,9 +6,8 @@ import BuiltByBadge from './BuiltByBadge'
 const CURRENT_YEAR = new Date().getFullYear()
 
 /**
- * Public marketing footer with link columns and the compliance disclaimer. Pinned
- * to the dark tone so it closes every page as a deliberate brand anchor and gives
- * the adaptive navbar a stable resting tone at the bottom of the scroll.
+ * Pinned to the dark tone rather than inheriting: it closes every page the same
+ * way, and it gives the adaptive navbar a stable tone at the end of the scroll.
  */
 export default function MarketingFooter() {
   return (

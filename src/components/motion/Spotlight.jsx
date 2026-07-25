@@ -2,11 +2,6 @@ import { useCallback, useRef } from 'react'
 import { cn } from '../../lib/cn'
 
 /**
- * Hook: track the pointer over an element and expose its position as the
- * `--mx`/`--my` CSS custom properties (percent), for cursor-reactive surfaces.
- * Updates the variables imperatively (no React re-render, no layout thrash) and
- * is a no-op for coarse pointers.
- *
  * @returns {{ ref: React.RefObject, onPointerMove: Function, onPointerLeave: Function }}
  */
 export function usePointerGlow() {

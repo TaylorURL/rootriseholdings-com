@@ -32,9 +32,6 @@ export const REVEAL_VIEWPORT = { once: true, margin: '-80px' }
 const OFFSET = 26
 
 /**
- * Build the hidden/visible pair for a reveal in a given direction. Honors
- * reduced-motion by collapsing positional movement to a pure fade.
- *
  * @param {'up'|'down'|'left'|'right'|'none'} direction
  * @param {number} distance - px of travel
  * @param {boolean} reduce - reduced-motion active
@@ -88,7 +85,6 @@ export const staggerParent = {
 }
 
 /**
- * Build a stagger-parent variant with a custom cadence.
  * @param {number} stagger - seconds between children
  * @param {number} delay - initial delay before the first child
  */

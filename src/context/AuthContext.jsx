@@ -31,7 +31,6 @@ function persistSession(session) {
   }
 }
 
-/** Provider that exposes the stubbed session and auth actions. */
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(readStoredSession)
 
@@ -67,7 +66,6 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-/** Access the stubbed auth context. */
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) throw new Error('useAuth must be used within an AuthProvider')

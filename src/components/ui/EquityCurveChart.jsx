@@ -5,10 +5,6 @@ import { ChartTooltip } from './ChartTooltip'
 import { AREA_STOPS, AXIS_TICK, CURSOR_STROKE, DRAW, GRID_STROKE } from '../charts/chartTheme'
 
 /**
- * Gradient-filled equity curve with a subtle grid, a soft accent glow on the
- * stroke, and a premium tooltip. Draws in on mount (pair with ChartInView to
- * trigger the draw on scroll).
- *
  * @param {object} props
  * @param {Array<{date:string, equity:number}>} props.data
  * @param {number} [props.height=300]

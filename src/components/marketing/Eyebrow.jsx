@@ -1,9 +1,6 @@
 import { cn } from '../../lib/cn'
 
 /**
- * Technical eyebrow label: a small uppercase mono caption preceded by a purple
- * status dot. The recurring "section index" motif of the marketing site.
- *
  * @param {object} props
  * @param {React.ReactNode} props.children
  * @param {string} [props.className]

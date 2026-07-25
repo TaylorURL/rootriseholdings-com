@@ -4,7 +4,6 @@ import { Plus } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { EASE_OUT } from '../../lib/marketingMotion'
 
-/** Single expandable row. */
 function AccordionItem({ item, isOpen, onToggle, reduceMotion }) {
   return (
     <div className="border-b border-border">
@@ -47,8 +46,6 @@ function AccordionItem({ item, isOpen, onToggle, reduceMotion }) {
 }
 
 /**
- * Accessible single-open FAQ accordion with animated height.
- *
  * @param {object} props
  * @param {Array<{question:string, answer:React.ReactNode}>} props.items
  * @param {string} [props.className]

@@ -3,8 +3,6 @@ import { cn } from '../../lib/cn'
 import { formatPercent, signedColor } from '../../lib/format'
 
 /**
- * Directional change indicator: colored arrow icon plus a signed percentage.
- *
  * @param {object} props
  * @param {number} props.value - percentage change (e.g. 0.31 for +0.31%)
  * @param {'sm'|'md'} [props.size='md']

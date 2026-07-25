@@ -7,7 +7,6 @@ import { useAuth } from '../../context/AuthContext'
 import BrandMark from './BrandMark'
 import MarketingButton from './MarketingButton'
 
-/** Track whether the page has scrolled past the hero fold. */
 function useScrolled(threshold = 12) {
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {

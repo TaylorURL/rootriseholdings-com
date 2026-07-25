@@ -3,8 +3,6 @@ import { cn } from '../../lib/cn'
 import { fadeUpVariants, pageContainerVariants } from '../../lib/motion'
 
 /**
- * Page wrapper that orchestrates a staggered fade-up entrance for its sections.
- *
  * @param {object} props
  * @param {React.ReactNode} props.children
  * @param {string} [props.className]
@@ -23,8 +21,6 @@ export function PageContainer({ children, className }) {
 }
 
 /**
- * Animated child block participating in the page stagger.
- *
  * @param {object} props
  * @param {React.ReactNode} props.children
  * @param {string} [props.className]
