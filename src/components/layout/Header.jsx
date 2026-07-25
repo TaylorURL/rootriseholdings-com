@@ -4,7 +4,6 @@ import { Menu } from 'lucide-react'
 import { titleForPath } from './navigation'
 import ThemeToggle from '../ui/ThemeToggle'
 
-/** Live wall clock that re-renders every second. */
 function useClock() {
   const [now, setNow] = useState(() => new Date())
   useEffect(() => {
@@ -15,9 +14,6 @@ function useClock() {
 }
 
 /**
- * Sticky frosted top bar: mobile drawer trigger, dynamic page title, live clock,
- * data-feed status, theme toggle, and a user avatar placeholder.
- *
  * @param {object} props
  * @param {() => void} props.onOpenDrawer
  */

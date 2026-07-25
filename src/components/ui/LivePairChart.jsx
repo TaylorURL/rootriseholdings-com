@@ -34,10 +34,6 @@ function LiveDot({ cx, cy, index, dataLength, stroke, reduce }) {
 }
 
 /**
- * A self-updating gradient area chart bound to a single live instrument (e.g.
- * 'XAUUSD', 'NAS100'). Each tick from the simulated data layer shifts the
- * rolling window, producing a genuinely live preview with a pulsing endpoint.
- *
  * @param {object} props
  * @param {string} props.symbol - instrument symbol, e.g. 'XAUUSD'
  * @param {number} [props.height=220]

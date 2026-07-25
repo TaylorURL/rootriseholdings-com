@@ -8,11 +8,6 @@ import { PLATFORM_STATS } from '../../../lib/content'
 import { useScrollLerp } from '../../../lib/useScrollLerp'
 
 /**
- * Operational metric strip with scroll-triggered count-ups and a scroll-driven
- * mesh backdrop that drifts as the section moves through the viewport. The
- * drift is the page's second scroll-driven moment (the hero owns the first),
- * keeping the lower half of the home feed alive while the user reads stats.
- *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */

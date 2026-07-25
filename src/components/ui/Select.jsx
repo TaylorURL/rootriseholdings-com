@@ -2,8 +2,6 @@ import { ChevronDown } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 /**
- * Styled native select with a label and chevron affordance.
- *
  * @param {object} props
  * @param {string} props.label - accessible label (visually hidden when hideLabel)
  * @param {string} props.value

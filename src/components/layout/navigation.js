@@ -10,7 +10,6 @@ export const NAV_ITEMS = [
   { to: '/app/account', label: 'Account', icon: User },
 ]
 
-/** Resolve the page title for a given pathname. */
 export function titleForPath(pathname) {
   const match = NAV_ITEMS.find((item) => (item.end ? pathname === item.to : pathname.startsWith(item.to)))
   return match?.label ?? 'Dashboard'

@@ -10,7 +10,6 @@ const VARIANT_CLASSES = {
   accent: 'bg-[var(--ds-accent-soft)] text-accent-bright',
 }
 
-/** Map a known status/side string to a badge variant. */
 function resolveVariant(variant, children) {
   if (variant) return variant
   const label = String(children).toLowerCase()
@@ -22,8 +21,6 @@ function resolveVariant(variant, children) {
 }
 
 /**
- * Small colored status/side badge.
- *
  * @param {object} props
  * @param {React.ReactNode} props.children - label text
  * @param {keyof typeof VARIANT_CLASSES} [props.variant] - explicit variant; inferred from text when omitted

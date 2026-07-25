@@ -128,13 +128,11 @@ export const INSTRUMENTS = [
   },
 ]
 
-/** Fast lookup by symbol. */
 export const INSTRUMENT_META = INSTRUMENTS.reduce((map, entry) => {
   map[entry.symbol] = entry
   return map
 }, {})
 
-/** Decimal precision used when rendering a quote for the instrument. */
 export function decimalsForInstrument(symbol) {
   const meta = INSTRUMENT_META[symbol]
   if (!meta) return 2
@@ -146,10 +144,8 @@ export function decimalsForInstrument(symbol) {
   return 5
 }
 
-/** Just the instruments the desk actively trades. */
 export const TRADED_INSTRUMENTS = INSTRUMENTS.filter((entry) => entry.tradeable)
 
-/** Just the watch-only pairs. */
 export const WATCH_ONLY_INSTRUMENTS = INSTRUMENTS.filter((entry) => entry.isWatchOnly)
 
 const VOLATILITY_BY_CATEGORY = {
@@ -243,9 +239,6 @@ function maybeStopTicking() {
 }
 
 /**
- * Subscribe to the simulated instrument feed. Returns the latest snapshot for
- * all instruments plus a `bySymbol` map for direct lookups.
- *
  * @param {string[]} [symbols] - restrict to these symbols; omit for all
  */
 export function useInstrumentQuotes(symbols) {

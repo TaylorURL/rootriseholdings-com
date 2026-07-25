@@ -3,8 +3,6 @@ import { cn } from '../../lib/cn'
 import ChangeIndicator from './ChangeIndicator'
 
 /**
- * Stat card with a label, large value, optional icon, and a change badge.
- *
  * @param {object} props
  * @param {string} props.label
  * @param {string|number} props.value - pre-formatted display value

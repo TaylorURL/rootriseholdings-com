@@ -32,7 +32,6 @@ function Candle({ x, y, width, height, payload }) {
   )
 }
 
-/** Custom OHLC tooltip. */
 function CandleTooltip({ active, payload, decimals }) {
   if (!active || !payload?.length) return null
   const candle = payload[0].payload
@@ -55,10 +54,6 @@ function CandleTooltip({ active, payload, decimals }) {
 }
 
 /**
- * Branded candlestick chart. Animates the bodies in on mount (pair with
- * ChartInView to draw on scroll). Reduced-motion is handled by recharts' timing
- * collapse under the global guard.
- *
  * @param {object} props
  * @param {Array<{open:number,high:number,low:number,close:number,range:[number,number]}>} props.data
  * @param {number} [props.height=280]

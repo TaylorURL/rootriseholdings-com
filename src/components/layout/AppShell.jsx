@@ -6,11 +6,6 @@ import Header from './Header'
 import { useTheme } from '../../context/ThemeContext'
 import { EASE_OUT } from '../../lib/marketingMotion'
 
-/**
- * Gated-terminal layout: a static sidebar on desktop and an animated drawer on
- * mobile, a sticky header, and a scrollable main area for the routed page.
- * Reads the global theme so the shell tokens match the persisted choice.
- */
 export default function AppShell() {
   const { theme } = useTheme()
   const [drawerOpen, setDrawerOpen] = useState(false)

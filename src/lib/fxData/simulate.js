@@ -13,8 +13,6 @@ function jitter() {
 }
 
 /**
- * Build the initial in-memory quote state for a pair from its seed anchor.
- *
  * @param {{pair:string, seed:number, category:string, pip:number}} meta
  * @returns {object} mutable quote state
  */
@@ -70,8 +68,6 @@ export function anchorQuote(state, price) {
 }
 
 /**
- * Project internal quote state into the public quote shape consumed by the UI.
- *
  * @param {object} state
  * @returns {{pair:string, bid:number, ask:number, spread:number, change:number,
  *   changePct:number, high:number, low:number, dir:string, category:string, volume:string}}

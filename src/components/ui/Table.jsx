@@ -18,8 +18,6 @@ const ALIGN_CLASSES = {
  */
 
 /**
- * Reusable, animated data table styled on the design tokens.
- *
  * @param {object} props
  * @param {TableColumn[]} props.columns
  * @param {object[]} props.rows

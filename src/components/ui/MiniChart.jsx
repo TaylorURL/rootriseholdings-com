@@ -3,9 +3,6 @@ import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
 import { AREA_STOPS, TREND_COLOR, resolveTrend } from '../charts/chartTheme'
 
 /**
- * Compact sparkline (axis-less gradient area) for table rows and cards. Trend
- * color is inferred from the data endpoints unless given explicitly.
- *
  * @param {object} props
  * @param {Array<{value:number}>} props.data
  * @param {'positive'|'negative'|'neutral'} [props.trend]

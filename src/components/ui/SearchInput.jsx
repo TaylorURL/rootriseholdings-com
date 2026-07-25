@@ -2,8 +2,6 @@ import { Search } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 /**
- * Search text input with a leading icon, styled on the design tokens.
- *
  * @param {object} props
  * @param {string} props.value
  * @param {(value:string) => void} props.onChange

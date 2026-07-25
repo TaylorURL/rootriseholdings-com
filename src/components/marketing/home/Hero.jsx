@@ -18,7 +18,6 @@ const ENTER = {
   }),
 }
 
-/** The cinematic landing hero: cursor-reactive signal field, mission, live panel. */
 export default function Hero() {
   const sectionRef = useRef(null)
   const reduceMotion = useReducedMotion()

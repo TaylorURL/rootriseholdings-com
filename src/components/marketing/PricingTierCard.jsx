@@ -5,9 +5,6 @@ import { PRICING_FEATURES } from '../../lib/content'
 import MarketingButton from './MarketingButton'
 
 /**
- * The single premium pricing plan card. Accent top-border, soft purple glow,
- * mono price, and the full feature list with check icons.
- *
  * @param {object} props
  * @param {'monthly'|'annual'} props.billing
  * @param {string} [props.className]

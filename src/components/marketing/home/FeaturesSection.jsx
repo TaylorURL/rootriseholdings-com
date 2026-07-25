@@ -4,8 +4,6 @@ import { SpotlightCard } from '../../motion/Spotlight'
 import { PLATFORM_FEATURES } from '../../../lib/content'
 
 /**
- * Capability grid — the platform's headline features.
- *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */

@@ -6,9 +6,6 @@ import { useAuth } from '../../context/AuthContext'
 import BrandMark from '../marketing/BrandMark'
 
 /**
- * Gated-terminal navigation. Renders the brand lockup, primary nav, and a
- * footer with the demo-mode notice plus sign-out / back-to-site actions.
- *
  * @param {object} props
  * @param {() => void} [props.onNavigate] - called after a nav action (closes the mobile drawer)
  */

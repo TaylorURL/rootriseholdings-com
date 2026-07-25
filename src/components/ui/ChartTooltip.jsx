@@ -1,9 +1,6 @@
 import { cn } from '../../lib/cn'
 
 /**
- * Dark, design-token-styled shell for Recharts custom tooltips. Frosted surface
- * with an accent edge so values read like a live terminal readout.
- *
  * @param {object} props
  * @param {React.ReactNode} props.children
  * @param {string} [props.className]
@@ -23,8 +20,6 @@ export function ChartTooltipShell({ children, className }) {
 }
 
 /**
- * Generic single-series tooltip rendering a label and a formatted value.
- *
  * @param {object} props
  * @param {boolean} props.active
  * @param {Array<object>} props.payload

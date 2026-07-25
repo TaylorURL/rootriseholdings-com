@@ -14,7 +14,6 @@ const NODES = [
   { x: 46, y: 88, depth: 16, size: 3 },
 ]
 
-/** Connections drawn between selected nodes to suggest a signal graph. */
 const EDGES = [
   [0, 2],
   [2, 3],
@@ -26,7 +25,6 @@ const EDGES = [
   [6, 7],
 ]
 
-/** One depth-parallaxed node bound to the shared cursor offset motion values. */
 function FieldNode({ node, offsetX, offsetY }) {
   const x = useTransform(offsetX, (value) => value * node.depth)
   const y = useTransform(offsetY, (value) => value * node.depth)
@@ -40,11 +38,8 @@ function FieldNode({ node, offsetX, offsetY }) {
 }
 
 /**
- * Cursor-reactive hero backdrop — Home's signature interactive section. A graph
- * of signal nodes parallaxes toward the pointer while a spotlight tracks it.
- * Driven by motion values lifted to the hero section (so pointer moves over the
- * copy/panel still register). Pure transform/opacity motion; reduced-motion is
- * handled upstream by freezing the offset values.
+ * The pointer motion values are owned by the hero section, not this component,
+ * so movement over the copy and panel still drives the parallax.
  *
  * @param {object} props
  * @param {import('framer-motion').MotionValue<number>} props.offsetX

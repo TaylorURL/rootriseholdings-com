@@ -2,9 +2,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { DURATION, EASE_OUT, REVEAL_VIEWPORT, staggerParentWith } from '../../lib/marketingMotion'
 
 /**
- * Scroll-triggered stagger container. Children wrapped in {@link StaggerItem}
- * cascade into view. Replaces hand-rolled `delay={index * n}` chains.
- *
  * @param {object} props
  * @param {React.ReactNode} props.children
  * @param {number} [props.stagger=0.08] - seconds between children
