@@ -2,9 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { fxService } from './createFxService'
 
 /**
- * Subscribe to the live FX service and receive a continuously updating list of
- * quotes. Optionally narrow to a subset of pairs.
- *
  * @param {string[]} [pairs] - restrict to these symbols; omit for all pairs
  * @returns {{ quotes: object[], byPair: Record<string, object>, mode: string }}
  */
@@ -29,8 +26,6 @@ export function useFxQuotes(pairs) {
 }
 
 /**
- * Subscribe to a single pair's live quote.
- *
  * @param {string} pair - e.g. 'EUR/USD'
  * @returns {object | undefined} the live quote, or undefined until first tick
  */

@@ -339,7 +339,6 @@ function seededRandom(seed) {
 }
 
 /**
- * Generate sparkline data for mini charts.
  * @param {number} baseValue - starting price
  * @param {number} [points=20] - number of data points
  * @param {number} [volatility=0.003] - per-step volatility factor
@@ -357,9 +356,6 @@ export function generateSparkline(baseValue, points = 20, volatility = 0.003, se
 }
 
 /**
- * Generate deterministic OHLC candles for a candlestick chart. Produces a
- * believable intraday walk with wicks, suitable for the terminal-grade preview.
- *
  * @param {number} baseValue - opening anchor price
  * @param {number} [count=40] - number of candles
  * @param {number} [volatility=0.0016] - per-candle volatility factor
@@ -389,7 +385,6 @@ export function generateCandles(baseValue, count = 40, volatility = 0.0016, seed
 }
 
 /**
- * Generate a 30-day equity curve with a gentle upward drift.
  * @param {number} [startEquity=112000] - equity 30 days ago
  * @param {number} [days=30] - number of days
  * @param {number} [seed=21] - deterministic seed

@@ -1,5 +1,4 @@
 /**
- * Format a monetary value with thousands separators and fixed decimals.
  * @param {number} value
  * @param {object} [options]
  * @param {string} [options.prefix='$'] - currency symbol
@@ -16,7 +15,6 @@ export function formatCurrency(value, { prefix = '$', decimals = 2, signed = fal
 }
 
 /**
- * Format a percentage value with an explicit sign.
  * @param {number} value
  * @param {number} [decimals=2]
  */
@@ -26,7 +24,6 @@ export function formatPercent(value, decimals = 2) {
 }
 
 /**
- * Format a signed pips value.
  * @param {number} value
  */
 export function formatPips(value) {
@@ -35,7 +32,6 @@ export function formatPips(value) {
 }
 
 /**
- * Choose a semantic text color class based on the sign of a value.
  * @param {number} value
  * @returns {string} Tailwind text color class
  */
@@ -46,8 +42,6 @@ export function signedColor(value) {
 }
 
 /**
- * Decimal precision for an FX price, by quote convention.
- * JPY-quoted pairs use 3 decimals; high-value exotics use 4; the rest use 5.
  * @param {string} pair
  */
 export function pairDecimals(pair) {
@@ -57,7 +51,6 @@ export function pairDecimals(pair) {
 }
 
 /**
- * Format an FX price using the correct precision for its pair.
  * @param {number} value
  * @param {string} pair
  */
@@ -66,9 +59,6 @@ export function formatPrice(value, pair) {
 }
 
 /**
- * Format an instrument price with its instrument-specific decimal precision.
- * Falls back to {@link formatPrice} for legacy FX pair strings.
- *
  * @param {number} value
  * @param {string} symbol - e.g. 'XAUUSD', 'NAS100', 'USDJPY'
  * @param {number} [decimals] - override the default precision for the instrument
@@ -84,7 +74,6 @@ export function formatInstrumentPrice(value, symbol, decimals) {
 }
 
 /**
- * Format a signed R-multiple to one decimal (e.g. +2.3R, -1.0R).
  * @param {number} value
  */
 export function formatR(value) {
@@ -102,7 +91,6 @@ export function formatMove(value, decimals = 1) {
 }
 
 /**
- * Compute the elapsed duration between two "YYYY-MM-DD HH:mm" timestamps.
  * @param {string} startTime
  * @param {string} endTime
  * @returns {string} compact duration like "4h 23m"

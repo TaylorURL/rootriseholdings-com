@@ -27,7 +27,6 @@ function readInitialTheme() {
   return 'dark'
 }
 
-/** Provider that exposes the active theme and toggling actions. */
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState(readInitialTheme)
 
@@ -56,7 +55,6 @@ export function ThemeProvider({ children }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
-/** Access the active theme and its actions. */
 export function useTheme() {
   const context = useContext(ThemeContext)
   if (!context) throw new Error('useTheme must be used within a ThemeProvider')

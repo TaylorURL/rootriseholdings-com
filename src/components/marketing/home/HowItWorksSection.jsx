@@ -7,8 +7,6 @@ import { SpotlightCard } from '../../motion/Spotlight'
 import { HOW_IT_WORKS_STEPS } from '../../../lib/content'
 
 /**
- * Home overview of the three-step decision loop. Deeper dive lives on its page.
- *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */

@@ -2,10 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useInView, useReducedMotion } from 'framer-motion'
 
 /**
- * Animate a number from 0 → target the first time it scrolls into view.
- * Uses requestAnimationFrame and an ease-out curve; honors reduced-motion by
- * rendering the final value immediately.
- *
  * @param {object} props
  * @param {number} props.value - target value
  * @param {number} [props.duration=1500] - animation length in ms

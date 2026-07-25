@@ -21,10 +21,6 @@ function ToneBadge({ tone }) {
   return <Badge variant={variant}>{label}</Badge>
 }
 
-/**
- * Single section of the 9-section briefing. Header shows the number, title, and
- * tone; body opens to the full SMC commentary + bullet rundown.
- */
 function BriefingSection({ section, expanded, onToggle }) {
   return (
     <li className="overflow-hidden rounded-lg border border-border bg-surface-2/40 transition-colors hover:border-border-hover">
@@ -70,11 +66,6 @@ function BriefingSection({ section, expanded, onToggle }) {
 }
 
 /**
- * Nine-section daily briefing — the morning/PM read the desk publishes each
- * day. Renders the executive summary up top with a collapsible list of all
- * nine sections beneath. Compact mode trims to the summary + the first three
- * sections for the Dashboard.
- *
  * @param {object} props
  * @param {'full'|'compact'} [props.variant='full']
  */

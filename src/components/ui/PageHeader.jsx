@@ -1,6 +1,4 @@
 /**
- * Page-level heading with a title, supporting subtitle, and optional right-side action.
- *
  * @param {object} props
  * @param {React.ReactNode} props.title
  * @param {React.ReactNode} [props.subtitle]

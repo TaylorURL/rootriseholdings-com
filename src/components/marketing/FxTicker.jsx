@@ -3,7 +3,6 @@ import { cn } from '../../lib/cn'
 import { useInstrumentQuotes } from '../../data/instruments'
 import { formatInstrumentPrice } from '../../lib/format'
 
-/** One ticker cell: instrument, live price, signed change. */
 function TickerItem({ quote }) {
   const positive = quote.changePct >= 0
   const Arrow = positive ? ArrowUpRight : ArrowDownRight

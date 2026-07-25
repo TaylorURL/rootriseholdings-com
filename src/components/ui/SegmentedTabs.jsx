@@ -1,8 +1,6 @@
 import { cn } from '../../lib/cn'
 
 /**
- * Segmented control for mutually-exclusive filters.
- *
  * @param {object} props
  * @param {string[]} props.options
  * @param {string} props.value - currently selected option

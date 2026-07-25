@@ -113,8 +113,6 @@ export function createFxService(env = import.meta.env) {
     /** Current quotes snapshot (array of public quotes). */
     getQuotes: snapshot,
     /**
-     * Subscribe to tick updates. Returns an unsubscribe function. The tick loop
-     * auto-starts on the first subscriber and stops when the last detaches.
      * @param {(quotes:object[]) => void} callback
      */
     subscribe(callback) {

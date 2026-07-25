@@ -1,8 +1,6 @@
 /**
- * Branded charting theme — the single source of truth for recharts styling
- * across the marketing previews and the gated terminal. Keeps axis, grid,
- * gradient and animation treatments consistent so every chart reads like one
- * premium trading surface.
+ * Every chart on both the marketing site and the terminal pulls from here, so a
+ * change to axis, grid or gradient treatment lands everywhere at once.
  */
 
 export const AXIS_COLOR = 'var(--ds-text-faint)'
@@ -10,7 +8,6 @@ export const AXIS_TICK = { fill: AXIS_COLOR, fontSize: 11, fontFamily: 'var(--ds
 export const GRID_STROKE = 'var(--ds-border)'
 export const CURSOR_STROKE = 'var(--ds-border-strong)'
 
-/** Semantic series colors. */
 export const TREND_COLOR = {
   positive: 'var(--ds-positive)',
   negative: 'var(--ds-danger)',
@@ -18,7 +15,6 @@ export const TREND_COLOR = {
   accent: 'var(--ds-accent-bright)',
 }
 
-/** Resolve trend direction from explicit prop or the data endpoints. */
 export function resolveTrend(trend, data, key = 'value') {
   if (trend) return trend
   if (!data || data.length < 2) return 'neutral'
@@ -31,7 +27,6 @@ export function resolveTrend(trend, data, key = 'value') {
 /** Standard draw-in animation timing for area/line/bar series. */
 export const DRAW = { isAnimationActive: true, animationDuration: 900, animationEasing: 'ease-out' }
 
-/** Gradient stop pairs for a vertical area fill, keyed to a series color. */
 export const AREA_STOPS = [
   { offset: '0%', opacity: 0.3 },
   { offset: '55%', opacity: 0.08 },

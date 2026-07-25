@@ -10,14 +10,12 @@ import { cn } from '../../lib/cn'
 const CANDLES = generateCandles(2348, 44, 0.0022, 91)
 const MIN_VISIBLE = 8
 
-/** The three narrated phases of a forming SMC signal. */
 const PHASES = [
   { icon: Radar, label: 'Mapping structure', body: 'Scripts track market structure across timeframes — Daily/4H bias, swing highs and lows, session context.' },
   { icon: Crosshair, label: 'BOS / CHoCH detected', body: 'Price breaks structure in line with the higher-timeframe bias, then pulls back into the OTE zone (62–79%).' },
   { icon: Sparkles, label: 'Signal fired', body: 'Conditions converge at the OTE. A scored entry is issued with stop and target — your call from here.' },
 ]
 
-/** The signal card that resolves at the end of the scrub. */
 function ResolvedSignal({ visible }) {
   return (
     <motion.div
@@ -51,10 +49,6 @@ function ResolvedSignal({ visible }) {
 }
 
 /**
- * HowItWorks signature section: a pinned, scroll-scrubbed candlestick sequence
- * that builds a signal candle-by-candle as the user scrolls, narrating the three
- * phases beside it. Reduced-motion renders the finished state statically.
- *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */

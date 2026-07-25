@@ -2,7 +2,6 @@ import { cn } from '../../lib/cn'
 import Reveal from './Reveal'
 import Eyebrow from './Eyebrow'
 
-/** Max-width content wrapper for marketing sections. */
 export function Container({ children, className }) {
   return <div className={cn('mx-auto w-full max-w-7xl px-6 lg:px-10', className)}>{children}</div>
 }
@@ -35,8 +34,6 @@ export function Section({ id, children, className, tone = 'dark', seam = true })
 }
 
 /**
- * Standard section heading block: eyebrow, large display title, supporting copy.
- *
  * @param {object} props
  * @param {string} props.eyebrow
  * @param {React.ReactNode} props.title

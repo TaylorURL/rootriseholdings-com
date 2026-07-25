@@ -2,8 +2,6 @@ import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts'
 import { TREND_COLOR } from '../charts/chartTheme'
 
 /**
- * Axis-less line sparkline for inline price trends.
- *
  * @param {object} props
  * @param {Array<{value:number}>} props.data
  * @param {boolean} [props.positive=true] - green line when true, red otherwise

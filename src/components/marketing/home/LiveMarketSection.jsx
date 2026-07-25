@@ -12,7 +12,6 @@ import { cn } from '../../../lib/cn'
 
 const PREVIEW_SYMBOLS = TRADED_INSTRUMENTS.map((entry) => entry.symbol)
 
-/** One streaming quote chip for the live wall marquee. */
 function QuoteChip({ quote }) {
   const positive = quote.changePct >= 0
   const Arrow = positive ? ArrowUpRight : ArrowDownRight
@@ -30,8 +29,6 @@ function QuoteChip({ quote }) {
 }
 
 /**
- * Live instrument preview wall — streaming charts + a continuously scrolling quote rail.
- *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']
  */

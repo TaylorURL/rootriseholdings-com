@@ -57,9 +57,6 @@ export const SESSIONS = [
 ]
 
 /**
- * Reward-to-risk ratio implied by an entry / stop / target triple. SMC playbook
- * caps at the minimum 1:2 floor; output is the raw multiple (reward / risk).
- *
  * @param {object} args
  * @param {number} args.entry
  * @param {number} args.stop

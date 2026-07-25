@@ -19,9 +19,6 @@ const SAMPLE = {
 }
 
 /**
- * A hand-built, clearly-illustrative signal card breaking down what each signal
- * carries: side, confidence, entry/target/stop, R:R and the catalysts behind it.
- *
  * @param {object} props
  * @param {string} [props.className]
  */

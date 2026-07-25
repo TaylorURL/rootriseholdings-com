@@ -1,4 +1,3 @@
-/** Shared motion primitives — the site's animation system. */
 export { default as Reveal } from './Reveal'
 export { StaggerGroup, StaggerItem } from './Stagger'
 export { default as Parallax } from './Parallax'
