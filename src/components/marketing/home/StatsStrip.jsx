@@ -14,9 +14,8 @@ import { useScrollLerp } from '../../../lib/useScrollLerp'
 export default function StatsStrip({ tone = 'dark' }) {
   const ref = useRef(null)
   const reduce = useReducedMotion()
-  // Decorative scroll-driven moment: the mesh wash drifts up and the opacity
-  // breathes from 0.4 → 0.85 → 0.4 as the section crosses the viewport. The
-  // spring lag from useScrollLerp keeps it feeling cinematic, not stuck-glued.
+  // Decorative only: the mesh wash drifts up and its opacity runs
+  // 0.4 → 0.85 → 0.4 as the section crosses the viewport.
   const meshY = useScrollLerp(ref, [0, 1], [reduce ? 0 : 80, reduce ? 0 : -80])
   const meshOpacity = useScrollLerp(ref, [0, 0.5, 1], [0.4, 0.85, 0.4])
 

@@ -25,10 +25,8 @@ export default function Hero() {
     target: sectionRef,
     offset: ['start start', 'end start'],
   })
-  // Spring-smooth each scroll-driven value so the columns lag the user's
-  // scroll slightly instead of tracking 1:1 — the lag is what makes the
-  // parallax feel composed rather than glued. Stiffness/damping tuned for
-  // a gentle, marketing-pace drift.
+  // Spring-smooth each scroll-driven value so the columns lag scroll
+  // slightly instead of tracking it 1:1.
   const panelSpring = { stiffness: 120, damping: 30, mass: 0.6 }
   const panelY = useSpring(useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -60]), panelSpring)
   const copyY = useSpring(useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 40]), panelSpring)
@@ -64,7 +62,6 @@ export default function Hero() {
       onPointerLeave={handleLeave}
       className="relative overflow-hidden bg-bg pt-32 text-text sm:pt-40"
     >
-      {/* Technical grid + reactive signal field + purple key light */}
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-60" aria-hidden="true" />
       <HeroSignalField offsetX={offsetX} offsetY={offsetY} />
       <motion.div
@@ -157,7 +154,6 @@ export default function Hero() {
               <LivePairChart symbol="XAUUSD" height={200} />
             </div>
 
-            {/* Signal callout — the product's core output */}
             <div className="mt-4 flex items-center justify-between rounded-xl border border-[var(--ds-accent-soft)] bg-[var(--ds-accent-softer)] p-4">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--ds-accent-soft)] font-mono text-xs font-bold text-accent-bright">

@@ -4,8 +4,9 @@ import { cn } from '../../lib/cn'
 
 /**
  * Cursor-reactive 3D-tilt surface. The card rotates toward the pointer and a
- * spotlight follows it, giving a tactile, reactive feel. Transform/opacity only;
- * reduced-motion and coarse pointers fall back to a flat, static card.
+ * spotlight follows it. Transform/opacity only; reduced-motion and coarse
+ * pointers fall back to a flat, static card — a tilt driven by a touch point
+ * that only exists mid-tap just snaps.
  *
  * @param {object} props
  * @param {React.ReactNode} props.children

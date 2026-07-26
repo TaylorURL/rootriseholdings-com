@@ -30,7 +30,6 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
         <Routes>
-          {/* Public marketing site */}
           <Route element={<MarketingLayout />}>
             <Route index element={<HomePage />} />
             <Route path="how-it-works" element={<HowItWorksPage />} />
@@ -39,11 +38,9 @@ export default function App() {
             <Route path="about" element={<AboutPage />} />
           </Route>
 
-          {/* Standalone design-only auth */}
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
 
-          {/* Gated product terminal */}
           <Route element={<RequireAuth />}>
             <Route path="app" element={<AppShell />}>
               <Route index element={<DashboardPage />} />

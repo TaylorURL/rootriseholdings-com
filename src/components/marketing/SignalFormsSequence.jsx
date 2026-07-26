@@ -80,7 +80,6 @@ export default function SignalFormsSequence({ tone = 'dark' }) {
       <div className={cn('top-0 flex min-h-screen items-center py-20', reduce ? '' : 'sticky')}>
         <Container>
           <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-            {/* Narration rail */}
             <div>
               <Eyebrow>Anatomy in motion</Eyebrow>
               <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-text sm:text-4xl lg:text-5xl">
@@ -126,13 +125,11 @@ export default function SignalFormsSequence({ tone = 'dark' }) {
                 })}
               </ol>
 
-              {/* Scroll-linked progress rail */}
               <div className="mt-6 h-1 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
                 <motion.div className="h-full origin-left rounded-full bg-[var(--ds-accent-face)]" style={{ scaleX: reduce ? 1 : lineScale }} />
               </div>
             </div>
 
-            {/* Pinned chart */}
             <div className="accent-ring relative overflow-hidden rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
               <div className="mb-3 flex items-center justify-between">
                 <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
