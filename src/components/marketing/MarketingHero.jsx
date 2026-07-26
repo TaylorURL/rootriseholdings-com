@@ -7,9 +7,9 @@ import { useScrollLerp } from '../../lib/useScrollLerp'
  * Shared marketing-page hero shell. Owns the page's first scroll-driven
  * moment: the technical grid drifts up, the purple key-light parallaxes a
  * touch slower, and the conic mesh fades out as the user scrolls past the
- * fold. The lag from `useScrollLerp`'s spring is what gives it the cinematic
- * feel instead of a 1:1 scroll glue. Reduced-motion users see the static
- * backdrop with all decoration in its rest state.
+ * fold. The spring in `useScrollLerp` is what keeps the layers from tracking
+ * scroll 1:1. Reduced-motion users see the static backdrop with all decoration
+ * in its rest state.
  *
  * Pure presentation — no copy/handler contracts; callers compose their
  * headline into the children slot.

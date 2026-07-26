@@ -66,7 +66,6 @@ export default function LiveMarketSection({ tone = 'dark' }) {
         </StaggerGroup>
       </Container>
 
-      {/* Edge-to-edge streaming quote wall across every tracked pair */}
       <Reveal className="mt-14 border-y border-border bg-bg-elevated/60">
         <Marquee speed={56} className="py-0">
           {quotes.map((quote) => (

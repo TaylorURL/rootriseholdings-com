@@ -38,7 +38,6 @@ export default function MissionTimeline({ tone = 'dark' }) {
         />
 
         <div ref={ref} className="relative mx-auto mt-16 max-w-3xl pl-10 sm:pl-14">
-          {/* Static rail + scroll-drawn accent overlay */}
           <div className="absolute left-[14px] top-2 bottom-2 w-px bg-border sm:left-[22px]" aria-hidden="true" />
           <motion.div
             className="absolute left-[14px] top-2 bottom-2 w-px origin-top bg-[var(--ds-accent-face)] shadow-[0_0_10px_var(--ds-accent-glow)] sm:left-[22px]"

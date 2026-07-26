@@ -13,9 +13,9 @@ const word = {
 }
 
 /**
- * Headline reveal that wipes words up from a clipped baseline — the signature
- * marketing display-text motion. Each word lives in an overflow-hidden mask so
- * it reads like type being set. Reduced-motion renders the text statically.
+ * Headline reveal that wipes words up from a clipped baseline. Each word sits
+ * in its own overflow-hidden mask, which is what clips the rise. Reduced-motion
+ * renders the text statically.
  *
  * @param {object} props
  * @param {string} props.text - plain text to animate per word

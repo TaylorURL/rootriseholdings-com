@@ -4,9 +4,8 @@ import TiltCard from '../motion/TiltCard'
 import { PLATFORM_FEATURES } from '../../lib/content'
 
 /**
- * Features signature section: a cursor-reactive capability matrix. Each tile
- * tilts toward the pointer with a tracking spotlight, turning the capability
- * overview into something you can feel. Behavior-free, transform-only motion.
+ * Capability matrix for the Features page. Each tile tilts toward the pointer
+ * with a tracking spotlight. Transform-only, so none of it triggers layout.
  *
  * @param {object} props
  * @param {'dark'|'light'} [props.tone='dark']

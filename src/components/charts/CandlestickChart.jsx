@@ -8,8 +8,7 @@ const DOWN = 'var(--ds-danger)'
 /**
  * Candlestick body + wick shape. Bound to a ranged `range:[low,high]` Bar so the
  * (y, height) geometry already spans the wick; open/close pixels are
- * interpolated within that range. Hairline wick, filled body, colored by
- * direction — the real trading-terminal treatment.
+ * interpolated within that range.
  */
 function Candle({ x, y, width, height, payload }) {
   const { open, close, high, low } = payload
