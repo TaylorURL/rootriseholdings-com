@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.13-8b5cf6?style=for-the-badge" alt="Version 1.0.13" />
+  <img src="https://img.shields.io/badge/version-1.0.14-8b5cf6?style=for-the-badge" alt="Version 1.0.14" />
   <a href="https://rootriseholdings-com.vercel.app"><img src="https://img.shields.io/badge/Live-Vercel-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Live site" /></a>
   <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
   <img src="https://img.shields.io/badge/Vite-5-7c3aed?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5" />
@@ -149,12 +149,18 @@ rootriseholdings-com/
 ├─ src/
 │  ├─ App.jsx                # route groups: marketing, auth, gated /app
 │  ├─ main.jsx
-│  ├─ components/            # marketing, layout, charts, ui, motion
+│  ├─ components/            # marketing, layout, charts, ui, motion, auth
+│  ├─ layouts/               # MarketingLayout (public shell)
 │  ├─ pages/                 # marketing/* + Dashboard, Markets, Positions, History, Insights, Account
-│  ├─ context/              # AuthContext (stub), ThemeContext
+│  ├─ context/               # AuthContext (stub), ThemeContext
 │  ├─ lib/
 │  │  ├─ fxData/             # swappable FX service + providers
 │  │  ├─ brand.js            # product facts + nav (single source of truth)
+│  │  ├─ content.js          # marketing copy
+│  │  ├─ format.js           # price / percent formatting
+│  │  ├─ motion.js           # shared Framer Motion variants
+│  │  ├─ marketingMotion.js  # marketing-only variants
+│  │  ├─ useScrollLerp.js    # smoothed scroll value
 │  │  └─ cn.js               # clsx + tailwind-merge helper
 │  ├─ data/                  # mock instruments, briefing, risk rules
 │  └─ styles/                # tokens.css (design system) + index.css
