@@ -25,7 +25,6 @@ export default function PricingTierCard({ billing, className }) {
         aria-hidden="true"
       />
       <div className="accent-ring card-elevated relative overflow-hidden rounded-2xl border border-border-strong bg-surface/60 backdrop-blur-xl">
-        {/* Accent top-border */}
         <div
           className="h-1 w-full bg-[var(--ds-accent-face)] shadow-[0_0_24px_var(--ds-accent-glow)]"
           aria-hidden="true"

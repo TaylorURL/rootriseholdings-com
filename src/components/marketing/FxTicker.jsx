@@ -47,8 +47,8 @@ export default function FxTicker({ className }) {
       )}
       aria-label="Live instrument rates"
     >
-      {/* Pause the marquee on hover so users can scan a specific quote without
-          chasing it across the screen — a small premium-feel detail. */}
+      {/* Pause on hover so a specific quote can be read without chasing it
+          across the screen. */}
       <div className="ticker-track flex w-max [@media(hover:hover)]:group-hover:[animation-play-state:paused]">
         {[0, 1].map((copy) => (
           <div key={copy} className="flex divide-x divide-border" aria-hidden={copy === 1}>

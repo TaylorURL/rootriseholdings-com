@@ -14,12 +14,10 @@ export default function AppShell() {
 
   return (
     <div className="ds-root flex h-screen overflow-hidden" data-theme={theme}>
-      {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <Sidebar />
       </div>
 
-      {/* Mobile drawer */}
       <AnimatePresence>
         {drawerOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">

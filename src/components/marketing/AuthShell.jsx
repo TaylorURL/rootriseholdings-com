@@ -8,9 +8,9 @@ import Eyebrow from './Eyebrow'
 import FxTicker from './FxTicker'
 
 /**
- * Shared two-panel auth layout. The LEFT panel hosts the form; the RIGHT panel
- * (lg+ only) is a cinematic brand aside with grid, accent glow, value prop, a
- * faux live-signal stat, and the live ticker.
+ * Shared two-panel auth layout: the form on the left, a brand aside on the
+ * right that only appears at lg+ (below that it would push the form below the
+ * fold).
  *
  * Renders OUTSIDE the marketing layout, so it wraps itself in the design-system
  * root (using the persisted theme) to inherit token CSS variables.
@@ -28,7 +28,6 @@ export default function AuthShell({ eyebrow, title, subtitle, children }) {
       className="ds-root grid min-h-screen grid-cols-1 bg-bg lg:grid-cols-2"
       data-theme={theme}
     >
-      {/* LEFT — form panel */}
       <div className="relative flex flex-col px-6 py-8 sm:px-10">
         <header className="flex items-center justify-between">
           <Link to="/" aria-label={`${PRODUCT.name} home`}>
@@ -63,7 +62,6 @@ export default function AuthShell({ eyebrow, title, subtitle, children }) {
         </p>
       </div>
 
-      {/* RIGHT — cinematic brand aside */}
       <aside className="relative hidden overflow-hidden border-l border-border bg-bg-elevated/40 lg:block">
         <div
           className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-50"
@@ -87,7 +85,6 @@ export default function AuthShell({ eyebrow, title, subtitle, children }) {
               {PRODUCT.valueProp}
             </p>
 
-            {/* Faux live-signal stat */}
             <div className="mt-10 flex items-center justify-between rounded-xl border border-[var(--ds-accent-soft)] bg-[var(--ds-accent-softer)] p-4">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--ds-accent-soft)]">
