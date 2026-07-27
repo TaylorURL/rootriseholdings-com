@@ -35,7 +35,6 @@ export default function HowItWorksPage() {
       {/* Signature: scroll-scrubbed signal-forming sequence */}
       <SignalFormsSequence tone="light" />
 
-      {/* Step walkthrough with connecting accent line */}
       <Section tone="dark" className="border-t border-border">
         <Container>
           <div className="relative">
@@ -50,7 +49,6 @@ export default function HowItWorksPage() {
                 return (
                   <Reveal key={step.id} delay={0.05}>
                     <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
-                      {/* Text column */}
                       <div className={index % 2 === 1 ? 'lg:order-2' : ''}>
                         <div className="flex items-center gap-5">
                           <span className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-2 text-accent-bright">
@@ -69,7 +67,6 @@ export default function HowItWorksPage() {
                         </p>
                       </div>
 
-                      {/* Visual column */}
                       <div className={index % 2 === 1 ? 'lg:order-1' : ''}>
                         {isChart ? (
                           <div className="card-elevated rounded-2xl border border-border-strong bg-surface/50 p-5 backdrop-blur-xl">
@@ -116,7 +113,6 @@ export default function HowItWorksPage() {
         </Container>
       </Section>
 
-      {/* What a signal contains */}
       <Section tone="light" className="border-t border-border">
         <Container>
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
@@ -132,7 +128,6 @@ export default function HowItWorksPage() {
         </Container>
       </Section>
 
-      {/* Roadmap / user-decides reiteration */}
       <Section tone="dark" className="border-t border-border">
         <Container>
           <Reveal className="mx-auto max-w-3xl text-center">

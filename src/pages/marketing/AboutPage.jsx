@@ -38,7 +38,6 @@ export default function AboutPage() {
         </Container>
       </MarketingHero>
 
-      {/* Mission / story */}
       <Section tone="light" className="border-t border-border">
         <Container>
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
@@ -69,7 +68,6 @@ export default function AboutPage() {
       {/* Signature: scroll-driven mission timeline */}
       <MissionTimeline tone="dark" />
 
-      {/* Principles */}
       <Section tone="light" className="border-t border-border">
         <Container>
           <SectionHeading
@@ -94,7 +92,6 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      {/* Team strip */}
       <Section tone="dark" className="border-t border-border">
         <Container>
           <SectionHeading

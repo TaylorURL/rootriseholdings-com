@@ -37,7 +37,6 @@ export default function FeaturesPage() {
       {/* Signature: cursor-reactive capability matrix */}
       <CapabilityMatrix tone="light" />
 
-      {/* Feature blocks — alternating large layout */}
       <Section tone="dark" className="border-t border-border">
         <Container>
           <div className="space-y-16 lg:space-y-24">
@@ -92,7 +91,6 @@ export default function FeaturesPage() {
         </Container>
       </Section>
 
-      {/* Trust pillars */}
       <Section tone="light" className="border-t border-border">
         <Container>
           <SectionHeading

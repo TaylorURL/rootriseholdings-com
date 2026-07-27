@@ -37,7 +37,6 @@ export default function PricingPage() {
             </p>
           </Reveal>
 
-          {/* Billing toggle */}
           <Reveal delay={0.1} className="mt-10 flex justify-center">
             <div
               role="radiogroup"
@@ -81,7 +80,6 @@ export default function PricingPage() {
         </Container>
       </MarketingHero>
 
-      {/* Plan card */}
       <Section tone="light" className="pt-4 sm:pt-6">
         <Container>
           <Reveal>
@@ -100,7 +98,6 @@ export default function PricingPage() {
       {/* Signature: animated operational comparison */}
       <PricingComparison tone="dark" />
 
-      {/* Compliance disclaimer block */}
       <Section tone="light" className="border-t border-border">
         <Container>
           <Reveal className="mx-auto max-w-3xl">
@@ -129,7 +126,6 @@ export default function PricingPage() {
         </Container>
       </Section>
 
-      {/* FAQ */}
       <Section tone="dark" className="border-t border-border">
         <Container>
           <SectionHeading
