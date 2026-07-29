@@ -4,10 +4,10 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
  * DESIGN-ONLY auth stub.
  *
  * TODO(auth): Replace this entire module with a real auth provider (Supabase)
- * when backend wiring lands. The signIn/signUp/signOut handlers below are no-op
- * stubs that only flip a locally-persisted "session" flag so the gated app and
- * sign-in/sign-up flows are demoable end-to-end. No credentials are validated,
- * stored securely, or sent anywhere.
+ * when backend wiring lands. signIn and signUp accept whatever they are given
+ * and write a session straight to localStorage, which is what makes the gated
+ * app and the sign-in/sign-up flows demoable end-to-end. Nothing is validated,
+ * hashed, or sent anywhere, so treat any "session" this issues as decoration.
  */
 const STORAGE_KEY = 'rr.demo.session'
 
