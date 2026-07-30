@@ -4,9 +4,9 @@
  * setup type (BOS / CHoCH / OTE), the session it triggered in, planned R:R,
  * and (for closed trades) the realised R-multiple.
  *
- * TODO(data): swap the static arrays below for live trade-journal / signal
- * streams when the backend ships. The journal/dashboards consume this module
- * directly; downstream R-math + rule enforcement lives in `./riskRules.js`.
+ * The arrays below are static; the journal and dashboards consume this module
+ * directly, so it is the single seam a live trade-journal / signal stream would
+ * replace. Downstream R-math and rule enforcement live in `./riskRules.js`.
  */
 import { computeRealisedR, computeRewardToRisk } from './riskRules'
 

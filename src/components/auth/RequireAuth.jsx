@@ -6,7 +6,9 @@ import { useAuth } from '../../context/AuthContext'
  * the (design-only) login page, preserving the intended destination so the
  * stubbed sign-in can route them back.
  *
- * TODO(auth): real session validation replaces the stubbed `isAuthenticated`.
+ * `isAuthenticated` only reflects the demo session AuthContext writes to
+ * localStorage, so this gate keeps the demo coherent — it is not a security
+ * boundary and everything behind it is static mock data.
  */
 export default function RequireAuth() {
   const { isAuthenticated } = useAuth()

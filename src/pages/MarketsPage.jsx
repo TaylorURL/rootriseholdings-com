@@ -42,9 +42,8 @@ function FeaturedStat({ label, value, valueClassName }) {
 
 /** SMC analysis sidebar — structure bias, BOS/CHoCH/OTE levels for the featured chart. */
 function SmcAnalysisCard({ symbol, price }) {
-  // Anchor SMC zones to the current price so the sidebar stays believable as
-  // the simulated ticker drifts. TODO(data): replace with real structure-engine
-  // output keyed to the actual chart timeframes.
+  // Zones are derived from the current price rather than from real structure,
+  // so the sidebar stays believable as the simulated ticker drifts.
   const meta = INSTRUMENT_META[symbol]
   const bias = symbol === 'NAS100' || symbol === 'SP500' ? 'Bearish' : 'Bullish'
   const direction = bias === 'Bearish' ? 'SELL' : 'BUY'
