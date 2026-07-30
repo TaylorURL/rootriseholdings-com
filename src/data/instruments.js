@@ -8,10 +8,9 @@ import { useEffect, useMemo, useState } from 'react'
  * never executed as primaries. The shape mirrors the FX layer so charts/tables
  * can compose either source uniformly.
  *
- * TODO(data): swap the in-memory simulator below for a real market-data feed
- * (indices + metals via a vendor like Polygon / Tradermade / Twelve Data).
- * All UI consumes through {@link useInstrumentQuotes}; the swap is local to
- * this file. Keep the same public quote shape on the way out.
+ * Quotes come from the in-memory simulator below. Every consumer goes through
+ * {@link useInstrumentQuotes}, so a real market-data feed can replace the
+ * simulator inside this file alone as long as the public quote shape holds.
  */
 export const INSTRUMENTS = [
   {
