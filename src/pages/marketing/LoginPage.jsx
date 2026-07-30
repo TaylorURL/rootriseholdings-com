@@ -51,7 +51,8 @@ export default function LoginPage() {
     setTouched({ email: true, password: true })
     if (Object.keys(nextErrors).length > 0) return
 
-    // TODO(auth): wire real Supabase auth here
+    // The stubbed context resolves instantly; the timeout only exists so the
+    // submitting state is visible rather than flashing past.
     setSubmitting(true)
     setTimeout(() => {
       signIn(values.email)
@@ -59,9 +60,9 @@ export default function LoginPage() {
     }, 400)
   }
 
-  const handleOAuth = () => {
-    // TODO(auth): wire OAuth provider
-  }
+  // The provider buttons are rendered for layout completeness; there is no
+  // OAuth client behind them.
+  const handleOAuth = () => {}
 
   return (
     <AuthShell

@@ -3,11 +3,11 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 /**
  * DESIGN-ONLY auth stub.
  *
- * TODO(auth): Replace this entire module with a real auth provider (Supabase)
- * when backend wiring lands. signIn and signUp accept whatever they are given
- * and write a session straight to localStorage, which is what makes the gated
- * app and the sign-in/sign-up flows demoable end-to-end. Nothing is validated,
- * hashed, or sent anywhere, so treat any "session" this issues as decoration.
+ * signIn and signUp accept whatever they are given and write a session straight
+ * to localStorage, which is what makes the gated app and the sign-in/sign-up
+ * flows demoable end-to-end. Nothing is validated, hashed, or sent anywhere, so
+ * treat any "session" this issues as decoration. This module is the whole seam:
+ * a real provider replaces it without touching the consumers.
  */
 const STORAGE_KEY = 'rr.demo.session'
 
@@ -35,7 +35,6 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(readStoredSession)
 
   const authenticate = useCallback((email, name) => {
-    // TODO(auth): swap for `supabase.auth.signInWithPassword` / `signUp`.
     const nextSession = {
       email: email || 'trader@riseandroot.com',
       name: name || email?.split('@')[0] || 'Trader',
@@ -47,7 +46,6 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signOut = useCallback(() => {
-    // TODO(auth): swap for `supabase.auth.signOut`.
     setSession(null)
     persistSession(null)
   }, [])

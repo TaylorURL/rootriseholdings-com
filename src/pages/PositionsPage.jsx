@@ -201,9 +201,9 @@ export default function PositionsPage() {
     }
   }, [])
 
-  // Pull a "today" subset from history to drive the rule evaluator. In a real
-  // wire-up this would come from the journal service; TODO(data) seam lives in
-  // mockData.js.
+  // "Today" is a fixed slice of the mock history, matched by date prefix — the
+  // rule evaluator needs a single day's closed trades and there is no journal
+  // service behind this yet.
   const todayClosedTrades = useMemo(
     () => tradeHistory.filter((trade) => trade.closeTime.startsWith('2026-06-14')),
     [],
