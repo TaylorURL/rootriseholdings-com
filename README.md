@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.20-8b5cf6?style=for-the-badge" alt="Version 1.0.20" />
+  <img src="https://img.shields.io/badge/version-1.0.21-8b5cf6?style=for-the-badge" alt="Version 1.0.21" />
   <a href="https://rootriseholdings-com.vercel.app"><img src="https://img.shields.io/badge/Live-Vercel-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Live site" /></a>
   <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
   <img src="https://img.shields.io/badge/Vite-5-7c3aed?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5" />
