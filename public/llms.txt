@@ -1,0 +1,17 @@
+# Root & Rise
+
+> A Smart Money Concepts trading desk: a rule-enforced trade journal and a nine-section daily briefing composed from live market data, behind a public brand page. The terminal at /app is gated behind an account; nothing is sold on the site.
+
+## Pages
+
+- [Home](https://www.rootriseholdings.com/): the brand page - the desk's method, the platform, and live market previews.
+- [Sign In](https://www.rootriseholdings.com/login): account sign-in and sign-up for the terminal.
+- [Privacy](https://www.rootriseholdings.com/privacy): what the platform stores and where.
+- [Terms](https://www.rootriseholdings.com/terms): what the platform is, and that nothing on it is investment advice.
+- [Contact](https://www.rootriseholdings.com/contact): how to reach the desk about the platform, the rule book, or access.
+
+## Facts
+
+- Root & Rise is a private trading desk and the software it runs on.
+- It does not manage outside money or sell trade signals.
+- Journal data stays in the reader's own browser.

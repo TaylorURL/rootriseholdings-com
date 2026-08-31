@@ -1,0 +1,993 @@
+/* pre-emit critique: P5 H4 E4 S5 R5 V4 */
+/* macrostructure: ruled-band-stack */
+/* nav: n11-mega-menu */
+/* panel: mm2-two-column-split */
+/* footer: ft5-statement */
+
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Every border that does not name a colour takes the ground's hairline, so a
+     card moved into a navy band re-draws its own edge. */
+  * {
+    border-color: var(--ds-border);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  /* An anchor jump lands below the fixed bar rather than under it. */
+  html {
+    scroll-padding-top: calc(var(--ds-chrome-height) + 1rem);
+  }
+
+  /* Decorative overflow - hero glows, the signal field, the ghost type wall -
+     must not be able to open a horizontal scrollbar. `clip` rather than
+     `hidden`, which would make the element a scroll container and break
+     position: sticky inside it. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-sans);
+    font-feature-settings: 'ss01', 'ss02', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* A heading breaks where the measure says, not where the viewport happens to
+     run out; a paragraph avoids leaving one word on the last line. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a,
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='tab'],
+  summary,
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
+  /* Dragging across a control should not select its label. */
+  label,
+  button,
+  [role='tab'] {
+    user-select: none;
+  }
+
+  a,
+  button,
+  [role='button'],
+  [role='tab'],
+  input,
+  select,
+  textarea,
+  summary {
+    touch-action: manipulation;
+  }
+
+  * {
+    -webkit-tap-highlight-color: var(--ds-accent-soft);
+  }
+
+  ::selection {
+    background: var(--ds-accent-soft);
+    color: var(--ds-text);
+  }
+
+  /* A field carries the raised surface by construction, not the page ground. */
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+  select,
+  textarea {
+    background-color: var(--ds-field-bg);
+  }
+
+  /* Chromium paints autofilled fields pale yellow from its own stylesheet,
+     which no background rule can reach. An inset shadow the size of the field
+     covers it, and the 5000s delay keeps it covered rather than fading back. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px var(--ds-field-bg) inset;
+    -webkit-text-fill-color: var(--ds-text);
+    transition: background-color 5000s ease-in-out 0s;
+    caret-color: var(--ds-text);
+  }
+
+  /* A finger is about 44px wide whatever the control looks like. */
+  @media (pointer: coarse) {
+    button,
+    select,
+    [role='button'],
+    [role='tab'],
+    input:not([type='checkbox']):not([type='radio']):not([type='range']) {
+      min-height: 44px;
+    }
+
+    button,
+    [role='button'] {
+      min-width: 44px;
+    }
+  }
+
+  /* The click layer. Press feedback belongs to the control that was hit; this
+     belongs to the click, and fires at the cursor wherever it lands. */
+  .click-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--ds-z-click-layer);
+  }
+
+  .click-ripple {
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    translate: -50% -50%;
+    border-radius: var(--ds-radius-full);
+    border: 1.5px solid var(--ds-accent-bright);
+    opacity: 0.9;
+    animation: click-ripple var(--ds-duration-slow) var(--ds-ease-out) forwards;
+  }
+}
+
+/* The type scale. Every step declares size, leading, tracking and weight in one
+   place, because a headline that inherits three of the four from somewhere else
+   is a headline nobody can move. Leading compresses and tracking tightens as
+   the size climbs: at 5rem the default spacing of a paragraph reads as a gap. */
+@layer components {
+  .t-display {
+    font-size: clamp(2.6rem, 6.4vw, 5.2rem);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
+
+  .t-h1 {
+    font-size: clamp(2.3rem, 5.2vw, 4rem);
+    line-height: 0.98;
+    letter-spacing: -0.042em;
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
+
+  .t-h2 {
+    font-size: clamp(1.9rem, 3.8vw, 2.9rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
+
+  .t-h3 {
+    font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+    line-height: 1.2;
+    letter-spacing: -0.022em;
+    font-weight: 600;
+  }
+
+  .t-h4 {
+    font-size: 1rem;
+    line-height: 1.35;
+    letter-spacing: -0.014em;
+    font-weight: 600;
+  }
+
+  .t-lede {
+    font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+    font-weight: 400;
+  }
+
+  .t-body {
+    font-size: 1rem;
+    line-height: 1.65;
+    letter-spacing: -0.006em;
+    font-weight: 400;
+  }
+
+  .t-meta {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+
+  /* The one uppercase micro-label on the site. Tracked wide, because caps set
+     at 11px with normal spacing close up into a block. */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--ds-font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: var(--tw-tracking, 0.18em);
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--ds-text-faint);
+  }
+
+  .eyebrow-accent {
+    color: var(--ds-accent);
+  }
+
+  /* The page rail. Three widths, one gutter ramp, and nothing sets its own. */
+  .container-rail {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--ds-width-page);
+    padding-inline: 1.5rem;
+  }
+
+  .container-reading {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--ds-width-reading);
+    padding-inline: 1.5rem;
+  }
+
+  .container-prose {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--ds-width-prose);
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-rail,
+    .container-reading,
+    .container-prose {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-rail,
+    .container-reading {
+      padding-inline: 4rem;
+    }
+  }
+
+  /* Cards.
+
+     A border draws a cell, and four cells of unequal height read as a broken
+     table. A ring plus two soft shadows draws an object that sits on the page.
+     Both live in box-shadow, so the edge and the elevation move together and
+     neither costs a layout pass. */
+  .card-lift {
+    border-radius: var(--ds-r-card);
+    background-color: var(--ds-surface);
+    box-shadow: var(--ds-raise);
+    transition:
+      box-shadow 200ms var(--ds-ease-out),
+      transform 200ms var(--ds-ease-out);
+  }
+
+  .panel {
+    border-radius: var(--ds-r-card);
+    background-color: var(--ds-surface);
+    box-shadow: var(--ds-raise);
+    transition: box-shadow 200ms var(--ds-ease-out);
+  }
+
+  /* No hover step: a panel nothing can be done to should not answer a pointer. */
+  .panel-static {
+    border-radius: var(--ds-r-card);
+    background-color: var(--ds-surface);
+    box-shadow: var(--ds-raise);
+  }
+
+  .edge-ring {
+    border-radius: var(--ds-r-card);
+    box-shadow: var(--ds-edge);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card-lift:hover,
+    .panel:hover {
+      box-shadow: var(--ds-raise-hi);
+    }
+  }
+
+  /* Buttons. Three tiers, told apart by how loud the ground under the label is
+     rather than by three different shapes. */
+  .btn {
+    display: inline-flex;
+    min-height: 44px;
+    cursor: pointer;
+    touch-action: manipulation;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border-radius: var(--ds-r-control);
+    padding-inline: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.011em;
+    transition:
+      background-color var(--ds-duration-base) var(--ds-ease-out),
+      box-shadow var(--ds-duration-base) var(--ds-ease-out),
+      color var(--ds-duration-base) var(--ds-ease-out),
+      transform var(--ds-duration-fast) var(--ds-ease-out);
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .btn-primary {
+    background-color: var(--ds-accent-fill);
+    color: var(--ds-on-accent);
+    box-shadow:
+      0 1px 1px rgba(10, 37, 64, 0.1),
+      0 2px 6px -1px rgba(10, 37, 64, 0.18);
+  }
+
+  .btn-secondary {
+    background-color: var(--ds-surface);
+    color: var(--ds-text);
+    box-shadow:
+      0 0 0 1px var(--ds-border-strong),
+      0 1px 2px rgba(10, 37, 64, 0.05);
+  }
+
+  .btn-quiet {
+    color: var(--ds-text-muted);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--ds-accent-fill-hover);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: var(--ds-surface-2);
+    }
+
+    .btn-quiet:hover:not(:disabled) {
+      color: var(--ds-text);
+    }
+  }
+
+  /* Chips: the small pressable tag, and the two static tints it shares a shape
+     with so a filter and a label never read as the same control. */
+  .chip {
+    display: inline-flex;
+    min-height: 44px;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--ds-r-control);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    box-shadow: 0 0 0 1px var(--ds-border-strong);
+    transition:
+      background-color 200ms var(--ds-ease-out),
+      color 200ms var(--ds-ease-out),
+      box-shadow 200ms var(--ds-ease-out),
+      transform var(--ds-duration-fast) var(--ds-ease-out);
+  }
+
+  .chip:active {
+    transform: scale(0.97);
+  }
+
+  .chip[aria-pressed='true'],
+  .chip[data-selected='true'] {
+    background-color: var(--ds-accent-fill);
+    color: var(--ds-on-accent);
+    box-shadow: none;
+  }
+
+  .chip-static {
+    display: inline-flex;
+    min-height: 0;
+    cursor: default;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: var(--ds-r-tiny);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    box-shadow: 0 0 0 1px var(--ds-border-strong);
+  }
+
+  .chip-accent {
+    background-color: var(--ds-accent-soft);
+    color: var(--ds-accent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--ds-accent) 24%, transparent);
+  }
+
+  /* Fields. The focus state is a ring the field grows, not a colour it swaps,
+     so the control does not appear to change size when it takes focus. */
+  .field {
+    width: 100%;
+    height: var(--ds-field-height);
+    border-radius: var(--ds-r-control);
+    background-color: var(--ds-field-bg);
+    padding-inline: 0.75rem;
+    font-size: 1rem;
+    color: var(--ds-text);
+    box-shadow:
+      0 0 0 1px var(--ds-border-input),
+      var(--ds-field-inset);
+    transition: box-shadow var(--ds-duration-base) var(--ds-ease-out);
+  }
+
+  .field::placeholder {
+    color: var(--ds-text-faint);
+  }
+
+  .field:focus,
+  .field:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1px var(--ds-accent-fill),
+      0 0 0 4px var(--ds-accent-soft);
+  }
+
+  .field[aria-invalid='true'] {
+    box-shadow:
+      0 0 0 1px var(--ds-danger),
+      var(--ds-field-inset);
+  }
+
+  .field:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  @media (min-width: 640px) {
+    .field {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* The ruled mesh. Cells are pulled a pixel up and left so each one's own top
+     and left border lands on its neighbour's, which draws a continuous table
+     rather than a grid of doubled lines - and the shell clips the overhang. */
+  .mesh-shell {
+    overflow: hidden;
+    border-radius: var(--ds-r-card);
+    box-shadow: var(--ds-edge);
+  }
+
+  .mesh-grid {
+    display: grid;
+    margin: -1px 0 0 -1px;
+  }
+
+  .mesh-cell {
+    border-top: 1px solid var(--ds-border);
+    border-left: 1px solid var(--ds-border);
+  }
+
+  /* The bar.
+
+     Two states and a transition between them: transparent while the page is at
+     the top, and a surfaced sheet with a hairline once it has moved. Both are
+     one element, so nothing reflows when the state flips. */
+  .nav-shell {
+    width: 100%;
+    border-bottom: 1px solid transparent;
+    background-color: transparent;
+    transition:
+      background-color var(--ds-nav-duration) var(--ds-ease-nav),
+      border-color var(--ds-nav-duration) var(--ds-ease-nav),
+      box-shadow var(--ds-nav-duration) var(--ds-ease-nav),
+      backdrop-filter var(--ds-nav-duration) var(--ds-ease-nav);
+  }
+
+  .nav-shell[data-surfaced='true'] {
+    background-color: var(--ds-nav-surface);
+    border-bottom-color: var(--ds-border);
+    backdrop-filter: blur(18px) saturate(1.4);
+    box-shadow: var(--ds-lift);
+  }
+
+  /* A blur that the browser refuses leaves a translucent bar over moving text.
+     Where it is unsupported the sheet goes opaque instead. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nav-shell[data-surfaced='true'] {
+      background-color: var(--ds-bg);
+    }
+  }
+
+  .nav-row {
+    display: flex;
+    height: var(--ds-nav-height);
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav-pad {
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .nav-pad {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .nav-pad {
+      padding-inline: 4rem;
+    }
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: var(--ds-r-control);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.011em;
+    color: var(--ds-text-muted);
+    transition:
+      color var(--ds-nav-duration) var(--ds-ease-nav),
+      background-color var(--ds-nav-duration) var(--ds-ease-nav);
+  }
+
+  .nav-link[aria-expanded='true'],
+  .nav-link[data-active='true'] {
+    color: var(--ds-text);
+    background-color: var(--ds-neutral-soft);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover {
+      color: var(--ds-text);
+    }
+  }
+
+  /* The panel the bar opens is a surface, never a filter: it covers a page of
+     type with a page of type, and anything showing through puts the two on top
+     of each other at the moment a reader is choosing. */
+  .menu-sheet {
+    background-color: var(--ds-bg-elevated);
+    border-bottom: 1px solid var(--ds-border);
+    box-shadow: var(--ds-lift);
+  }
+
+  .menu-head {
+    font-family: var(--ds-font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ds-text-faint);
+  }
+
+  .menu-row {
+    display: block;
+    border-radius: var(--ds-r-control);
+    padding: 0.5rem 0.75rem;
+    transition: background-color var(--ds-nav-duration) var(--ds-ease-nav);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .menu-row:hover {
+      background-color: var(--ds-neutral-soft);
+    }
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    height: 44px;
+    width: 44px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ds-r-control);
+    color: var(--ds-text);
+    transition:
+      background-color var(--ds-nav-duration) var(--ds-ease-nav),
+      transform var(--ds-duration-fast) var(--ds-ease-out);
+  }
+
+  .nav-toggle:active {
+    transform: scale(0.94);
+  }
+}
+
+@layer utilities {
+  /* The blueprint grid. A hairline crosshatch laid under a section at 96px, and
+     under a panel at 48px, which is the texture that reads as drawn rather than
+     poured. Never takes a pointer event. */
+  .grid-blueprint {
+    background-image:
+      linear-gradient(90deg, var(--ds-rule) 1px, transparent 1px),
+      linear-gradient(var(--ds-rule) 1px, transparent 1px);
+    background-size: 96px 96px;
+    pointer-events: none;
+  }
+
+  .grid-blueprint-fine {
+    background-image:
+      linear-gradient(90deg, var(--ds-rule-fine) 1px, transparent 1px),
+      linear-gradient(var(--ds-rule-fine) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  /* Fades the grid out toward the edges so it reads as texture under the
+     content rather than as a sheet the section is printed on. */
+  .grid-fade {
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 70% at 50% 40%,
+      var(--ds-mask-opaque),
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 80% 70% at 50% 40%,
+      var(--ds-mask-opaque),
+      transparent 100%
+    );
+  }
+
+  /* The line that opens a slab: one accent hairline, brightest at the middle
+     and gone at both ends, so the seam between two grounds is deliberate. */
+  .rule-accent {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--ds-accent) 60%, transparent) 50%,
+      transparent 100%
+    );
+  }
+
+  .band-seam {
+    position: relative;
+  }
+
+  .band-seam::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: var(--ds-seam);
+    pointer-events: none;
+  }
+
+  .accent-face {
+    background: var(--ds-accent-face);
+  }
+
+  .accent-glow {
+    background: radial-gradient(ellipse at center, var(--ds-accent-glow), transparent 70%);
+    pointer-events: none;
+  }
+
+  .accent-glow-strong {
+    background: radial-gradient(ellipse at center, var(--ds-glow-strong), transparent 70%);
+    pointer-events: none;
+  }
+
+  .bg-mesh {
+    background-image: var(--ds-mesh);
+    pointer-events: none;
+  }
+
+  /* A radial the pointer carries with it, positioned from two custom properties
+     written straight to the node so the paint never costs a React render. */
+  .spotlight {
+    background: radial-gradient(
+      600px circle at var(--mx, 50%) var(--my, 50%),
+      var(--ds-accent-soft),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .sheen-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sheen-sweep::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      var(--ds-sheen-strong) 50%,
+      transparent 80%
+    );
+    opacity: 0;
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sheen-sweep:hover::after {
+      animation: sheen-pan var(--ds-duration-slow) var(--ds-ease-out);
+    }
+  }
+
+  /* A conic hairline drawn as a masked pseudo-element, so the ring can carry a
+     gradient a border cannot. */
+  .accent-ring {
+    position: relative;
+  }
+
+  .accent-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from 210deg at 50% 50%,
+      var(--ds-accent-soft) 0deg,
+      var(--ds-accent) 110deg,
+      var(--ds-accent-soft) 220deg,
+      var(--ds-accent) 360deg
+    );
+    -webkit-mask:
+      linear-gradient(var(--ds-mask-opaque) 0 0) content-box,
+      linear-gradient(var(--ds-mask-opaque) 0 0);
+    mask:
+      linear-gradient(var(--ds-mask-opaque) 0 0) content-box,
+      linear-gradient(var(--ds-mask-opaque) 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .marquee-fade-x {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--ds-mask-opaque) 8%,
+      var(--ds-mask-opaque) 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--ds-mask-opaque) 8%,
+      var(--ds-mask-opaque) 92%,
+      transparent
+    );
+  }
+
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker-scroll 48s linear infinite;
+  }
+
+  /* Big quiet type used as texture. Never carries a string that has to be read;
+     the sentence it stands for is given to a screen reader separately. */
+  .type-ghost {
+    color: var(--ds-text-ghost);
+    font-size: clamp(2.4rem, 8.5vw, 6.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    font-weight: 600;
+    user-select: none;
+  }
+
+  /* A section below the fold is not laid out until it is near the viewport; the
+     reserved height keeps the scrollbar honest while it is skipped. */
+  .section-defer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
+  }
+
+  .skeleton {
+    border-radius: var(--ds-r-tiny);
+    animation: skeleton-pulse 1.6s ease-in-out infinite;
+  }
+
+  .content-enter {
+    animation: content-enter 240ms var(--ds-ease-out) both;
+  }
+
+  /* A route that resolves quickly should never flash its own placeholder. */
+  .pending-in {
+    animation: content-enter 240ms var(--ds-ease-out) 300ms both;
+  }
+
+  .press {
+    transition: transform var(--ds-duration-fast) var(--ds-ease-out);
+  }
+
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  /* A ring drawn in box-shadow rather than outline, so an ancestor with
+     overflow: hidden cannot clip it away. */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--ds-bg),
+      0 0 0 4px var(--ds-accent-fill);
+  }
+
+  .focus-ring-inset:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ds-accent-fill);
+  }
+
+  .card-elevated {
+    box-shadow: var(--ds-shadow-card);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card-elevated:hover {
+      box-shadow: var(--ds-shadow-card-hover);
+    }
+  }
+
+  /* Scroll containers keep their own overscroll and take a thin thumb, so a
+     table inside a page does not rubber-band the page behind it. */
+  .ds-scroll {
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ds-surface-3) transparent;
+  }
+
+  .ds-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .ds-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .ds-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--ds-surface-3);
+    border-radius: var(--ds-radius-full);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  .ds-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ds-border-strong);
+  }
+
+  /* Chrome pinned to a viewport edge clears the device's own inset, so a bottom
+     rail does not sit under the home indicator. */
+  .safe-b {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+
+  .safe-x {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Keyframes sit outside every layer: a layer orders element rules, and an
+   @keyframes block is not one. */
+@keyframes sheen-pan {
+  from {
+    opacity: 0.7;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes content-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes click-ripple {
+  to {
+    transform: scale(4.5);
+    opacity: 0;
+  }
+}
+
+/* Motion off. The looping decoration stops outright; everything else is clamped
+   rather than removed, because a blanket transition-duration of zero would take
+   the focus ring and the bar's own tone fade with it, and those report state
+   rather than decorate it. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-nav-duration: var(--ds-motion-off);
+    --ds-nav-duration-slow: var(--ds-motion-off);
+  }
+
+  .ticker-track,
+  .content-enter,
+  .pending-in,
+  .skeleton,
+  .click-ripple {
+    animation: none !important;
+  }
+
+  .sheen-sweep::after {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

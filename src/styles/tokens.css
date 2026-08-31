@@ -1,0 +1,531 @@
+/* Every colour, radius, duration, easing and shadow the site paints with, as
+   custom properties.
+
+   The names are roles rather than paints. Three page settings declare a full
+   set of them, and so does every ground - the slabs a page is cut into - so a
+   rule reads `--ds-text` and never a literal, and a card dropped inside a navy
+   band inverts without knowing it moved. That is the whole mechanism behind
+   the band rhythm: `data-theme` decides the page, `data-ground` decides the
+   slab, and both write the same names. */
+
+/* Geist and Geist Mono, self-hosted as variable fonts from public/fonts so no
+   render blocks on a third-party host. Latin and latin-ext subsets cover the
+   site's copy; anything outside them falls to the system stack. */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/geist-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/geist-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/geist-mono-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/geist-mono-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+/* Metric-matched fallbacks. Geist measures 581/1000 em against Arial's 543 and
+   Geist Mono 600/1000 against Courier New's 600, so the local face is scaled to
+   occupy the same width and given Geist's own ascent and descent. Text laid out
+   in the fallback therefore holds the exact lines the web font will hold, and
+   the swap moves nothing. */
+@font-face {
+  font-family: 'Geist Fallback';
+  font-display: swap;
+  /* Arial's metrics, from whichever face on the machine carries them:
+     Liberation Sans and Arimo are metric-compatible with it, and one of the
+     three is present on Windows, macOS, Android and desktop Linux. A fallback
+     that resolves nowhere is no fallback, and the text reflows when the web
+     font lands. */
+  src: local('Arial'), local('Liberation Sans'), local('Arimo'), local('Helvetica');
+  size-adjust: 106.82%;
+  ascent-override: 94.08%;
+  descent-override: 27.62%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Geist Mono Fallback';
+  font-display: swap;
+  /* Courier New's metrics, by the same reasoning: Liberation Mono and
+     Nimbus Mono PS are metric-compatible with it. */
+  src: local('Courier New'), local('Liberation Mono'), local('Nimbus Mono PS');
+  size-adjust: 100%;
+  ascent-override: 100.5%;
+  descent-override: 29.5%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --ds-font-sans: 'Geist', 'Geist Fallback', system-ui, -apple-system, sans-serif;
+  --ds-font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Four radii, and the page uses only these. A control is tighter than the
+     panel it sits in and a panel is tighter than the feature block around it,
+     so nesting reads as depth rather than as three unrelated curves. */
+  --ds-radius-xs: 3px;
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-radius-lg: 8px;
+  --ds-radius-xl: 12px;
+  --ds-radius-2xl: 16px;
+  --ds-radius-full: 9999px;
+  /* The same steps under the names the components reach for. */
+  --ds-r-tiny: var(--ds-radius-sm);
+  --ds-r-control: var(--ds-radius-md);
+  --ds-r-card: var(--ds-radius-lg);
+  --ds-r-feature: var(--ds-radius-xl);
+
+  --ds-duration-fast: 120ms;
+  --ds-duration-base: 200ms;
+  --ds-duration-slow: 280ms;
+  --ds-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ds-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ds-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* The bar's own motion family, kept apart from the page's so a reduced-motion
+     block zeroes the whole bar at two names rather than hunting transitions. */
+  --ds-ease-nav: cubic-bezier(0.16, 1, 0.3, 1);
+  --ds-nav-duration: 240ms;
+  --ds-nav-duration-slow: 300ms;
+  /* Non-zero, so a transitionend listener still fires when motion is off. */
+  --ds-motion-off: 0.01ms;
+  /* Ergonomic aliases - short names for inline arbitrary-value Tailwind use. */
+  --ease-out: var(--ds-ease-out);
+  --ease-in-out: var(--ds-ease-in-out);
+  --ease-drawer: var(--ds-ease-drawer);
+  --ease-nav: var(--ds-ease-nav);
+
+  /* Opaque stencil for mask-image. A mask reads alpha, not colour, so this is
+     "fully opaque here" rather than a paint - it lives in the token block so
+     no rule has to spell a raw literal. */
+  --ds-mask-opaque: #000;
+
+  /* Measures. Anything that offsets against the bar - a sticky element below
+     it, scroll-padding for an anchor jump, the hero's top inset - reads these
+     rather than repeating the number. */
+  --ds-header-height: 64px;
+  --ds-rail-height: 28px;
+  --ds-nav-height: var(--ds-header-height);
+  --ds-chrome-height: calc(var(--ds-nav-height) + var(--ds-rail-height));
+  --ds-control-height: 40px;
+  --ds-field-height: 40px;
+
+  /* Column widths: the page rail, the measure a paragraph is set to, the
+     narrower one a legal page runs at, and the wider rail the terminal's
+     tables need. */
+  --ds-width-page: 1280px;
+  --ds-width-reading: 760px;
+  --ds-width-prose: 680px;
+
+  /* Named layers, in the order they stack. Nothing sets a raw z-index. */
+  --ds-z-raised: 10;
+  --ds-z-sticky: 20;
+  --ds-z-float: 40;
+  /* The scrim dims the page under an open panel, so it sits below the bar that
+     opened it. Above it, the scrim covers its own trigger: the pointer lands on
+     the scrim, the bar reads that as having been left, and the panel closes and
+     reopens on a loop. */
+  --ds-z-scrim: 45;
+  --ds-z-nav: 50;
+  --ds-z-panel: 56;
+  --ds-z-click-layer: 60;
+  --ds-z-toast: 80;
+  --ds-z-modal: 90;
+  --ds-z-skip: 100;
+
+  /* Accent glow scale. Three steps, in the order a surface climbs off the page:
+     a point of light on a live indicator, then two lift heights for the mark
+     and for the primary button under a pointer. */
+  --ds-glow-dot: 0 0 8px var(--ds-accent-glow);
+  --ds-glow-lift-sm: 0 4px 20px -6px var(--ds-accent-glow);
+  --ds-glow-lift: 0 8px 30px -8px var(--ds-accent-glow);
+  --ds-glow-lift-strong: 0 12px 44px -8px var(--ds-glow-strong);
+}
+
+/* The three page settings. Each declares the full role set, because a partial
+   override leaves a name resolving against whichever block last set it, and
+   that is how a light page ends up carrying one dark border. */
+
+[data-theme='dark'] {
+  /* Ink navy, stepped down to a page ground and up through three surfaces.
+     Not black: the hue is what carries the palette through the terminal, where
+     almost every pixel is a surface rather than an accent. */
+  --ds-bg: #071322;
+  --ds-bg-elevated: #0a1a2c;
+  --ds-surface: #0d2137;
+  --ds-surface-2: #122942;
+  --ds-surface-3: #17324f;
+  --ds-border: rgba(226, 238, 252, 0.1);
+  --ds-border-strong: rgba(226, 238, 252, 0.18);
+  --ds-border-input: rgba(226, 238, 252, 0.24);
+  --ds-border-hover: rgba(226, 238, 252, 0.28);
+  --ds-text: #f3f7fc;
+  --ds-text-muted: rgba(243, 247, 252, 0.68);
+  /* Faint is the quietest text that still has to be read: captions, timestamps,
+     column labels. Set from the contrast it clears on surface-3, the deepest
+     ground it lands on, rather than on the page. */
+  --ds-text-faint: rgba(243, 247, 252, 0.56);
+  /* Ghost carries no meaning - the wall of type in the footer, a watermark
+     behind a figure. Never a string that has to be read. */
+  --ds-text-ghost: rgba(243, 247, 252, 0.16);
+
+  --ds-accent: #7a73ff;
+  --ds-accent-bright: #948eff;
+  --ds-accent-glow: rgba(122, 115, 255, 0.4);
+  --ds-accent-soft: rgba(122, 115, 255, 0.16);
+  --ds-accent-softer: rgba(122, 115, 255, 0.07);
+  --ds-accent-fill: #635bff;
+  --ds-accent-fill-hover: #5147e0;
+  --ds-on-accent: #ffffff;
+
+  --ds-positive: #4fd1a5;
+  --ds-positive-soft: rgba(79, 209, 165, 0.16);
+  --ds-warning: #f0b429;
+  --ds-warning-soft: rgba(240, 180, 41, 0.16);
+  --ds-danger: #ff8080;
+  --ds-danger-soft: rgba(255, 128, 128, 0.16);
+  --ds-neutral: rgba(243, 247, 252, 0.56);
+  --ds-neutral-soft: rgba(226, 238, 252, 0.07);
+
+  --ds-overlay: rgba(3, 9, 17, 0.7);
+  --ds-backdrop: rgba(7, 19, 34, 0.78);
+  --ds-nav-surface: rgba(7, 19, 34, 0.82);
+  --ds-sheen: rgba(255, 255, 255, 0.06);
+  --ds-sheen-strong: rgba(255, 255, 255, 0.12);
+  --ds-field-bg: #0b1e33;
+  --ds-field-inset: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+
+  /* The blueprint rule, at two weights: the coarse grid carries a section and
+     the fine one carries a panel, and one alpha cannot do both. */
+  --ds-rule: rgba(226, 238, 252, 0.06);
+  --ds-rule-fine: rgba(226, 238, 252, 0.035);
+
+  /* Edge, raise, and raise under a pointer. A border draws a cell, and four
+     cells of unequal height read as a broken table; a ring plus two soft
+     shadows draws an object. Carried in box-shadow so it costs no layout. */
+  --ds-edge: 0 0 0 1px var(--ds-border);
+  --ds-raise:
+    0 0 0 1px var(--ds-border), 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -14px rgba(0, 0, 0, 0.6);
+  --ds-raise-hi:
+    0 0 0 1px var(--ds-border-strong), 0 2px 4px rgba(0, 0, 0, 0.45),
+    0 18px 40px -16px rgba(0, 0, 0, 0.7);
+  --ds-lift: 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+  --ds-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ds-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 20px -8px rgba(0, 0, 0, 0.55);
+  --ds-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.4), 0 24px 48px -16px rgba(0, 0, 0, 0.65);
+  --ds-shadow-card: var(--ds-raise);
+  --ds-shadow-card-hover: var(--ds-raise-hi);
+
+  --ds-glow-strong: rgba(122, 115, 255, 0.55);
+  --ds-mesh:
+    radial-gradient(38% 52% at 18% 12%, rgba(99, 91, 255, 0.22) 0%, transparent 62%),
+    radial-gradient(42% 46% at 84% 24%, rgba(0, 212, 255, 0.12) 0%, transparent 64%),
+    radial-gradient(52% 58% at 50% 100%, rgba(99, 91, 255, 0.16) 0%, transparent 66%);
+  --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
+  --ds-accent-face: linear-gradient(180deg, #6f66ff 0%, #635bff 52%, #5147e0 100%);
+  --ds-accent-face-hover: linear-gradient(180deg, #635bff 0%, #5147e0 52%, #4239c4 100%);
+  --ds-mark-invert: 1;
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  /* Paper, not white: the page sits a shade cooler than the cards set into it,
+     which is what lets a white surface read as raised before a shadow has done
+     any work. */
+  --ds-bg: #f6f9fc;
+  --ds-bg-elevated: #fdfeff;
+  --ds-surface: #fdfeff;
+  --ds-surface-2: #eef3f9;
+  --ds-surface-3: #e3ebf4;
+  --ds-border: rgba(10, 37, 64, 0.1);
+  --ds-border-strong: rgba(10, 37, 64, 0.16);
+  --ds-border-input: rgba(10, 37, 64, 0.22);
+  --ds-border-hover: rgba(10, 37, 64, 0.28);
+  --ds-text: #0a2540;
+  --ds-text-muted: rgba(10, 37, 64, 0.68);
+  --ds-text-faint: rgba(10, 37, 64, 0.64);
+  --ds-text-ghost: rgba(10, 37, 64, 0.12);
+
+  /* On a paper ground the legible accent is the darker one. This token is what
+     text, icons and focus rings take, so it is set from the contrast it has to
+     clear rather than from the fill's own hue. */
+  --ds-accent: #4b45d4;
+  --ds-accent-bright: #3a35a8;
+  --ds-accent-glow: rgba(99, 91, 255, 0.3);
+  --ds-accent-soft: rgba(99, 91, 255, 0.12);
+  --ds-accent-softer: rgba(99, 91, 255, 0.05);
+  --ds-accent-fill: #635bff;
+  --ds-accent-fill-hover: #5147e0;
+  --ds-on-accent: #ffffff;
+
+  /* Each status colour is dark enough to read as text on its own soft fill,
+     which is where it is most often used: a badge, a pill, an inline figure. */
+  --ds-positive: #11704a;
+  --ds-positive-soft: rgba(17, 112, 74, 0.12);
+  --ds-warning: #7a5210;
+  --ds-warning-soft: rgba(122, 82, 16, 0.12);
+  --ds-danger: #a32020;
+  --ds-danger-soft: rgba(163, 32, 32, 0.1);
+  --ds-neutral: rgba(10, 37, 64, 0.64);
+  --ds-neutral-soft: rgba(10, 37, 64, 0.05);
+
+  --ds-overlay: rgba(10, 37, 64, 0.4);
+  --ds-backdrop: rgba(246, 249, 252, 0.8);
+  --ds-nav-surface: rgba(246, 249, 252, 0.85);
+  --ds-sheen: rgba(255, 255, 255, 0.9);
+  --ds-sheen-strong: rgba(255, 255, 255, 1);
+  --ds-field-bg: #ffffff;
+  --ds-field-inset: inset 0 1px 2px rgba(10, 37, 64, 0.05);
+
+  --ds-rule: rgba(10, 37, 64, 0.055);
+  --ds-rule-fine: rgba(10, 37, 64, 0.03);
+
+  --ds-edge: 0 0 0 1px var(--ds-border);
+  --ds-raise:
+    0 0 0 1px var(--ds-border), 0 1px 2px rgba(10, 37, 64, 0.05),
+    0 8px 24px -12px rgba(10, 37, 64, 0.14);
+  --ds-raise-hi:
+    0 0 0 1px var(--ds-border-strong), 0 2px 4px rgba(10, 37, 64, 0.06),
+    0 16px 36px -14px rgba(10, 37, 64, 0.2);
+  --ds-lift: 0 30px 70px -30px rgba(10, 37, 64, 0.22);
+  --ds-shadow-sm: 0 1px 2px rgba(10, 37, 64, 0.06);
+  --ds-shadow-md: 0 2px 4px rgba(10, 37, 64, 0.06), 0 8px 20px -8px rgba(10, 37, 64, 0.12);
+  --ds-shadow-lg: 0 4px 8px rgba(10, 37, 64, 0.07), 0 24px 48px -16px rgba(10, 37, 64, 0.16);
+  --ds-shadow-card: var(--ds-raise);
+  --ds-shadow-card-hover: var(--ds-raise-hi);
+
+  --ds-glow-strong: rgba(99, 91, 255, 0.4);
+  --ds-mesh:
+    radial-gradient(38% 52% at 18% 12%, rgba(99, 91, 255, 0.16) 0%, transparent 62%),
+    radial-gradient(42% 46% at 84% 24%, rgba(0, 178, 255, 0.1) 0%, transparent 64%),
+    radial-gradient(52% 58% at 50% 100%, rgba(99, 91, 255, 0.12) 0%, transparent 66%);
+  --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
+  --ds-accent-face: linear-gradient(180deg, #6f66ff 0%, #635bff 52%, #5147e0 100%);
+  --ds-accent-face-hover: linear-gradient(180deg, #635bff 0%, #5147e0 52%, #4239c4 100%);
+  --ds-mark-invert: 0;
+  color-scheme: light;
+}
+
+/* Gray sits between the other two: paper pulled down to a slate sheet, with
+   light's ink and accent set carried over. The quiet inks are darker than
+   light's because they still have to clear 4.5:1 on surface-3, a deeper ground
+   here than in light. */
+[data-theme='gray'] {
+  --ds-bg: #dde5ee;
+  --ds-bg-elevated: #e6ecf4;
+  --ds-surface: #eaeff6;
+  --ds-surface-2: #dae2ec;
+  --ds-surface-3: #ccd7e4;
+  --ds-border: rgba(10, 37, 64, 0.14);
+  --ds-border-strong: rgba(10, 37, 64, 0.2);
+  --ds-border-input: rgba(10, 37, 64, 0.28);
+  --ds-border-hover: rgba(10, 37, 64, 0.34);
+  --ds-text: #0a2540;
+  --ds-text-muted: rgba(10, 37, 64, 0.74);
+  --ds-text-faint: rgba(10, 37, 64, 0.7);
+  --ds-text-ghost: rgba(10, 37, 64, 0.14);
+
+  --ds-accent: #4b45d4;
+  --ds-accent-bright: #3a35a8;
+  --ds-accent-glow: rgba(99, 91, 255, 0.26);
+  --ds-accent-soft: rgba(99, 91, 255, 0.12);
+  --ds-accent-softer: rgba(99, 91, 255, 0.05);
+  --ds-accent-fill: #635bff;
+  --ds-accent-fill-hover: #5147e0;
+  --ds-on-accent: #ffffff;
+
+  --ds-positive: #11704a;
+  --ds-positive-soft: rgba(17, 112, 74, 0.13);
+  --ds-warning: #7a5210;
+  --ds-warning-soft: rgba(122, 82, 16, 0.13);
+  --ds-danger: #a32020;
+  --ds-danger-soft: rgba(163, 32, 32, 0.11);
+  --ds-neutral: rgba(10, 37, 64, 0.7);
+  --ds-neutral-soft: rgba(10, 37, 64, 0.06);
+
+  --ds-overlay: rgba(10, 37, 64, 0.42);
+  --ds-backdrop: rgba(221, 229, 238, 0.8);
+  --ds-nav-surface: rgba(221, 229, 238, 0.86);
+  --ds-sheen: rgba(255, 255, 255, 0.72);
+  --ds-sheen-strong: rgba(255, 255, 255, 0.92);
+  --ds-field-bg: #f2f6fb;
+  --ds-field-inset: inset 0 1px 2px rgba(10, 37, 64, 0.07);
+
+  --ds-rule: rgba(10, 37, 64, 0.06);
+  --ds-rule-fine: rgba(10, 37, 64, 0.035);
+
+  --ds-edge: 0 0 0 1px var(--ds-border);
+  --ds-raise:
+    0 0 0 1px var(--ds-border), 0 1px 2px rgba(10, 37, 64, 0.06),
+    0 8px 24px -12px rgba(10, 37, 64, 0.16);
+  --ds-raise-hi:
+    0 0 0 1px var(--ds-border-strong), 0 2px 4px rgba(10, 37, 64, 0.07),
+    0 16px 36px -14px rgba(10, 37, 64, 0.22);
+  --ds-lift: 0 30px 70px -30px rgba(10, 37, 64, 0.26);
+  --ds-shadow-sm: 0 1px 2px rgba(10, 37, 64, 0.07);
+  --ds-shadow-md: 0 2px 4px rgba(10, 37, 64, 0.07), 0 8px 20px -8px rgba(10, 37, 64, 0.14);
+  --ds-shadow-lg: 0 4px 8px rgba(10, 37, 64, 0.08), 0 24px 48px -16px rgba(10, 37, 64, 0.18);
+  --ds-shadow-card: var(--ds-raise);
+  --ds-shadow-card-hover: var(--ds-raise-hi);
+
+  --ds-glow-strong: rgba(99, 91, 255, 0.36);
+  --ds-mesh:
+    radial-gradient(38% 52% at 18% 12%, rgba(99, 91, 255, 0.14) 0%, transparent 62%),
+    radial-gradient(42% 46% at 84% 24%, rgba(0, 178, 255, 0.09) 0%, transparent 64%),
+    radial-gradient(52% 58% at 50% 100%, rgba(99, 91, 255, 0.1) 0%, transparent 66%);
+  --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
+  --ds-accent-face: linear-gradient(180deg, #6f66ff 0%, #635bff 52%, #5147e0 100%);
+  --ds-accent-face-hover: linear-gradient(180deg, #635bff 0%, #5147e0 52%, #4239c4 100%);
+  --ds-mark-invert: 0;
+  color-scheme: light;
+}
+
+/* The grounds.
+
+   A page is a stack of full-bleed slabs, and a slab declares what it is rather
+   than inheriting it. `dark` is the navy slab whatever the page setting;
+   `paper` is the light sheet on the same terms. `band` is the one that reads
+   the page: on a paper page it is the contrasting navy slab that gives the
+   rhythm its stripe, and on a dark page it stands down, because a band holding
+   its contrast every second section against an already-dark ground reads as
+   banding rather than as structure. What is left under the dark setting are the
+   slabs carrying the page rather than its rhythm - the masthead, the closing
+   call, the footer - which ask for `dark` outright.
+
+   :not([data-theme='dark']) rather than [data-theme='light'], so a band is a
+   slab in the moment before the resolver has stamped a setting as well. */
+[data-ground='dark'],
+:root:not([data-theme='dark']) [data-ground='band'] {
+  --ds-bg: #0a2540;
+  --ds-bg-elevated: #0c2c4c;
+  --ds-surface: #103254;
+  --ds-surface-2: #143b62;
+  --ds-surface-3: #1a4571;
+  --ds-border: rgba(226, 238, 252, 0.12);
+  --ds-border-strong: rgba(226, 238, 252, 0.2);
+  --ds-border-input: rgba(226, 238, 252, 0.26);
+  --ds-border-hover: rgba(226, 238, 252, 0.3);
+  --ds-text: #f8fbfe;
+  --ds-text-muted: rgba(255, 255, 255, 0.72);
+  --ds-text-faint: rgba(255, 255, 255, 0.56);
+  --ds-text-ghost: rgba(255, 255, 255, 0.14);
+
+  --ds-accent: #8f89ff;
+  --ds-accent-bright: #a9a4ff;
+  --ds-accent-glow: rgba(143, 137, 255, 0.42);
+  --ds-accent-soft: rgba(143, 137, 255, 0.18);
+  --ds-accent-softer: rgba(143, 137, 255, 0.08);
+  --ds-accent-fill: #635bff;
+  --ds-accent-fill-hover: #5147e0;
+  --ds-on-accent: #ffffff;
+
+  --ds-positive: #4fd1a5;
+  --ds-positive-soft: rgba(79, 209, 165, 0.18);
+  --ds-warning: #f0b429;
+  --ds-warning-soft: rgba(240, 180, 41, 0.18);
+  --ds-danger: #ff8f8f;
+  --ds-danger-soft: rgba(255, 143, 143, 0.18);
+  --ds-neutral: rgba(255, 255, 255, 0.56);
+  --ds-neutral-soft: rgba(255, 255, 255, 0.08);
+
+  --ds-overlay: rgba(3, 12, 22, 0.7);
+  --ds-backdrop: rgba(10, 37, 64, 0.8);
+  --ds-nav-surface: rgba(10, 37, 64, 0.85);
+  --ds-sheen: rgba(255, 255, 255, 0.07);
+  --ds-sheen-strong: rgba(255, 255, 255, 0.14);
+  --ds-field-bg: #0d2c4b;
+  --ds-field-inset: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+
+  --ds-rule: rgba(255, 255, 255, 0.06);
+  --ds-rule-fine: rgba(255, 255, 255, 0.035);
+
+  --ds-edge: 0 0 0 1px var(--ds-border);
+  --ds-raise:
+    0 0 0 1px var(--ds-border), 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px -14px rgba(0, 0, 0, 0.5);
+  --ds-raise-hi:
+    0 0 0 1px var(--ds-border-strong), 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 18px 40px -16px rgba(0, 0, 0, 0.6);
+  --ds-lift: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  --ds-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --ds-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.35), 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  --ds-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.35), 0 24px 48px -16px rgba(0, 0, 0, 0.6);
+  --ds-shadow-card: var(--ds-raise);
+  --ds-shadow-card-hover: var(--ds-raise-hi);
+
+  --ds-glow-strong: rgba(143, 137, 255, 0.5);
+  --ds-mesh:
+    radial-gradient(38% 52% at 18% 12%, rgba(99, 91, 255, 0.28) 0%, transparent 62%),
+    radial-gradient(42% 46% at 84% 24%, rgba(0, 212, 255, 0.14) 0%, transparent 64%),
+    radial-gradient(52% 58% at 50% 100%, rgba(99, 91, 255, 0.2) 0%, transparent 66%);
+  --ds-mark-invert: 1;
+  color-scheme: dark;
+}
+
+/* Pins the paper sheet whatever the page setting - the surfaces standing for a
+   finished document rather than for a section of this one. */
+[data-ground='paper'] {
+  --ds-bg: #fcfdfe;
+  --ds-bg-elevated: #fcfdfe;
+  --ds-surface: #f6f9fc;
+  --ds-surface-2: #eef3f9;
+  --ds-surface-3: #e3ebf4;
+  --ds-border: rgba(10, 37, 64, 0.1);
+  --ds-border-strong: rgba(10, 37, 64, 0.16);
+  --ds-border-input: rgba(10, 37, 64, 0.22);
+  --ds-border-hover: rgba(10, 37, 64, 0.28);
+  --ds-text: #0a2540;
+  --ds-text-muted: rgba(10, 37, 64, 0.68);
+  --ds-text-faint: rgba(10, 37, 64, 0.64);
+  --ds-text-ghost: rgba(10, 37, 64, 0.12);
+  --ds-accent: #4b45d4;
+  --ds-accent-bright: #3a35a8;
+  --ds-accent-soft: rgba(99, 91, 255, 0.12);
+  --ds-accent-softer: rgba(99, 91, 255, 0.05);
+  --ds-neutral: rgba(10, 37, 64, 0.64);
+  --ds-neutral-soft: rgba(10, 37, 64, 0.05);
+  --ds-rule: rgba(10, 37, 64, 0.055);
+  --ds-rule-fine: rgba(10, 37, 64, 0.03);
+  --ds-field-bg: #ffffff;
+  --ds-field-inset: inset 0 1px 2px rgba(10, 37, 64, 0.05);
+  --ds-mark-invert: 0;
+  color-scheme: light;
+}
+
+.ds-root {
+  font-family: var(--ds-font-sans);
+  background: var(--ds-bg);
+  color: var(--ds-text);
+  font-feature-settings: 'ss01', 'ss02', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}

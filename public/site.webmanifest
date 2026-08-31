@@ -1,0 +1,15 @@
+{
+  "name": "Root & Rise",
+  "short_name": "Root & Rise",
+  "description": "A Smart Money Concepts trading desk: structure on gold and the US indices, a rule-gated journal, and a daily briefing from live data.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

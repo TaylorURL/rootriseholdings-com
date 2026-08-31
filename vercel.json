@@ -1,0 +1,57 @@
+{
+  "rewrites": [
+    {
+      "source": "/data/calendar",
+      "destination": "/api/calendar"
+    },
+    {
+      "source": "/data/market/:symbol",
+      "destination": "/api/market?symbol=:symbol"
+    },
+    {
+      "source": "/login",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy/index.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact/index.html"
+    },
+    {
+      "source": "/app",
+      "destination": "/shell.html"
+    },
+    {
+      "source": "/app/:path*",
+      "destination": "/shell.html"
+    }
+  ],
+  "regions": ["sfo1"],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

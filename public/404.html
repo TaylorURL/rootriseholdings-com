@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Page Not Found · Root &amp; Rise</title>
+    <style>
+      @font-face {
+        font-family: 'Geist';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('/fonts/geist-latin.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Geist Fallback';
+        font-display: swap;
+        src: local('Arial'), local('Liberation Sans'), local('Arimo'), local('Helvetica');
+        size-adjust: 106.82%;
+        ascent-override: 94.08%;
+        descent-override: 27.62%;
+        line-gap-override: 0%;
+      }
+      @font-face {
+        font-family: 'Geist Mono';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('/fonts/geist-mono-latin.woff2') format('woff2');
+      }
+      :root {
+        --accent-face: linear-gradient(180deg, #6f66ff 0%, #635bff 52%, #5147e0 100%);
+        --on-accent: #ffffff;
+        --radius: 8px;
+        --radius-control: 6px;
+        --pad: 24px;
+        --pad-y: 20px;
+        --gap: 12px;
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      :root,
+      :root[data-theme='dark'] {
+        --bg: #071322;
+        --surface: #0d2137;
+        --border: rgba(226, 238, 252, 0.1);
+        --text: #f3f7fc;
+        --muted: rgba(243, 247, 252, 0.68);
+        --faint: rgba(243, 247, 252, 0.56);
+        --accent: #948eff;
+        color-scheme: dark;
+      }
+      @media (prefers-color-scheme: light) {
+        :root:not([data-theme='dark']):not([data-theme='gray']) {
+          --bg: #f6f9fc;
+          --surface: #fdfeff;
+          --border: rgba(10, 37, 64, 0.1);
+          --text: #0a2540;
+          --muted: rgba(10, 37, 64, 0.68);
+          --faint: rgba(10, 37, 64, 0.64);
+          --accent: #4b45d4;
+          color-scheme: light;
+        }
+      }
+      :root[data-theme='light'] {
+        --bg: #f6f9fc;
+        --surface: #fdfeff;
+        --border: rgba(10, 37, 64, 0.1);
+        --text: #0a2540;
+        --muted: rgba(10, 37, 64, 0.68);
+        --faint: rgba(10, 37, 64, 0.64);
+        --accent: #4b45d4;
+        color-scheme: light;
+      }
+      :root[data-theme='gray'] {
+        --bg: #dde5ee;
+        --surface: #eaeff6;
+        --border: rgba(10, 37, 64, 0.14);
+        --text: #0a2540;
+        --muted: rgba(10, 37, 64, 0.74);
+        --faint: rgba(10, 37, 64, 0.7);
+        --accent: #4b45d4;
+        color-scheme: light;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          'Geist',
+          'Geist Fallback',
+          system-ui,
+          -apple-system,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      header,
+      footer {
+        padding: var(--pad-y) var(--pad);
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+      }
+      footer {
+        border-top: 1px solid var(--border);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--gap);
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: var(--radius);
+      }
+      .brand svg {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius);
+      }
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px var(--pad);
+        text-align: center;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--gap);
+      }
+      .code {
+        font-family: 'Geist Mono', ui-monospace, Menlo, monospace;
+        font-size: 0.8125rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      h1 {
+        font-size: 2rem;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+        overflow-wrap: anywhere;
+        min-width: 0;
+      }
+      main p {
+        max-width: 52ch;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      .home {
+        display: inline-block;
+        padding: 12px var(--pad);
+        border-radius: var(--radius);
+        background: var(--accent-face);
+        color: var(--on-accent);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 600;
+        transition:
+          transform 200ms var(--ease-out),
+          filter 200ms var(--ease-out);
+      }
+      a:hover {
+        filter: brightness(1.1);
+      }
+      a:active {
+        transform: scale(0.97);
+      }
+      a:focus-visible {
+        outline: none;
+        box-shadow:
+          0 0 0 2px var(--bg),
+          0 0 0 4px var(--accent);
+      }
+      footer p {
+        font-size: 0.75rem;
+        color: var(--faint);
+      }
+    </style>
+    <script>
+      // Resolve the theme before first paint to avoid a flash: stored choice →
+      // OS preference → dark default. Mirrors src/context/ThemeContext.jsx.
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('rr.theme')
+          var theme =
+            stored === 'light' || stored === 'dark' || stored === 'gray'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark'
+          document.documentElement.setAttribute('data-theme', theme)
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark')
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="32" height="32" rx="8" style="fill: var(--accent)" />
+          <path
+            d="M9 23V9h7.4c1.94 0 3.5.46 4.66 1.4 1.18.93 1.78 2.22 1.78 3.86 0 1.18-.31 2.18-.92 3-.6.8-1.43 1.4-2.46 1.78L23.4 23h-3.66l-3.46-5.34h-3.86V23H9Zm3.42-7.94h3.66c.93 0 1.65-.2 2.16-.6.51-.4.76-.97.76-1.7 0-.74-.25-1.31-.76-1.71-.51-.41-1.23-.62-2.16-.62h-3.66v4.63Z"
+            style="fill: var(--on-accent)"
+          />
+        </svg>
+        Root &amp; Rise
+      </a>
+    </header>
+    <main>
+      <div class="card">
+        <p class="code">404</p>
+        <h1>This page does not exist.</h1>
+        <p>
+          The address may be mistyped, or the page it named may have moved. The desk is still where
+          it was.
+        </p>
+        <a class="home" href="/">Back to the Desk</a>
+      </div>
+    </main>
+    <footer>
+      <p>
+        Root &amp; Rise is a private trading desk and the software it runs on. Nothing on this site
+        is investment advice.
+      </p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+import { cn } from '../../lib/cn'
+
+/**
+ * @param {object} props
+ * @param {string[]} props.options
+ * @param {string} props.value - currently selected option
+ * @param {(option:string) => void} props.onChange
+ * @param {string} [props.ariaLabel='Filter']
+ * @param {string} [props.className]
+ */
+export default function SegmentedTabs({
+  options,
+  value,
+  onChange,
+  ariaLabel = 'Filter',
+  className,
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label={ariaLabel}
+      className={cn(
+        'inline-flex flex-wrap items-center gap-0.5 rounded-control bg-surface-2 p-0.5 shadow-[var(--ds-edge)]',
+        className
+      )}
+    >
+      {options.map((option) => (
+        <button
+          key={option}
+          type="button"
+          role="tab"
+          aria-selected={value === option}
+          onClick={() => onChange(option)}
+          className={cn(
+            'press focus-ring rounded-sm px-3 py-1.5 text-xs font-medium transition-colors duration-200 ease-out',
+            value === option
+              ? 'bg-[var(--ds-accent-fill)] text-on-accent shadow-sm'
+              : 'text-text-muted hover:text-text'
+          )}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  )
+}

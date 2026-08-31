@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="400" height="280" role="img">
+  <rect width="400" height="280" rx="12" fill="#0a2540"/>
+  <g stroke="#ffffff" stroke-opacity="0.06" stroke-width="1">
+    <path d="M0 56h400M0 112h400M0 168h400M0 224h400"/>
+    <path d="M80 0v280M160 0v280M240 0v280M320 0v280"/>
+  </g>
+  <rect x="24" y="24" width="352" height="232" rx="8" fill="#103254" stroke="#ffffff" stroke-opacity="0.12"/>
+  <path d="M24 58h352" stroke="#ffffff" stroke-opacity="0.12"/>
+  <circle cx="42" cy="41" r="4" fill="#4fd1a5"/>
+  <text x="56" y="45" font-family="ui-monospace, monospace" font-size="10" font-weight="600" fill="#f6f9fc" letter-spacing="0.8">TICKET 0412</text>
+  <rect x="300" y="33" width="60" height="17" rx="4" fill="#4fd1a5" fill-opacity="0.18"/>
+  <text x="310" y="45" font-family="ui-monospace, monospace" font-size="9" font-weight="700" fill="#4fd1a5" letter-spacing="0.8">PASSED</text>
+  <g font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">
+    <text x="42" y="84">ENTRY</text><text x="140" y="84">STOP</text><text x="238" y="84">TARGET</text><text x="320" y="84">R:R</text>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="14" font-weight="600" fill="#f6f9fc">
+    <text x="42" y="104">2418.60</text><text x="140" y="104">2412.20</text><text x="238" y="104">2431.40</text>
+    <text x="320" y="104" fill="#4fd1a5">2.0R</text>
+  </g>
+  <path d="M40 122h320" stroke="#ffffff" stroke-opacity="0.12"/>
+  <g font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">
+    <text x="42" y="146">RISK</text><text x="140" y="146">SETUP</text><text x="238" y="146">SESSION</text><text x="320" y="146">GRADE</text>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#f6f9fc">
+    <text x="42" y="164">0.90%</text><text x="140" y="164">OTE</text><text x="238" y="164">LONDON</text>
+  </g>
+  <rect x="318" y="152" width="26" height="16" rx="4" fill="#635bff"/>
+  <text x="325" y="164" font-family="ui-monospace, monospace" font-size="10" font-weight="700" fill="#f6f9fc">A+</text>
+  <path d="M40 182h320" stroke="#ffffff" stroke-opacity="0.12"/>
+  <g>
+    <rect x="40" y="196" width="150" height="10" rx="5" fill="#ffffff" fill-opacity="0.1"/>
+    <rect x="40" y="196" width="96" height="10" rx="5" fill="#635bff"/>
+    <text x="40" y="222" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">DAILY RISK 0.9 / 1.0</text>
+  </g>
+  <g>
+    <rect x="210" y="196" width="150" height="10" rx="5" fill="#ffffff" fill-opacity="0.1"/>
+    <rect x="210" y="196" width="60" height="10" rx="5" fill="#f0b429"/>
+    <text x="210" y="222" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">A+ TAKEN 1 / 2</text>
+  </g>
+  <rect x="40" y="234" width="120" height="18" rx="4" fill="#ff8f8f" fill-opacity="0.16"/>
+  <text x="50" y="247" font-family="ui-monospace, monospace" font-size="9" font-weight="600" fill="#ff8f8f" letter-spacing="0.7">2 LOSSES LOCKS DAY</text>
+</svg>

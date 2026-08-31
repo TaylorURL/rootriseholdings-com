@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href="/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href="/fonts/geist-mono-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="preconnect" href="https://pwvlzopjbuwsaaqtnrkc.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://gujgtjqqurildqurpffh.supabase.co" crossorigin />
+    <meta name="theme-color" content="#071322" />
+    <meta
+      name="description"
+      content="Root & Rise is a Smart Money Concepts trading desk: structure read on gold and the US indices, a rule-gated journal, and a daily briefing from live data."
+    />
+    <link rel="canonical" href="https://www.rootriseholdings.com/" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Root & Rise" />
+    <meta property="og:title" content="Root & Rise · Trade on Structure" />
+    <meta
+      property="og:description"
+      content="A Smart Money Concepts trading desk: structure read the SMC way on gold and the US indices, a rule-enforced trade journal, and a nine-section daily briefing composed from live data."
+    />
+    <meta property="og:url" content="https://www.rootriseholdings.com/" />
+    <meta property="og:image" content="https://www.rootriseholdings.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Root & Rise · Trade on Structure" />
+    <meta
+      name="twitter:description"
+      content="A Smart Money Concepts trading desk: structure, rules, and a daily briefing composed from live data."
+    />
+    <meta name="twitter:image" content="https://www.rootriseholdings.com/og-image.png" />
+    <title>Root & Rise · Trade on Structure</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://www.rootriseholdings.com/#org",
+        "name": "Root & Rise",
+        "url": "https://www.rootriseholdings.com/",
+        "logo": "https://www.rootriseholdings.com/apple-touch-icon.png",
+        "description": "A private Smart Money Concepts trading desk and the software it runs on. It does not manage outside money or sell trade signals."
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Root & Rise",
+        "url": "https://www.rootriseholdings.com/",
+        "publisher": { "@id": "https://www.rootriseholdings.com/#org" },
+        "author": { "@id": "https://www.rootriseholdings.com/#org" },
+        "inLanguage": "en"
+      }
+    </script>
+    <script>
+      // Resolve the theme before first paint to avoid a flash: stored choice →
+      // OS preference → dark default. Mirrors src/context/ThemeContext.jsx.
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('rr.theme')
+          var theme =
+            stored === 'light' || stored === 'dark' || stored === 'gray'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark'
+          document.documentElement.setAttribute('data-theme', theme)
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark')
+        }
+      })()
+    </script>
+    <script>
+      ;(function () {
+        var endpoint = 'https://sunday.tail1f78d7.ts.net/report'
+        var site = 'RootRise Holdings'
+        var sent = 0
+        var RELOAD_KEY = 'rr.chunk-reload'
+        function isStaleChunkMessage(msg) {
+          return (
+            msg.indexOf('Failed to fetch dynamically imported module') !== -1 ||
+            msg.indexOf('Importing a module script failed') !== -1 ||
+            msg.indexOf('error loading dynamically imported module') !== -1 ||
+            msg.indexOf('Chunk resolved without a default export') !== -1 ||
+            msg.indexOf("reading 'default'") !== -1 ||
+            msg.indexOf(".default'") !== -1
+          )
+        }
+        function reloadOnce() {
+          try {
+            var stamp = sessionStorage.getItem(RELOAD_KEY)
+            if (stamp && Date.now() - Number(stamp) < 30000) return false
+            sessionStorage.setItem(RELOAD_KEY, String(Date.now()))
+          } catch (e) {}
+          window.location.reload()
+          return true
+        }
+        window.addEventListener('vite:preloadError', function (event) {
+          event.preventDefault()
+          reloadOnce()
+        })
+        function report(kind, message, stack) {
+          if (sent >= 10) return
+          sent += 1
+          try {
+            var body = JSON.stringify({
+              site: site,
+              kind: kind,
+              message: String(message || 'Unknown error').slice(0, 1500),
+              stack: String(stack || '').slice(0, 4000),
+              url: location.href,
+              userAgent: navigator.userAgent,
+            })
+            if (navigator.sendBeacon) {
+              navigator.sendBeacon(endpoint, body)
+            } else {
+              fetch(endpoint, { method: 'POST', body: body, keepalive: true }).catch(function () {})
+            }
+          } catch (ignored) {}
+        }
+        window.addEventListener(
+          'error',
+          function (event) {
+            if (event.target && event.target !== window && event.target.tagName) {
+              if (event.target.tagName === 'LINK' && event.target.rel === 'modulepreload') return
+              var src = event.target.src || event.target.href || ''
+              if (event.target.tagName === 'SCRIPT' && src.indexOf('/assets/') !== -1) {
+                if (reloadOnce()) return
+              }
+              report(
+                'resource',
+                'Failed to load ' + event.target.tagName.toLowerCase() + ': ' + src
+              )
+            } else {
+              report('uncaught', event.message, event.error && event.error.stack)
+            }
+          },
+          true
+        )
+        window.addEventListener('unhandledrejection', function (event) {
+          var reason = event.reason
+          if (reason && reason.name === 'AbortError') return
+          var msg = (reason && reason.message) || ''
+          if (isStaleChunkMessage(msg)) return
+          report(
+            'rejection',
+            reason && reason.message ? reason.message : reason,
+            reason && reason.stack
+          )
+        })
+        var consoleError = console.error
+        console.error = function () {
+          var parts = []
+          for (var i = 0; i < arguments.length; i += 1) {
+            var piece = arguments[i]
+            if (piece && piece.stack) {
+              if (piece.message) parts.push(piece.message)
+              parts.push(piece.stack)
+            } else if (typeof piece === 'object') {
+              try {
+                parts.push(JSON.stringify(piece))
+              } catch (ignored) {
+                parts.push(String(piece))
+              }
+            } else {
+              parts.push(String(piece))
+            }
+          }
+          var joined = parts.join(' ')
+          if (!isStaleChunkMessage(joined)) report('console', joined)
+          return consoleError.apply(console, arguments)
+        }
+        if (window.fetch) {
+          var originalFetch = window.fetch
+          window.fetch = function (input) {
+            var target = typeof input === 'string' ? input : (input && input.url) || ''
+            if (target.indexOf(endpoint) === 0) return originalFetch.apply(window, arguments)
+            return originalFetch.apply(window, arguments).then(
+              function (response) {
+                if (response.status >= 500)
+                  report('http', 'HTTP ' + response.status + ' from ' + target.split('?')[0])
+                return response
+              },
+              function (error) {
+                if (error && error.name === 'AbortError') throw error
+                report(
+                  'network',
+                  (error && error.message ? error.message : String(error)) +
+                    ' fetching ' +
+                    target.split('?')[0]
+                )
+                throw error
+              }
+            )
+          }
+        }
+      })()
+    </script>
+    <!-- Traffic analytics. The site key is public by design: it says which
+         site a hit belongs to, and the collector accepts it only from this
+         site's own origins. It is attached after the load event rather than
+         with the document, so third-party code cannot take the main thread
+         while the reader is still waiting for the first screen. -->
+    <script>
+      addEventListener('load', function () {
+        var tracker = document.createElement('script')
+        tracker.src = 'https://gujgtjqqurildqurpffh.supabase.co/functions/v1/analytics-tracker'
+        tracker.dataset.site = 'sa_40ab2ff4219c902d25c7d08ec8d5230a'
+        tracker.crossOrigin = 'anonymous'
+        document.head.appendChild(tracker)
+      })
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
