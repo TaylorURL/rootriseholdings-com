@@ -1,5 +1,11 @@
-import { motion, useReducedMotion } from 'framer-motion'
-import { DURATION, EASE_OUT, REVEAL_VIEWPORT, staggerParentWith } from '../../lib/marketingMotion'
+import { motion } from 'framer-motion'
+import {
+  DURATION,
+  EASE_OUT,
+  REVEAL_VIEWPORT,
+  staggerParentWith,
+  useSafeReducedMotion,
+} from '../../lib/marketingMotion'
 
 /**
  * @param {object} props
@@ -52,7 +58,7 @@ export function StaggerItem({
   className,
   ...rest
 }) {
-  const reduce = useReducedMotion()
+  const reduce = useSafeReducedMotion()
   const MotionTag = motion[as] ?? motion.div
   const axis = direction === 'left' || direction === 'right' ? 'x' : 'y'
   const sign = direction === 'down' || direction === 'right' ? 1 : -1

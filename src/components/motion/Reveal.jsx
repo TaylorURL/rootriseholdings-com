@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   DURATION,
   EASE_OUT,
@@ -6,6 +6,7 @@ import {
   blurUp,
   revealVariants,
   scaleIn,
+  useSafeReducedMotion,
 } from '../../lib/marketingMotion'
 
 /**
@@ -34,7 +35,7 @@ export default function Reveal({
   once = true,
   ...rest
 }) {
-  const reduce = useReducedMotion()
+  const reduce = useSafeReducedMotion()
   const MotionTag = motion[as] ?? motion.div
 
   const variants =

@@ -1,7 +1,7 @@
 {
   "name": "riseandroot-com",
   "private": true,
-  "version": "2026.36.2",
+  "version": "2026.36.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
