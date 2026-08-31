@@ -705,6 +705,10 @@
     background: var(--ds-accent-face);
   }
 
+  .plate-face {
+    background: var(--ds-plate-face);
+  }
+
   .accent-glow {
     background: radial-gradient(ellipse at center, var(--ds-accent-glow), transparent 70%);
     pointer-events: none;
