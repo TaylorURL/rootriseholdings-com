@@ -94,7 +94,12 @@
             msg.indexOf('error loading dynamically imported module') !== -1 ||
             msg.indexOf('Chunk resolved without a default export') !== -1 ||
             msg.indexOf("reading 'default'") !== -1 ||
-            msg.indexOf(".default'") !== -1
+            msg.indexOf(".default'") !== -1 ||
+            msg.indexOf('Load failed') !== -1 ||
+            msg.indexOf('MIME type') !== -1 ||
+            msg.indexOf('module script') !== -1 ||
+            msg.indexOf('Unexpected token') !== -1 ||
+            msg.indexOf('_result') !== -1
           )
         }
         function reloadOnce() {
@@ -143,6 +148,11 @@
                 'Failed to load ' + event.target.tagName.toLowerCase() + ': ' + src
               )
             } else {
+              var msg = (event.error && event.error.message) || event.message || ''
+              if (isStaleChunkMessage(String(msg))) {
+                reloadOnce()
+                return
+              }
               report('uncaught', event.message, event.error && event.error.stack)
             }
           },
