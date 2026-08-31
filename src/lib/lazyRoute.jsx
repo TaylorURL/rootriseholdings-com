@@ -5,17 +5,25 @@ const RELOAD_KEY = 'rr.chunk-reload'
 /**
  * True when the failure is from a content-hashed filename the server no longer
  * has -- the signature of a deployment that changed chunk names while a tab
- * was still open with the previous build's HTML.
+ * was still open with the previous build's HTML. iOS Safari 26 surfaces the
+ * same underlying failure through the lazy component's internal payload
+ * access rather than the fetch layer, so `_result` in the message is treated
+ * the same way.
  */
 function isStaleChunkError(error) {
   if (!error) return false
-  const msg = error.message || ''
+  const msg = String(error.message || error || '')
   return (
     msg.includes('Failed to fetch dynamically imported module') ||
     msg.includes('Importing a module script failed') ||
     msg.includes('error loading dynamically imported module') ||
     msg.includes('Failed to load') ||
+    msg.includes('Load failed') ||
+    msg.includes('MIME type') ||
+    msg.includes('module script') ||
+    msg.includes('Unexpected token') ||
     msg.includes('without a default export') ||
+    msg.includes('_result') ||
     (error instanceof TypeError && (msg.includes("reading 'default'") || msg.includes(".default'")))
   )
 }
@@ -69,9 +77,11 @@ export function withChunkReload(load) {
         return module
       })
       .catch((error) => {
-        if (isStaleChunkError(error) && reloadOnce()) {
-          return new Promise(() => {})
-        }
+        // Any failure at the module-import layer means the chunk this build
+        // pointed at is unusable in this tab. Reloading fetches the current
+        // HTML whose script tags name the chunks the server holds; the
+        // sessionStorage stamp keeps a broken server from looping.
+        if (reloadOnce()) return new Promise(() => {})
         throw error
       })
 }
