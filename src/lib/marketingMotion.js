@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { useReducedMotion } from 'framer-motion'
+
 /**
  * The durations, easings, stagger rhythm and reveal variants every surface
  * animates on.
@@ -7,6 +10,29 @@
  * curves as the `--ds-ease-*` tokens in tokens.css, so a transition reads the
  * same whether CSS or JS is driving it.
  */
+
+/**
+ * The reader's reduced-motion preference, held back until after hydration.
+ *
+ * `useReducedMotion` reads matchMedia the first time it is called, so the value
+ * is null while the document is being written out and either true or false the
+ * moment a browser picks the script up. A reveal computes its initial variant
+ * off that value, so the transform written into the markup and the transform
+ * the client renders at hydration are different for anyone who keeps reduced
+ * motion on. React refuses that difference (error #425) and switches the
+ * enclosing Suspense boundary to client rendering (error #422), which is the
+ * home page the reports named.
+ *
+ * The gate returns false on the first render on both sides, so the two agree,
+ * and hands over the real setting once the tree is live. Every surface built
+ * from the preference then honours it as before.
+ */
+export function useSafeReducedMotion() {
+  const value = useReducedMotion()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  return mounted ? value : false
+}
 
 /* The bar's own curve, steeper into its settle than the page's, so a panel
    arrives rather than drifts. Mirrors --ds-ease-nav. */
