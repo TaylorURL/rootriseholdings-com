@@ -5,10 +5,11 @@ import { cn } from '../../lib/cn'
  * ink set, kept as files under public/art so they stay out of the bundle and
  * cache on their own.
  *
- * Each plate draws its own ground, so nothing behind one has to supply a card
- * for it to sit on, and each is sized off the column it lands in rather than
- * pinned to a height - a plate matched to the height of a heading beside it
- * reads as a mark above that heading and the eye skips it.
+ * The ground is the image element's rather than the drawing's, so a plate is
+ * transparent behind its ink and the face under it is one the page can change.
+ * Each is sized off the column it lands in rather than pinned to a height - a
+ * plate matched to the height of a heading beside it reads as a mark above
+ * that heading and the eye skips it.
  */
 const PLATES = {
   structure: {
@@ -37,7 +38,7 @@ export default function Plate({ name, className, loading = 'lazy' }) {
       height={280}
       loading={loading}
       decoding="async"
-      className={cn('block h-auto w-full rounded-card', className)}
+      className={cn('plate-face block h-auto w-full rounded-card', className)}
     />
   )
 }

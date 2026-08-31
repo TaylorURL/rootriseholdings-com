@@ -252,6 +252,10 @@
     radial-gradient(52% 58% at 50% 100%, rgba(99, 91, 255, 0.16) 0%, transparent 66%);
   --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
   --ds-accent-face: linear-gradient(180deg, #6f66ff 0%, #635bff 52%, #5147e0 100%);
+  --ds-plate-face: #0a2540;
+  /* The plates carry one fixed ink set, so the face under them is fixed too
+     and travels with the image rather than with the band it lands on. */
+  --ds-plate-face: #0a2540;
   --ds-accent-face-hover: linear-gradient(180deg, #635bff 0%, #5147e0 52%, #4239c4 100%);
   --ds-mark-invert: 1;
   color-scheme: dark;
@@ -330,6 +334,7 @@
     radial-gradient(52% 58% at 50% 100%, rgba(99, 91, 255, 0.12) 0%, transparent 66%);
   --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
   --ds-accent-face: linear-gradient(180deg, #6f66ff 0%, #635bff 52%, #5147e0 100%);
+  --ds-plate-face: #0a2540;
   --ds-accent-face-hover: linear-gradient(180deg, #635bff 0%, #5147e0 52%, #4239c4 100%);
   --ds-mark-invert: 0;
   color-scheme: light;
@@ -404,6 +409,7 @@
     radial-gradient(52% 58% at 50% 100%, rgba(99, 91, 255, 0.1) 0%, transparent 66%);
   --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
   --ds-accent-face: linear-gradient(180deg, #6f66ff 0%, #635bff 52%, #5147e0 100%);
+  --ds-plate-face: #0a2540;
   --ds-accent-face-hover: linear-gradient(180deg, #635bff 0%, #5147e0 52%, #4239c4 100%);
   --ds-mark-invert: 0;
   color-scheme: light;
