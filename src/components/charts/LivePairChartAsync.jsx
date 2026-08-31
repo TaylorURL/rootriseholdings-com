@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState, useEffect } from 'react'
 import { Skeleton, SkeletonRegion } from '../ui/Skeleton'
-import { withChunkReload } from '../../lib/lazyRoute.jsx'
+import { ChunkErrorBoundary, withChunkReload } from '../../lib/lazyRoute.jsx'
 
 const LivePairChart = lazy(withChunkReload(() => import('../ui/LivePairChart')))
 
@@ -52,8 +52,10 @@ export default function LivePairChartAsync({ height = 220, compact = false, ...r
   if (!mounted) return <ChartPending height={height} compact={compact} />
 
   return (
-    <Suspense fallback={<ChartPending height={height} compact={compact} />}>
-      <LivePairChart height={height} compact={compact} {...rest} />
-    </Suspense>
+    <ChunkErrorBoundary>
+      <Suspense fallback={<ChartPending height={height} compact={compact} />}>
+        <LivePairChart height={height} compact={compact} {...rest} />
+      </Suspense>
+    </ChunkErrorBoundary>
   )
 }
