@@ -5,9 +5,7 @@ import { ThemeProvider } from './context/ThemeContext'
 import { JournalProvider } from './context/JournalContext'
 import { SignalsProvider } from './context/SignalsContext'
 import MarketingLayout from './layouts/MarketingLayout'
-import RequireAuth from './components/auth/RequireAuth'
 import ClickRipple from './components/ui/ClickRipple'
-import AppShell from './components/layout/AppShell'
 import RoutePending from './components/layout/RoutePending'
 import { ChunkErrorBoundary } from './lib/lazyRoute.jsx'
 import { useRouteMeta } from './lib/routeMeta.js'
@@ -17,6 +15,8 @@ import {
   PrivacyPage,
   TermsPage,
   ContactPage,
+  RequireAuth,
+  AppShell,
   DashboardPage,
   BriefingPage,
   JournalPage,
@@ -44,49 +44,65 @@ function RouteHead() {
   return null
 }
 
+/**
+ * The journal and the signal sweep belong to the terminal alone. Both open on
+ * mount - the sweep reads every instrument the desk follows and runs the
+ * structure pass over each one, the journal re-reads its store on a timer - and
+ * nothing on a public page reads a line of either, so they are opened by the
+ * gated frame rather than by the tree above it.
+ */
+function DeskProviders({ children }) {
+  return (
+    <JournalProvider>
+      <SignalsProvider>{children}</SignalsProvider>
+    </JournalProvider>
+  )
+}
+
 export function AppRoutes() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <JournalProvider>
-          <SignalsProvider>
-            <>
-              <ClickRipple />
-              <ScrollToTop />
-              <RouteHead />
-              <ChunkErrorBoundary>
-                <Suspense fallback={<RoutePending />}>
-                  <Routes>
-                    <Route element={<MarketingLayout />}>
-                      <Route index element={<HomePage />} />
-                      <Route path="privacy" element={<PrivacyPage />} />
-                      <Route path="terms" element={<TermsPage />} />
-                      <Route path="contact" element={<ContactPage />} />
-                    </Route>
+        <ClickRipple />
+        <ScrollToTop />
+        <RouteHead />
+        <ChunkErrorBoundary>
+          <Suspense fallback={<RoutePending />}>
+            <Routes>
+              <Route element={<MarketingLayout />}>
+                <Route index element={<HomePage />} />
+                <Route path="privacy" element={<PrivacyPage />} />
+                <Route path="terms" element={<TermsPage />} />
+                <Route path="contact" element={<ContactPage />} />
+              </Route>
 
-                    <Route path="login" element={<LoginPage />} />
+              <Route path="login" element={<LoginPage />} />
 
-                    <Route element={<RequireAuth />}>
-                      <Route path="app" element={<AppShell />}>
-                        <Route index element={<DashboardPage />} />
-                        <Route path="briefing" element={<BriefingPage />} />
-                        <Route path="journal" element={<JournalPage />} />
-                        <Route path="markets" element={<MarketsPage />} />
-                        <Route path="signals" element={<SignalsPage />} />
-                        <Route path="insights" element={<InsightsPage />} />
-                        <Route path="account" element={<AccountPage />} />
-                        <Route path="positions" element={<Navigate to="/app/journal" replace />} />
-                        <Route path="history" element={<Navigate to="/app/journal" replace />} />
-                      </Route>
-                    </Route>
+              <Route element={<RequireAuth />}>
+                <Route
+                  path="app"
+                  element={
+                    <DeskProviders>
+                      <AppShell />
+                    </DeskProviders>
+                  }
+                >
+                  <Route index element={<DashboardPage />} />
+                  <Route path="briefing" element={<BriefingPage />} />
+                  <Route path="journal" element={<JournalPage />} />
+                  <Route path="markets" element={<MarketsPage />} />
+                  <Route path="signals" element={<SignalsPage />} />
+                  <Route path="insights" element={<InsightsPage />} />
+                  <Route path="account" element={<AccountPage />} />
+                  <Route path="positions" element={<Navigate to="/app/journal" replace />} />
+                  <Route path="history" element={<Navigate to="/app/journal" replace />} />
+                </Route>
+              </Route>
 
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </Suspense>
-              </ChunkErrorBoundary>
-            </>
-          </SignalsProvider>
-        </JournalProvider>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+        </ChunkErrorBoundary>
       </AuthProvider>
     </ThemeProvider>
   )

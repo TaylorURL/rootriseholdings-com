@@ -15,6 +15,15 @@ export const TermsPage = lazyRoute(() =>
   import('./pages/marketing/LegalPage').then((m) => ({ default: m.TermsPage }))
 )
 export const ContactPage = lazyRoute(() => import('./pages/marketing/ContactPage'))
+
+/**
+ * The terminal's guard and its frame. Neither renders anywhere but under /app,
+ * and the frame carries the sidebar, the header and the desk rail with it, so a
+ * reader on a public page pays for none of it.
+ */
+export const RequireAuth = lazyRoute(() => import('./components/auth/RequireAuth'))
+export const AppShell = lazyRoute(() => import('./components/layout/AppShell'))
+
 export const DashboardPage = lazyRoute(() => import('./pages/DashboardPage'))
 export const BriefingPage = lazyRoute(() => import('./pages/BriefingPage'))
 export const JournalPage = lazyRoute(() => import('./pages/JournalPage'))

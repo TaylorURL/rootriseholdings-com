@@ -1,4 +1,5 @@
 import { Section, SectionHeading } from '../Section'
+import ChartInView from '../../charts/ChartInView'
 import LivePairChart from '../../charts/LivePairChartAsync'
 import { PRIMARY_INSTRUMENTS } from '../../../data/instruments'
 import { useInstrumentQuotes } from '../../../lib/marketData/instrumentQuotes'
@@ -29,7 +30,9 @@ export default function LiveMarketSection({ ground = 'page' }) {
         {PRIMARY_INSTRUMENTS.map((instrument) => (
           <StaggerItem key={instrument.symbol}>
             <div className="panel h-full p-4">
-              <LivePairChart symbol={instrument.symbol} height={150} compact />
+              <ChartInView height={150} label={`${instrument.displaySymbol} price`}>
+                {() => <LivePairChart symbol={instrument.symbol} height={150} compact />}
+              </ChartInView>
             </div>
           </StaggerItem>
         ))}
