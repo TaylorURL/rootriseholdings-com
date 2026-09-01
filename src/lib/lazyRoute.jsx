@@ -32,8 +32,13 @@ function isStaleChunkError(error) {
  * Reload the page once so the browser fetches the current HTML, whose script
  * tags name the chunks the server actually holds. A sessionStorage timestamp
  * prevents a loop when the server itself is broken.
+ *
+ * Returns true when the reload was scheduled, false when the recent-reload
+ * stamp refused it. The entry boot in `main.jsx` reads the same signal to
+ * decide between reloading and rendering from a cleared container, so it is
+ * exported here rather than duplicated there.
  */
-function reloadOnce() {
+export function reloadOnce() {
   try {
     const stamp = sessionStorage.getItem(RELOAD_KEY)
     if (stamp && Date.now() - Number(stamp) < 30_000) return false

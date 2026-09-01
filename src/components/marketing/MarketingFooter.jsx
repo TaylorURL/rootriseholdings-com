@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import BrandMark from './BrandMark'
 import { COMPLIANCE, FOOTER_LINKS, FOOTER_STATEMENT, LEGAL_LINKS, PRODUCT } from '../../lib/brand'
@@ -18,7 +19,14 @@ export default function MarketingFooter({ children }) {
   // Central turns the year over hours before the desk does, and the line
   // underneath a notice of ownership is the wrong place to be a few hours
   // ahead of the company it names.
-  const year = ctParts(new Date()).year
+  //
+  // The year is held back until after mount, so the value the server wrote at
+  // build time and the value the client renders at hydration always agree.
+  // Otherwise a page built one side of the CT year rollover and loaded the
+  // other side would hand React a text mismatch (error #425) and drop the
+  // enclosing Suspense boundary into client rendering (error #422), which is
+  // the same shape `useSafeReducedMotion` closes on the reveal primitives.
+  const year = useSafeYear()
 
   return (
     <footer
@@ -65,4 +73,16 @@ export default function MarketingFooter({ children }) {
       {children}
     </footer>
   )
+}
+
+/**
+ * The desk's current year, null on both sides of hydration and the real value
+ * after mount. The initial null keeps server and client rendering identical so
+ * React never sees the year mismatch that would take the enclosing Suspense
+ * boundary down when the request and the mount straddle midnight in CT.
+ */
+function useSafeYear() {
+  const [year, setYear] = useState(null)
+  useEffect(() => setYear(ctParts(new Date()).year), [])
+  return year
 }
