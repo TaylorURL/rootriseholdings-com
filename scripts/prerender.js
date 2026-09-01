@@ -104,6 +104,33 @@ function homeExtras(html) {
   )
 }
 
+const ENTITIES = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#x27;': "'",
+}
+
+/*
+ * A style element holds raw text: the parser reads everything between the tags
+ * literally and decodes no entity in it, so an apostrophe written as `&#x27;`
+ * stays six characters wide in the document forever. The render that attaches
+ * to that document produces the apostrophe, finds a stylesheet that does not
+ * match the one in front of it, and throws every node on the page away to draw
+ * them all again, which is the whole prerender spent.
+ *
+ * The renderer escapes a text child wherever it finds one, having no way to
+ * know this element will not decode it. Putting the text back belongs to the
+ * step writing the file.
+ */
+const rawText = (markup) =>
+  markup.replace(
+    /(<style\b[^>]*>)([\s\S]*?)(<\/style>)/g,
+    (whole, open, body, close) =>
+      open + body.replace(/&(?:amp|lt|gt|quot|#x27);/g, (e) => ENTITIES[e]) + close
+  )
+
 const shell = stylesheetFirst(fs.readFileSync(path.join(OUT, 'index.html'), 'utf8'))
 if (!shell.includes('<div id="root"></div>')) {
   throw new Error('prerender: the shell no longer has an empty #root to render into')
@@ -118,7 +145,10 @@ console.log('wrote     shell.html for the routes that mount rather than hydrate'
 
 for (const route of PRERENDERED_ROUTES) {
   const markup = await render(route)
-  let html = head(shell, route).replace('<div id="root"></div>', `<div id="root">${markup}</div>`)
+  let html = head(shell, route).replace(
+    '<div id="root"></div>',
+    `<div id="root">${rawText(markup)}</div>`
+  )
   if (route === '/') html = homeExtras(html)
 
   const dir = route === '/' ? OUT : path.join(OUT, route.replace(/^\//, ''))
