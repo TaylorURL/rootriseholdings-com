@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import {
+  createContext,
+  startTransition,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { supabase } from '../lib/supabase'
 
 /**
@@ -94,11 +102,19 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let active = true
 
+    // On a warm session the claim read resolves inside the same commit that is
+    // hydrating the tree. An urgent update reaching a Suspense boundary that is
+    // still adopting the server markup leaves React no way to reconcile it, so
+    // the boundary is torn out and rebuilt on the client -- the page a reader is
+    // already looking at, thrown away and drawn again. A transition lets the
+    // hydration finish first, the same way ThemeContext defers its resolved flag.
     const settle = () =>
       readIdentity().then((next) => {
         if (!active) return
-        setIdentity(next)
-        setLoading(false)
+        startTransition(() => {
+          setIdentity(next)
+          setLoading(false)
+        })
       })
 
     settle()
