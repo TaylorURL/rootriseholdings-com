@@ -4,7 +4,6 @@ import MarketingButton from '../MarketingButton'
 import LivePairChart from '../../charts/LivePairChartAsync'
 import { PRODUCT } from '../../../lib/brand'
 import { RISK_RULES } from '../../../data/riskRules'
-import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 
 /** The four figures the rule book is, shown as the desk states them. */
 const RULE_CHIPS = [
@@ -32,19 +31,19 @@ export default function Hero() {
 
       <Container className="relative">
         <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-          <StaggerGroup>
-            <StaggerItem>
+          <div>
+            <div className="hero-rise">
               <Eyebrow accent>Smart Money Concepts</Eyebrow>
-            </StaggerItem>
-            <StaggerItem>
+            </div>
+            <div className="hero-rise">
               <h1 className="t-display mt-5 max-w-[13ch] text-text">
                 Trade on structure, not on instinct.
               </h1>
-            </StaggerItem>
-            <StaggerItem>
+            </div>
+            <div className="hero-rise">
               <p className="t-lede mt-6 max-w-[48ch] text-text-muted">{PRODUCT.heroLine}</p>
-            </StaggerItem>
-            <StaggerItem>
+            </div>
+            <div className="hero-rise">
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <MarketingButton to="/login" size="lg">
                   Sign In
@@ -53,8 +52,8 @@ export default function Hero() {
                   The Method
                 </MarketingButton>
               </div>
-            </StaggerItem>
-          </StaggerGroup>
+            </div>
+          </div>
 
           <div className="card-lift accent-ring relative p-4">
             <div className="mb-3 flex items-center justify-between">

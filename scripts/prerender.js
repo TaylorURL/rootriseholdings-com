@@ -49,6 +49,25 @@ function head(html, route) {
   return next
 }
 
+/**
+ * Puts the stylesheet ahead of the bundle in the head.
+ *
+ * Nothing is painted until the stylesheet has arrived, and the bundle is more
+ * than an order of magnitude larger than it is. Written in the order the
+ * bundler emits them, the entry script and its module preloads are queued
+ * first and the twelve kilobytes the first screen actually waits on are queued
+ * behind two hundred that it does not.
+ */
+function stylesheetFirst(html) {
+  const sheets = html.match(/^[ \t]*<link rel="stylesheet"[^>]*>\n/gm)
+  if (!sheets) throw new Error('prerender: the shell head carries no stylesheet')
+  let next = html
+  for (const sheet of sheets) next = next.replace(sheet, '')
+  const anchor = next.match(/^[ \t]*<(?:script type="module"|link rel="modulepreload")[^>]*>/m)
+  if (!anchor) throw new Error('prerender: the shell head carries no module script')
+  return next.replace(anchor[0], `${sheets.join('')}${anchor[0]}`)
+}
+
 /** The home document alone carries the questions and preloads its own chunk. */
 function homeExtras(html) {
   const chunks = JSON.parse(fs.readFileSync(path.join(OUT, '.home-chunks.json'), 'utf8'))
@@ -85,7 +104,7 @@ function homeExtras(html) {
   )
 }
 
-const shell = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8')
+const shell = stylesheetFirst(fs.readFileSync(path.join(OUT, 'index.html'), 'utf8'))
 if (!shell.includes('<div id="root"></div>')) {
   throw new Error('prerender: the shell no longer has an empty #root to render into')
 }

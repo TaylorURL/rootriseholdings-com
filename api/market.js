@@ -65,9 +65,18 @@ const EDGE_SECONDS = { '5m': 60, '15m': 300, '1h': 900, '1d': 3600 }
  */
 const STALE_SECONDS = 86_400
 
+/**
+ * How long a browser may answer its own re-read without asking the edge. It is
+ * short enough that a chart still refreshes on the desk's own minute-long
+ * poll, and long enough that a page opened twice in a row - a reader moving
+ * between the terminal's screens, or coming back to the tab - draws from what
+ * the tab already holds rather than from the network.
+ */
+const BROWSER_SECONDS = 30
+
 function cacheControlFor(params) {
   const fresh = EDGE_SECONDS[params?.get('interval')] ?? 60
-  return `public, s-maxage=${fresh}, stale-while-revalidate=${STALE_SECONDS}`
+  return `public, max-age=${BROWSER_SECONDS}, s-maxage=${fresh}, stale-while-revalidate=${STALE_SECONDS}`
 }
 
 /**

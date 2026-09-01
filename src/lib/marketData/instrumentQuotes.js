@@ -36,17 +36,6 @@ import { fetchQuote } from './chartFeed.js'
  */
 const POLL_MS = 60_000
 
-/**
- * How many instrument reads are in flight at once.
- *
- * The registry is wide enough that reading it in one burst puts dozens of
- * requests on the wire at the same instant. The browser queues most of them
- * anyway, and the origin's upstream reads the arrival as a flood from a single
- * address, which is what earns a refusal. Bounded groups spread the same work
- * across a few seconds of a minute-long interval.
- */
-const READ_WIDTH = 6
-
 const listeners = new Set()
 
 /** @type {{quotes: Quote[], bySymbol: Record<string, Quote>, loading: boolean, at: number|null}} */
@@ -82,15 +71,18 @@ async function readQuote(meta) {
 /**
  * Reads every instrument once and publishes the result as one snapshot, so the
  * interface never shows half a refresh.
+ *
+ * The registry goes on the wire together. Every read is answered by this site's
+ * own origin over one multiplexed connection, and the edge holds each answer
+ * for as long as the instrument's timeframe prints, so the width of the burst
+ * is not what spends the upstream allowance. Reading it in bounded groups would
+ * hold the one snapshot back by the sum of the groups rather than by the
+ * slowest read, and leave every chart on a placeholder for that whole stretch.
  */
 async function poll() {
   if (inFlight) return inFlight
   inFlight = (async () => {
-    const settled = []
-    for (let index = 0; index < INSTRUMENTS.length; index += READ_WIDTH) {
-      const group = INSTRUMENTS.slice(index, index + READ_WIDTH)
-      settled.push(...(await Promise.all(group.map(readQuote))))
-    }
+    const settled = await Promise.all(INSTRUMENTS.map(readQuote))
     const quotes = settled.filter(Boolean)
     publish({
       quotes,
