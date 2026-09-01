@@ -46,4 +46,5 @@
   <path d="M24 252h352" stroke="#ffffff" stroke-opacity="0.12"/>
   <text x="24" y="270" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">09 THIRTY-SECOND TAKE</text>
   <circle cx="368" cy="266" r="4" fill="#4fd1a5"/>
+<rect x="0.5" y="0.5" width="399" height="279" rx="11.5" fill="none" stroke="#ffffff" stroke-opacity="0.16"/>
 </svg>
