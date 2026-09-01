@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import BrandMark from './BrandMark'
 import { COMPLIANCE, FOOTER_LINKS, FOOTER_STATEMENT, LEGAL_LINKS, PRODUCT } from '../../lib/brand'
+import { ctParts } from '../../lib/time'
 import Reveal from '../motion/Reveal'
 
 const LINK_CLASS =
@@ -13,7 +14,11 @@ const LINK_CLASS =
  * actually click sits small underneath.
  */
 export default function MarketingFooter({ children }) {
-  const year = new Date().getFullYear()
+  // Read off the desk's clock rather than the reader's. A visitor east of
+  // Central turns the year over hours before the desk does, and the line
+  // underneath a notice of ownership is the wrong place to be a few hours
+  // ahead of the company it names.
+  const year = ctParts(new Date()).year
 
   return (
     <footer
