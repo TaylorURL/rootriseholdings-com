@@ -17,11 +17,13 @@ export const TermsPage = lazyRoute(() =>
 export const ContactPage = lazyRoute(() => import('./pages/marketing/ContactPage'))
 
 /**
- * The terminal's guard and its frame. Neither renders anywhere but under /app,
- * and the frame carries the sidebar, the header and the desk rail with it, so a
- * reader on a public page pays for none of it.
+ * The terminal's guard, its stores and its frame. None of them renders anywhere
+ * but under /app; the frame carries the sidebar, the header and the desk rail
+ * with it, and the stores carry the structure engine, the rule book and the
+ * journal, so a reader on a public page pays for none of it.
  */
 export const RequireAuth = lazyRoute(() => import('./components/auth/RequireAuth'))
+export const DeskProviders = lazyRoute(() => import('./components/layout/DeskProviders'))
 export const AppShell = lazyRoute(() => import('./components/layout/AppShell'))
 
 export const DashboardPage = lazyRoute(() => import('./pages/DashboardPage'))
