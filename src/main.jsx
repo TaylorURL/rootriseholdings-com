@@ -5,6 +5,20 @@ import { preloadRoute } from './lib/preloadRoute.js'
 import { reloadOnce } from './lib/lazyRoute.jsx'
 import './styles/index.css'
 
+// Hydration mismatches React itself recovers from -- an early transition into a
+// still-hydrating boundary, a subtree the client rebuilt, a text node an
+// extension mutated between the server write and the mount -- reach the page's
+// reporter through the default handler's console.error and land on the queue as
+// tickets a reader never saw. React 18 hands them to onRecoverableError, so
+// dropping the recovered codes there keeps the reader-facing errors on the
+// queue and takes the noise off it.
+const RECOVERED_HYDRATION_CODES = /Minified React error #(418|421|422|423|425)\b/
+function reportUnrecoverable(error) {
+  const message = String(error?.message ?? error ?? '')
+  if (RECOVERED_HYDRATION_CODES.test(message)) return
+  console.error(error)
+}
+
 /**
  * Public routes are written out at build time, so the element the app mounts
  * into already holds the page. Hydrating adopts that markup and leaves it on
@@ -34,7 +48,7 @@ const tree = (
 )
 
 function hydrate() {
-  hydrateRoot(container, tree)
+  hydrateRoot(container, tree, { onRecoverableError: reportUnrecoverable })
 }
 
 /**
