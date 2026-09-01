@@ -2,8 +2,6 @@ import { Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
-import { JournalProvider } from './context/JournalContext'
-import { SignalsProvider } from './context/SignalsContext'
 import MarketingLayout from './layouts/MarketingLayout'
 import ClickRipple from './components/ui/ClickRipple'
 import RoutePending from './components/layout/RoutePending'
@@ -16,6 +14,7 @@ import {
   TermsPage,
   ContactPage,
   RequireAuth,
+  DeskProviders,
   AppShell,
   DashboardPage,
   BriefingPage,
@@ -42,21 +41,6 @@ function ScrollToTop() {
 function RouteHead() {
   useRouteMeta()
   return null
-}
-
-/**
- * The journal and the signal sweep belong to the terminal alone. Both open on
- * mount - the sweep reads every instrument the desk follows and runs the
- * structure pass over each one, the journal re-reads its store on a timer - and
- * nothing on a public page reads a line of either, so they are opened by the
- * gated frame rather than by the tree above it.
- */
-function DeskProviders({ children }) {
-  return (
-    <JournalProvider>
-      <SignalsProvider>{children}</SignalsProvider>
-    </JournalProvider>
-  )
 }
 
 export function AppRoutes() {
