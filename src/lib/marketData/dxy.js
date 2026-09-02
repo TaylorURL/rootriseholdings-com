@@ -1,4 +1,4 @@
-import { fetchQuote, fetchSeries } from './chartFeed.js'
+import { fetchQuote } from './chartFeed.js'
 
 /**
  * The US Dollar Index as ICE publishes it, read straight off the feed rather
@@ -26,14 +26,4 @@ export async function fetchDxy(signal) {
     exchange: quote.exchange,
     at: quote.marketTime,
   }
-}
-
-/**
- * Index candles, for a structure read on the dollar itself.
- *
- * @param {'15m'|'1H'|'4H'|'Daily'} timeframe
- * @param {AbortSignal} [signal]
- */
-export function fetchDxySeries(timeframe, signal) {
-  return fetchSeries(DXY_SYMBOL, timeframe, signal)
 }

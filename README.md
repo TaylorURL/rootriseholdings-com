@@ -11,6 +11,9 @@
   A rule-enforced trade journal and a nine-section daily briefing,<br />
   behind a brand page. Structure is computed, never typed.
 </p>
+<p align="center">
+  <sub>Published for reading. Proprietary — see <a href="LICENSE.md">LICENSE.md</a>. Outside contributions are not accepted.</sub>
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-2026.36.19-8b5cf6?style=for-the-badge" alt="Version 2026.36.19" />
@@ -122,13 +125,14 @@ No secret is required to build or run: market data works keyless on the public f
 
 ```
 rootriseholdings-com/
-├── public/                    favicon + touch icon, OG card, robots.txt, sitemap.xml, llms.txt, web manifest, 404 page, self-hosted fonts
+├── public/                    favicon + touch icon, OG card, robots.txt, sitemap.xml, llms.txt, web manifest, 404 page, self-hosted fonts, the brand page's drawn plates under art/
 ├── docs/logo.svg              README mark — purple R, transparent
 ├── api/market.js              Function serving quotes and candles — OANDA when keyed, Yahoo otherwise
 ├── api/lib/spotMetal.js       Spot prints, and the basis that puts the COMEX series onto them
 ├── api/lib/quoteFallback.js   A second keyless venue, for the price when the chart feed refuses
 ├── api/lib/seriesFallback.js  The same venue's candle history, folded to the interval asked for
 ├── api/calendar.js            Function serving and caching the weekly economic calendar
+├── api/version.js             Function reporting the commit the deployment was built from
 ├── vercel.json                SPA rewrites + the calendar and market paths
 ├── scripts/prerender.js       Writes a real document for each public route after the SSR build
 ├── scripts/routeDocuments.js  Names the chunks the home document preloads, and makes preview resolve paths as the host does
@@ -160,9 +164,8 @@ rootriseholdings-com/
         ├── faq.data.js        The brand page's questions, and the FAQPage markup they source
         ├── lazyRoute.jsx      A lazy route that renders straight from a preloaded module
         ├── preloadRoute.js    What each written-out document needs in hand before hydration
-        ├── format.js          Price / percent / R formatting
-        ├── motion.js          Shared Framer Motion variants
-        ├── marketingMotion.js Brand-page motion variants
+        ├── format.js          Price / currency / R formatting
+        ├── marketingMotion.js The durations, easings and reveal variants every surface animates on
         ├── useRouteFocus.js   Moves focus to main on a route change
         └── cn.js              clsx + tailwind-merge helper
 ```

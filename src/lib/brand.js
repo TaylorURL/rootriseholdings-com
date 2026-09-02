@@ -97,9 +97,6 @@ export const NAV_GROUPS = [
   { key: 'contact', label: 'Contact', to: '/contact' },
 ]
 
-/** The flat list the mobile drawer and the footer read. */
-export const MARKETING_NAV = NAV_GROUPS.map(({ key, label, to }) => ({ key, label, to }))
-
 /** Footer links, one row beneath the statement. */
 export const FOOTER_LINKS = [
   { to: '/#method', label: 'Method' },

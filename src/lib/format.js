@@ -18,15 +18,6 @@ export function formatCurrency(value, { prefix = '$', decimals = 2, signed = fal
 
 /**
  * @param {number} value
- * @param {number} [decimals=2]
- */
-export function formatPercent(value, decimals = 2) {
-  const sign = value > 0 ? '+' : ''
-  return `${sign}${value.toFixed(decimals)}%`
-}
-
-/**
- * @param {number} value
  * @returns {string} Tailwind text color class
  */
 export function signedColor(value) {

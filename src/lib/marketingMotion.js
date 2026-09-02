@@ -39,7 +39,6 @@ export function useSafeReducedMotion() {
 export const EASE_NAV = [0.16, 1, 0.3, 1]
 
 export const EASE_OUT = [0.22, 1, 0.36, 1]
-export const EASE_IN_OUT = [0.77, 0, 0.175, 1]
 export const EASE_DRAWER = [0.32, 0.72, 0, 1]
 
 /** Duration scale (seconds). Cinematic for marketing reveals, crisp for UI. */
@@ -49,10 +48,6 @@ export const DURATION = {
   slow: 0.5,
   cinematic: 0.72,
 }
-
-export const SPRING_SOFT = { type: 'spring', stiffness: 120, damping: 18, mass: 0.9 }
-export const SPRING_SNAPPY = { type: 'spring', stiffness: 300, damping: 26 }
-export const SPRING_CURSOR = { stiffness: 150, damping: 18, mass: 0.6 }
 
 /** Default viewport config for scroll-reveal: fire once, slightly early. */
 export const REVEAL_VIEWPORT = { once: true, margin: '-80px' }
@@ -79,17 +74,6 @@ export function revealVariants(direction = 'up', distance = OFFSET, reduce = fal
   }
 }
 
-/** Classic fade-up reveal. */
-export const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
-}
-
-export const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.7, ease: EASE_OUT } },
-}
-
 export const blurUp = {
   hidden: { opacity: 0, y: 22, filter: 'blur(8px)' },
   visible: {
@@ -110,12 +94,6 @@ export const scaleIn = {
     y: 0,
     transition: { duration: DURATION.cinematic, ease: EASE_OUT },
   },
-}
-
-/** Parent that staggers its children's reveals. */
-export const staggerParent = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 }
 
 /**
