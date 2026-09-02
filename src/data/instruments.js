@@ -2,11 +2,27 @@
  * Instrument registry — everything the desk prices, and the smaller set it acts on.
  *
  * Three postures live here. The four primaries are the Smart-Money-Concepts
- * playbook's own: they are swept for structure, they are what a published call
- * can be about, and they are the charts the marketing pages draw. The FX watch
- * pairs are read for sentiment context and never executed. Everything else is
- * the rest of the book the desk holds — priced on the markets screen, charted,
- * and available to the journal, with no call published against it.
+ * playbook's own: they are what the marketing pages draw and what the briefing
+ * reads. The FX watch pairs are read for sentiment context and never executed.
+ * Everything else is the rest of the book the desk holds — priced on the
+ * markets screen, charted, and available to the journal.
+ *
+ * Whether a call is published against an instrument is a fourth thing, and it
+ * is `swept`. It used to be the same flag as `isPrimary`, which meant the desk
+ * silently published nothing on the FX majors it trades every day — structure
+ * was read, a setup formed, and no call was ever written down. They are
+ * separate now because they answer different questions: `isPrimary` is about
+ * what the site puts in front of a reader, `swept` is about what the engine
+ * costs.
+ *
+ * That cost is why the swept set is not simply everything tradeable. A sweep
+ * reads each swept instrument at its execution timeframe and both bias
+ * timeframes, so it is three feed reads per instrument per pass, and a pass
+ * runs every two minutes. Nine swept instruments is twenty-seven reads a pass;
+ * the whole book would be near a hundred, against upstreams that answer a
+ * datacentre address with a throttle. Adding a pair here is a real decision
+ * with a real price, which is why it is one flag on one line rather than a
+ * filter that quietly grows.
  *
  * `providerSymbol` is the ticker the market data layer requests. When the site
  * holds a market data key the market function answers these from OANDA's CFD
@@ -58,6 +74,7 @@ function fxPair(symbol, posture = {}) {
     tradeable: true,
     isPrimary: false,
     isWatchOnly: false,
+    swept: false,
     note: BOOK_NOTE,
     providerSymbol: `${symbol}=X`,
     tickSize: quote === 'JPY' ? 0.001 : 0.00001,
@@ -72,6 +89,7 @@ const watching = (note) => ({
   biasTimeframes: ['Daily'],
   tradeable: false,
   isWatchOnly: true,
+  swept: false,
   note,
 })
 
@@ -87,6 +105,7 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: true,
     isWatchOnly: false,
+    swept: true,
     note: 'Only trade in the direction of the higher-timeframe (Daily / 4H) bias.',
     providerSymbol: 'GC=F', // spot XAU_USD when keyed; the COMEX future rebased onto spot otherwise
     tickSize: 0.01,
@@ -103,6 +122,7 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: true,
     isWatchOnly: false,
+    swept: true,
     note: 'Intraday 15m execution; bias confirmed off 1H/4H structure.',
     providerSymbol: '^NDX', // Nasdaq 100 index
     tickSize: 0.1,
@@ -119,6 +139,7 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: true,
     isWatchOnly: false,
+    swept: true,
     note: '1H execution — cleaner structure than the other indices intraday.',
     providerSymbol: '^DJI', // Dow Jones Industrial Average
     tickSize: 1,
@@ -135,15 +156,16 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: true,
     isWatchOnly: false,
+    swept: true,
     note: 'SHORTS ONLY. Bias rule — never long this index.',
     providerSymbol: '^GSPC', // S&P 500 index
     tickSize: 0.1,
     moveLabel: 'pts',
   },
 
-  fxPair('EURUSD'),
-  fxPair('GBPUSD'),
-  fxPair('AUDUSD'),
+  fxPair('EURUSD', { swept: true }),
+  fxPair('GBPUSD', { swept: true }),
+  fxPair('AUDUSD', { swept: true }),
   fxPair('NZDUSD', watching('Monitor only — risk-sentiment proxy.')),
   // The public feed's own name for dollar-yen predates the six-letter form and
   // is the one both fallback venues answer to.
@@ -151,8 +173,8 @@ export const INSTRUMENTS = [
     ...watching('Monitor only — DXY corroboration, never executed as a primary.'),
     providerSymbol: 'JPY=X',
   }),
-  fxPair('USDCAD'),
-  fxPair('USDCHF'),
+  fxPair('USDCAD', { swept: true }),
+  fxPair('USDCHF', { swept: true }),
 
   fxPair('AUDCAD'),
   fxPair('AUDCHF'),
@@ -186,6 +208,7 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: false,
     isWatchOnly: false,
+    swept: false,
     note: BOOK_NOTE,
     providerSymbol: 'SI=F', // spot XAG_USD when keyed; the COMEX future rebased onto spot otherwise
     tickSize: 0.001,
@@ -202,6 +225,7 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: false,
     isWatchOnly: false,
+    swept: false,
     note: BOOK_NOTE,
     providerSymbol: 'CL=F', // WTI front month, which is what a CFD on it tracks
     tickSize: 0.001,
@@ -218,6 +242,7 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: false,
     isWatchOnly: false,
+    swept: false,
     note: BOOK_NOTE,
     providerSymbol: 'BTC-USD', // the dollar pair; a tether quote tracks it within its own peg
     tickSize: 0.01,
@@ -234,6 +259,7 @@ export const INSTRUMENTS = [
     tradeable: true,
     isPrimary: false,
     isWatchOnly: false,
+    swept: false,
     note: BOOK_NOTE,
     providerSymbol: 'XRP-USD', // the dollar pair; a tether quote tracks it within its own peg
     tickSize: 0.0001,
@@ -258,8 +284,13 @@ export function decimalsForInstrument(symbol) {
   return 5
 }
 
-/** The playbook's own instruments: swept for structure, and called on. */
+/** The playbook's own instruments: what the marketing pages and briefing show. */
 export const PRIMARY_INSTRUMENTS = INSTRUMENTS.filter((entry) => entry.isPrimary)
+
+/** What a sweep reads, and what a published call can be about. */
+export const SWEPT_INSTRUMENTS = INSTRUMENTS.filter(
+  (entry) => entry.swept && entry.tradeable && !entry.isWatchOnly
+)
 
 export const TRADED_INSTRUMENTS = INSTRUMENTS.filter((entry) => entry.tradeable)
 

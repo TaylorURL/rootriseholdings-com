@@ -119,12 +119,21 @@ const TTL_MS = 30_000
 
 let cached = null
 
-/** The venue formats prices for reading, with grouping separators in them. */
+/**
+ * The venue formats prices for reading, with grouping separators in them.
+ *
+ * Zero prices nothing the registry carries, and this service prints it where it
+ * has no figure rather than leaving the field out - silver's session extremes
+ * answer as 0.00 for hours at a stretch. It is a missing price, and read as a
+ * number it stops being one: a reader looking for the day's range finds a
+ * finite figure sitting there and never reaches for the range it would have
+ * measured itself.
+ */
 function toPrice(text) {
-  if (typeof text === 'number') return Number.isFinite(text) ? text : null
+  if (typeof text === 'number') return Number.isFinite(text) && text !== 0 ? text : null
   if (typeof text !== 'string') return null
   const value = Number(text.replace(/,/g, ''))
-  return Number.isFinite(value) ? value : null
+  return Number.isFinite(value) && value !== 0 ? value : null
 }
 
 /** Normalizes one of the venue's rows into the fields a quote needs. */

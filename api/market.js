@@ -6,9 +6,9 @@
  * folded into the chart shape - one token, held server-side, serves every
  * reader. Otherwise the public chart feed answers, and the metals are rebased
  * onto keyless spot prints so their levels are the ones a spot platform quotes.
- * When that feed is refusing, a second keyless venue answers in its place,
- * serving candle history where it has bars at the interval asked for and the
- * price alone where it does not.
+ * When that feed is refusing, or when a metal has no spot print to be put onto,
+ * a second keyless venue answers in its place, serving candle history where it
+ * has bars at the interval asked for and the price alone where it does not.
  *
  * A rewrite cannot do the public feed's job. That upstream refuses a request
  * that arrives with no browser user-agent, and a rewrite has no way to add
@@ -323,11 +323,21 @@ export default async function handler(request, response) {
     }
 
     if (payload?.chart?.result?.[0]) {
+      // A metal leaves here on the spot scale or it does not leave here at all.
+      // With no spot print to anchor a basis, the rebasing refuses rather than
+      // handing the front month over as though it were spot - tens of dollars
+      // of gold, with nothing on the payload marking the jump - and the request
+      // carries on to the venues below, which quote the metals as spot outright
+      // and so need no shift at all.
       const naming = SPOT_REBASED[symbol]
-      if (naming) payload = rebaseToSpot(payload, await readSpotMetal(naming.metal), naming)
-      rememberPayload(key, payload)
-      sendPayload(response, payload, { cache: cacheControlFor(url.searchParams) })
-      return
+      const served = naming
+        ? rebaseToSpot(payload, await readSpotMetal(naming.metal), naming)
+        : payload
+      if (served) {
+        rememberPayload(key, served)
+        sendPayload(response, served, { cache: cacheControlFor(url.searchParams) })
+        return
+      }
     }
 
     // The upstream refuses a datacentre address in stretches. A chart the desk

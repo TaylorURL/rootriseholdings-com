@@ -13,6 +13,22 @@
 /** Where the browser reaches the proxied chart endpoint. */
 export const MARKET_PATH = '/data/market'
 
+/**
+ * What the feed path is resolved against.
+ *
+ * A browser resolves `/data/market` against the page it is on and needs
+ * nothing here. The sweep runs on the host, where there is no page to resolve
+ * against, so it names the origin once at startup and every read underneath it
+ * - the same engine, the same registry, the same code - reaches the same
+ * function the browser would have.
+ */
+let feedOrigin = ''
+
+/** @param {string} origin - an absolute origin, or '' to resolve relatively */
+export function setFeedOrigin(origin) {
+  feedOrigin = origin ? origin.replace(/\/$/, '') : ''
+}
+
 /** Desk timeframe to the interval and lookback that fills a readable series. */
 const TIMEFRAME_QUERY = {
   '15m': { interval: '15m', range: '5d' },
@@ -89,7 +105,7 @@ export function foldCandles(candles, size) {
  *   is not served or the request fails
  */
 export async function fetchChart(providerSymbol, { interval, range }, signal) {
-  const url = `${MARKET_PATH}/${encodeURIComponent(providerSymbol)}?interval=${interval}&range=${range}`
+  const url = `${feedOrigin}${MARKET_PATH}/${encodeURIComponent(providerSymbol)}?interval=${interval}&range=${range}`
   try {
     const response = await fetch(url, { signal })
     if (!response.ok) return null

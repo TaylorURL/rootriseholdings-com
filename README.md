@@ -11,9 +11,12 @@
   A rule-enforced trade journal and a nine-section daily briefing,<br />
   behind a brand page. Structure is computed, never typed.
 </p>
+<p align="center">
+  <sub>Published for reading. Proprietary — see <a href="LICENSE.md">LICENSE.md</a>. Outside contributions are not accepted.</sub>
+</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.36.19-8b5cf6?style=for-the-badge" alt="Version 2026.36.19" />
+  <img src="https://img.shields.io/badge/version-2026.36.20-8b5cf6?style=for-the-badge" alt="Version 2026.36.20" />
   <a href="https://www.rootriseholdings.com"><img src="https://img.shields.io/badge/Live-Vercel-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Live site" /></a>
   <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
   <img src="https://img.shields.io/badge/Vite-6-7c3aed?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 6" />
@@ -48,13 +51,21 @@ A journal is only worth reading if it holds every trade the desk actually took, 
 
 ### The instruments
 
-`src/data/instruments.js` is the one list every surface reads, and each entry carries three things that decide how it behaves: whether it is a primary, whether the playbook executes it at all, and the ticker each feed knows it by. Three FX pairs — USDJPY, NZDUSD, NZDJPY — are watch-only, read for dollar and risk-sentiment context and never executed; the briefing's FX Watch section is exactly that set. Precision comes off each entry's tick size rather than a second list, so a yen cross prints to three decimals, every other pair to five, and silver to three, wherever the price appears.
+`src/data/instruments.js` is the one list every surface reads, and each entry carries four things that decide how it behaves: whether it is a primary, whether the playbook executes it at all, whether the sweep publishes calls against it, and the ticker each feed knows it by. Primary and swept are separate flags because they answer different questions — the first is what the marketing pages and briefing lead with, the second is what the engine reads and pays for. They were the same flag once, which meant the desk published nothing on the FX majors it trades every day: structure was read, setups formed, and no call was ever written down. Nine instruments are swept now — the four primaries and the five tradeable majors — at three feed reads each per pass, which is what keeps a two-minute sweep under the upstreams' throttles. Three FX pairs — USDJPY, NZDUSD, NZDJPY — are watch-only, read for dollar and risk-sentiment context and never executed; the briefing's FX Watch section is exactly that set. Precision comes off each entry's tick size rather than a second list, so a yen cross prints to three decimals, every other pair to five, and silver to three, wherever the price appears.
 
 ### The signals
 
 `src/lib/smc/signal.js` turns a structure read into an order ticket: side from the trend, entry at the midpoint of the OTE band, stop past the leg's origin, target at its extreme, with the reward-to-risk computed and the per-instrument side constraint obeyed — SP500 never returns a long. Where the levels do not describe a trade there is no call, and the panel says why.
 
-Every call is written down before the answer arrives and scored against the bars that follow (`src/lib/signals/model.js`): price must reach the entry before anything counts, then whichever of the stop and target the tape touches first is the result. A bar spanning both is read as the stop, because the order they printed inside it is not knowable. A call price never reached expires and sits outside the hit rate rather than counting either way. The sweep runs every two minutes whichever page is open, and a new call reaches the reader through the browser's own notification channel when they have switched alerts on — no mail provider, no account, no key.
+Each call records the venue it was read off, and is only ever scored against that venue again. The desk prices gold three ways — a broker's spot CFD, a COMEX future shifted onto spot, and a second venue's native spot print — and they do not agree to the dollar, or in the futures case to sixty-five of them. A call's target is the leg's extreme, a level price is already hovering at, while its stop sits an ATR buffer beyond a swing price has not traded through, so a scale error of a few cents reaches the target and not the stop: comparing frozen levels against a feed that changed underneath them manufactures wins specifically. When the venue has changed, the call stands until its own is answering again or until it expires.
+
+Every call is written down before the answer arrives and scored against the bars that follow (`src/lib/signals/model.js`): price must reach the entry before anything counts, then whichever of the stop and target the tape touches first is the result. A bar spanning both is read as the stop, because the order they printed inside it is not knowable — and the bar that fills a call cannot also pay it out, for the same reason and resolved the same way. A call price never reached expires and sits outside the hit rate rather than counting either way.
+
+The sweep runs on the host, not in the tab. `api/sweep` runs the same engine on a two-minute schedule, reads the calls still standing from `public.signals`, publishes what structure has newly produced, scores what the tape has answered, and writes both back — so a setup that fires at three in the morning is found, and every device reads one history rather than the one its own browser happened to record. The endpoint is idempotent: publishing is gated on the fingerprints already standing, scoring only moves a call forward, and a partial unique index makes that true even if two sweeps overlap. It answers nothing without `CRON_SECRET`, because one sweep costs a feed read of every swept instrument at every timeframe.
+
+The browser reads that record (`src/lib/signals/remote.js`) and separately re-reads structure every two minutes for the live panels, which is a view of this minute rather than a claim anyone is asked to trust later. A call new to the record reaches the reader through the browser's own notification channel when they have switched alerts on — no mail provider, no account, no key — and the record as it already stood on load is never announced, so opening the tab does not replay everything published while they were away.
+
+That channel only fires while a tab is open, which is the one case it is needed for, so the sweep announces from the host as well: set `SIGNAL_WEBHOOK_URL` and each newly published call is posted as an order ticket — side, instrument, grade, setup, timeframe, entry, stop, target, reward-to-risk — to anything that takes a JSON post, a Discord webhook included. It posts after the record is written, never before: a call that reached a phone but not the record is the one failure that cannot be recovered from. A pass announces at most four and says how many it held back, and a webhook that refuses or times out is reported in the sweep's own response rather than failing the pass that found the call.
 
 ### The journal
 
@@ -81,7 +92,7 @@ Yahoo turns away a datacentre address in stretches, and a crumb minted against o
 
 An answer that lands is then held two ways: the edge keeps serving it for a day while re-trying underneath, and the function holds the last payload each query answered with. When there is no stored copy either, a second keyless venue answers in its place. Its quote service prices in one request every instrument it carries, both metals quoted as spot outright, so the ticker, the instrument table, the dollar index and the FX watch keep real prices; its chart service carries bars at two granularities — five-minute over the last handful of sessions, daily over the last year or two — which are folded up to the interval the request asked for, so the charts and the structure engine keep drawing too. What the desk gets from it at the coarser timeframes is a shorter chart rather than an empty one: an hourly read spans days rather than a month. Where the venue has no bars to fold, a quote still answers the price query, and its candle arrays come back empty rather than carrying the single point it knows — a surface asking for structure is told there is none rather than handed a chart with one bar on it.
 
-One response serves both jobs: `meta` carries the price, the prior close and the session range, and the same payload's `timestamp` and `quote` arrays become the candles the structure engine reads. On the keyed feed the metals are spot `XAU_USD` and `XAG_USD`, the numbers a prop platform quotes, with the session rolled at OANDA's 17:00 New York day, and every FX pair translates from the public feed's six-letter ticker to OANDA's two-leg name without a list to keep in step. Yahoo carries no spot metal series at all — it prices them off their COMEX front months, which trade above spot on the carry, tens of dollars on gold, and that gap lands on every level the structure engine reads. So `api/lib/spotMetal.js` measures the basis against the series' own last close and subtracts it (`meta.spotBasis` records the figure). A constant shift leaves swings, breaks and retracement percentages identical while the prices attached to them become the ones a spot platform quotes. The venue badge names which of the three answered. No shape carries a four-hour interval, so 4H bars are folded from hourly ones.
+One response serves both jobs: `meta` carries the price, the prior close and the session range, and the same payload's `timestamp` and `quote` arrays become the candles the structure engine reads. On the keyed feed the metals are spot `XAU_USD` and `XAG_USD`, the numbers a prop platform quotes, with the session rolled at OANDA's 17:00 New York day, and every FX pair translates from the public feed's six-letter ticker to OANDA's two-leg name without a list to keep in step. Yahoo carries no spot metal series at all — it prices them off their COMEX front months, which trade above spot on the carry, tens of dollars on gold, and that gap lands on every level the structure engine reads. So `api/lib/spotMetal.js` measures the basis and subtracts it (`meta.spotBasis` records the figure actually applied, `meta.spotAnchor` the spot print it was measured against). The measurement is anchored on the last bar that has finished printing rather than the one still forming, whose close is just the live tick, and the resulting figure is held per metal for ten minutes rather than recomputed per request — so the five-minute quote a reader watches and the hourly series a signal is scored against are shifted by the same number. Recomputing it per request is what used to make them differ: a call's levels are frozen at publication and the series under them was re-anchored on every read, so the record booked targets that never traded. A measurement is eased in at a quarter weight, because the futures leg is a closed bar and the spot leg a print from another venue up to a minute old and the gap between them is noise against a quantity that moves on the cost of carry; a jump past half a percent of spot is a front-month roll rather than noise and is taken whole. Where no honest spot anchor exists the rebasing refuses outright rather than serving the raw future as though it were spot — the request falls through to the stored copy and then to the keyless venue, whose metals are quoted spot natively. A constant shift leaves swings, breaks and retracement percentages identical while the prices attached to them become the ones a spot platform quotes. The venue badge names which of the three answered. No shape carries a four-hour interval, so 4H bars are folded from hourly ones.
 
 The keyed feed is real-time; the fallback's index and FX quotes carry the usual exchange fifteen-minute delay, which the token exists to remove, and the Account screen says so. An instrument no feed can price is absent rather than approximated, and every surface renders that as unavailable. Nothing generates a number.
 
@@ -89,9 +100,11 @@ The keyed feed is real-time; the fallback's index and FX quotes carry the usual 
 
 Accounts are Supabase auth (`src/lib/supabase.js`, `src/context/AuthContext.jsx`). Sign-up takes an email and a password and returns a session straight away — there is no confirmation mail, magic link or recovery flow. The client persists and refreshes the session, so a reload keeps the reader signed in, and `RequireAuth` holds the frame until the stored session has been read rather than bouncing them to `/login`.
 
-The contact form is the only thing the site writes to Postgres. `public.contact_messages` takes an insert from an anonymous reader and nothing else: row-level security carries an insert-only policy, and select, update, delete and truncate are revoked outright from `anon` and `authenticated`, so the publishable key in the browser bundle can add a message and never read one back. The table, its policy and its grants are in `supabase/migrations/`.
+The published signal record lives in Postgres. `public.signals` is written by the sweep alone, under the service role: row-level security lets a signed-in reader select, and the grants are stated from zero rather than trimmed — nothing at all for `anon`, select alone for `authenticated` — so the record a subscriber is asked to judge the desk by is one none of its readers can edit. Stated from zero because a new table in this schema inherits default privileges granting both roles everything, and truncate is among them: it is not a row operation, so no policy stands in front of it, and revoking the three obvious writes would have left a reader able to empty the record. A partial unique index on the fingerprint of every call still standing is what makes publishing idempotent across overlapping sweeps.
 
-Journal data (trades, settings, prop firms, day plans) persists as one versioned record in browser `localStorage` via `src/lib/journal/store.js`, and the signal record as a second one via `src/lib/signals/store.js`, capped at 500 entries. Both take the store as a parameter rather than reaching for `localStorage` themselves, which is how the tests run them against a plain object and what any other `getItem`/`setItem` backend would slot into.
+The contact form is the only thing a reader's own browser writes to Postgres. `public.contact_messages` takes an insert from an anonymous reader and nothing else: row-level security carries an insert-only policy, and select, update, delete and truncate are revoked outright from `anon` and `authenticated`, so the publishable key in the browser bundle can add a message and never read one back. The table, its policy and its grants are in `supabase/migrations/`.
+
+Journal data (trades, settings, prop firms, day plans) persists as one versioned record in browser `localStorage` via `src/lib/journal/store.js`. What `src/lib/signals/store.js` still keeps there is the reader's alert preference and nothing else — that is genuinely about this device, where the record was not. Both take the store as a parameter rather than reaching for `localStorage` themselves, which is how the tests run them against a plain object and what any other `getItem`/`setItem` backend would slot into.
 
 ## Getting started
 
@@ -104,6 +117,8 @@ npm run preview  # preview the production build
 ```
 
 No secret is required to build or run: market data works keyless on the public feed, and the Supabase project the app ships against is compiled in. To point a build at a different project, copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. To serve real-time OANDA pricing, set `OANDA_API_TOKEN` (a free practice-account token) in the hosting environment — it is read by the market function, never compiled into the browser bundle.
+
+The sweep needs three more, set in the hosting environment and never in the bundle: `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` for the record it writes, and `CRON_SECRET` for the scheduler to prove itself with. `SIGNAL_WEBHOOK_URL` is optional and turns host-side alerts on. Without them `/api/sweep` answers 503 and 401 respectively rather than half-running, and the desk renders an empty record with the reason stated instead of a broken one.
 
 ## Routes
 
@@ -122,13 +137,14 @@ No secret is required to build or run: market data works keyless on the public f
 
 ```
 rootriseholdings-com/
-├── public/                    favicon + touch icon, OG card, robots.txt, sitemap.xml, llms.txt, web manifest, 404 page, self-hosted fonts
+├── public/                    favicon + touch icon, OG card, robots.txt, sitemap.xml, llms.txt, web manifest, 404 page, self-hosted fonts, the brand page's drawn plates under art/
 ├── docs/logo.svg              README mark — purple R, transparent
 ├── api/market.js              Function serving quotes and candles — OANDA when keyed, Yahoo otherwise
 ├── api/lib/spotMetal.js       Spot prints, and the basis that puts the COMEX series onto them
 ├── api/lib/quoteFallback.js   A second keyless venue, for the price when the chart feed refuses
 ├── api/lib/seriesFallback.js  The same venue's candle history, folded to the interval asked for
 ├── api/calendar.js            Function serving and caching the weekly economic calendar
+├── api/version.js             Function reporting the commit the deployment was built from
 ├── vercel.json                SPA rewrites + the calendar and market paths
 ├── scripts/prerender.js       Writes a real document for each public route after the SSR build
 ├── scripts/routeDocuments.js  Names the chunks the home document preloads, and makes preview resolve paths as the host does
@@ -160,9 +176,8 @@ rootriseholdings-com/
         ├── faq.data.js        The brand page's questions, and the FAQPage markup they source
         ├── lazyRoute.jsx      A lazy route that renders straight from a preloaded module
         ├── preloadRoute.js    What each written-out document needs in hand before hydration
-        ├── format.js          Price / percent / R formatting
-        ├── motion.js          Shared Framer Motion variants
-        ├── marketingMotion.js Brand-page motion variants
+        ├── format.js          Price / currency / R formatting
+        ├── marketingMotion.js The durations, easings and reveal variants every surface animates on
         ├── useRouteFocus.js   Moves focus to main on a route change
         └── cn.js              clsx + tailwind-merge helper
 ```

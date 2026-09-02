@@ -75,7 +75,7 @@ function AlertToggle() {
 }
 
 export default function SignalsPage() {
-  const { signals, reads, stats, sweeping, lastSweep, refresh } = useSignals()
+  const { signals, recordError, reads, stats, sweeping, lastSweep, refresh } = useSignals()
   const [tab, setTab] = useState('All')
 
   const standing = useMemo(
@@ -180,6 +180,23 @@ export default function SignalsPage() {
           </MarketingButton>
         }
       />
+
+      {/* An unreachable record is said out loud rather than drawn as an empty
+          one. A desk showing no calls because it cannot read the record looks
+          exactly like a desk showing no calls because there were none, and the
+          reader has no way to tell them apart unless it says so. */}
+      {recordError ? (
+        <div
+          role="status"
+          className="border-danger/40 bg-danger/5 rounded-lg border px-4 py-3 text-sm text-text"
+        >
+          <span className="font-medium">The published record is unreachable.</span>{' '}
+          <span className="text-text-muted">
+            Nothing below is the desk&rsquo;s history — it is what this page could load, which is
+            nothing. {recordError}
+          </span>
+        </div>
+      ) : null}
 
       {/* The record, as one strip. Four boxed tiles say the same thing and
           leave four borders between figures that belong on one line. */}
