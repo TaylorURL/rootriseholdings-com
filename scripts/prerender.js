@@ -68,6 +68,30 @@ function stylesheetFirst(html) {
   return next.replace(anchor[0], `${sheets.join('')}${anchor[0]}`)
 }
 
+/**
+ * Runs the bundle after the first frame rather than before it.
+ *
+ * Every route written here is a finished document, so its first frame owes
+ * the bundle nothing. A module script is deferred, which only means it waits
+ * for the parser: it runs the moment parsing ends, and on a slow phone that
+ * moment arrives before the browser has found a frame to paint the document
+ * in. The page then sits blank while the bundle adopts markup nobody has been
+ * shown, and the whole download is charged to the first paint.
+ *
+ * The entry keeps its early fetch, as a module preload, and loses its script
+ * tag. An inline module in its place asks for the bundle one frame after the
+ * first, which is the first frame the document can have been painted in and
+ * the earliest the bundle can no longer hold it back.
+ */
+function paintFirst(html) {
+  const entry = html.match(/^[ \t]*<script type="module" crossorigin src="([^"]+)"><\/script>\n/m)
+  if (!entry) throw new Error('prerender: the shell head carries no module entry')
+  const [tag, src] = entry
+  const preload = `    <link rel="modulepreload" crossorigin href="${src}" />\n`
+  const boot = `    <script type="module">requestAnimationFrame(() => requestAnimationFrame(() => import(${JSON.stringify(src)})))</script>\n`
+  return html.replace(tag, `${preload}${boot}`)
+}
+
 /** The home document alone carries the questions and preloads its own chunk. */
 function homeExtras(html) {
   const chunks = JSON.parse(fs.readFileSync(path.join(OUT, '.home-chunks.json'), 'utf8'))
@@ -145,7 +169,7 @@ console.log('wrote     shell.html for the routes that mount rather than hydrate'
 
 for (const route of PRERENDERED_ROUTES) {
   const markup = await render(route)
-  let html = head(shell, route).replace(
+  let html = paintFirst(head(shell, route)).replace(
     '<div id="root"></div>',
     `<div id="root">${rawText(markup)}</div>`
   )
