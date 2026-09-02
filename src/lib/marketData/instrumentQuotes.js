@@ -1,6 +1,5 @@
 import { startTransition, useEffect, useState } from 'react'
 import { INSTRUMENTS } from '../../data/instruments.js'
-import { fetchQuote } from './chartFeed.js'
 
 /**
  * Live quotes for the desk's instruments.
@@ -50,7 +49,7 @@ function publish(next) {
 }
 
 /** One instrument's registry fields with its live quote folded in. */
-async function readQuote(meta) {
+async function readQuote(fetchQuote, meta) {
   const quote = await fetchQuote(meta.providerSymbol)
   if (!quote) return null
   return {
@@ -82,7 +81,11 @@ async function readQuote(meta) {
 async function poll() {
   if (inFlight) return inFlight
   inFlight = (async () => {
-    const settled = await Promise.all(INSTRUMENTS.map(readQuote))
+    // The feed client travels with the first read rather than with the module
+    // that declares the stream, so a page that never opens the stream never
+    // fetches it.
+    const { fetchQuote } = await import('./chartFeed.js')
+    const settled = await Promise.all(INSTRUMENTS.map((meta) => readQuote(fetchQuote, meta)))
     const quotes = settled.filter(Boolean)
     publish({
       quotes,
@@ -115,12 +118,22 @@ function stop() {
  * Subscribes to the shared quote stream. The poll runs while at least one
  * component is listening and stops when the last one leaves.
  *
+ * A surface that is not ready for the stream holds it off with `enabled`. The
+ * marketing pages are written out at build time and use it to keep the first
+ * read of the whole registry out of hydration, where thirty-odd requests and
+ * the render they land on share a main thread with the page arriving on it. The
+ * desk mounts into an empty document and subscribes straight away, as it always
+ * has.
+ *
+ * @param {object} [options]
+ * @param {boolean} [options.enabled=true] - whether to open the stream yet
  * @returns {{quotes: Quote[], bySymbol: Record<string, Quote>, loading: boolean, at: number|null}}
  */
-export function useInstrumentQuotes() {
+export function useInstrumentQuotes({ enabled = true } = {}) {
   const [state, setState] = useState(snapshot)
 
   useEffect(() => {
+    if (!enabled) return undefined
     listeners.add(setState)
     start()
     setState(snapshot)
@@ -128,7 +141,7 @@ export function useInstrumentQuotes() {
       listeners.delete(setState)
       if (!listeners.size) stop()
     }
-  }, [])
+  }, [enabled])
 
   return state
 }
@@ -137,10 +150,11 @@ export function useInstrumentQuotes() {
  * One instrument off the shared stream.
  *
  * @param {string} symbol - the desk's instrument symbol, e.g. XAUUSD
+ * @param {object} [options] - as {@link useInstrumentQuotes}
  * @returns {Quote|null} null while the first read is in flight, or when the
  *   feed does not serve this instrument
  */
-export function useInstrumentQuote(symbol) {
-  const { bySymbol } = useInstrumentQuotes()
+export function useInstrumentQuote(symbol, options) {
+  const { bySymbol } = useInstrumentQuotes(options)
   return bySymbol[symbol] ?? null
 }

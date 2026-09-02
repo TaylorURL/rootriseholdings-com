@@ -7,7 +7,8 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { supabase } from '../lib/supabase'
+import { useLocation } from 'react-router-dom'
+import { hasStoredSession, isSessionKey, loadSupabase } from '../lib/supabase'
 
 /**
  * Account state for the terminal, backed by Supabase auth.
@@ -89,7 +90,7 @@ async function withTimeout(promise) {
  * answer mean something, so every decision below is taken on this rather than
  * on the stored session.
  */
-async function readIdentity() {
+async function readIdentity(supabase) {
   const { data, error } = await supabase.auth.getClaims()
   if (error || !data?.claims) return null
   return { id: data.claims.sub, email: data.claims.email ?? null }
@@ -98,41 +99,72 @@ async function readIdentity() {
 export function AuthProvider({ children }) {
   const [identity, setIdentity] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { pathname } = useLocation()
+
+  // The terminal and the sign-in page decide what they show on the answer, so
+  // they ask the provider for it whatever storage says. A public page spends it
+  // on one button's label, and a browser holding no session has already
+  // answered that.
+  const mustVerify = pathname === '/login' || pathname.startsWith('/app')
 
   useEffect(() => {
     let active = true
+    let unsubscribe = null
 
-    // On a warm session the claim read resolves inside the same commit that is
-    // hydrating the tree. An urgent update reaching a Suspense boundary that is
-    // still adopting the server markup leaves React no way to reconcile it, so
-    // the boundary is torn out and rebuilt on the client -- the page a reader is
-    // already looking at, thrown away and drawn again. A transition lets the
-    // hydration finish first, the same way ThemeContext defers its resolved flag.
-    const settle = () =>
-      readIdentity().then((next) => {
-        if (!active) return
-        startTransition(() => {
-          setIdentity(next)
-          setLoading(false)
+    // The provider's client is asked for rather than imported, so the two
+    // hundred kilobytes it weighs are never in the entry every reader has to run
+    // before the page can be adopted, and on a public page a reader who has
+    // never signed in does not fetch it at all.
+    const attach = async () => {
+      const supabase = await loadSupabase()
+      if (!active || unsubscribe) return
+
+      // On a warm session the claim read resolves inside the same commit that is
+      // hydrating the tree. An urgent update reaching a Suspense boundary that is
+      // still adopting the server markup leaves React no way to reconcile it, so
+      // the boundary is torn out and rebuilt on the client -- the page a reader is
+      // already looking at, thrown away and drawn again. A transition lets the
+      // hydration finish first, the same way ThemeContext defers its resolved flag.
+      const settle = () =>
+        readIdentity(supabase).then((next) => {
+          if (!active) return
+          startTransition(() => {
+            setIdentity(next)
+            setLoading(false)
+          })
         })
-      })
 
-    settle()
-
-    // Covers the whole lifecycle in one place: a token refreshing in the
-    // background, a sign-out in another tab, and the sign-in this tab just did.
-    // Each one re-reads the claims rather than trusting the event's payload.
-    const { data: subscription } = supabase.auth.onAuthStateChange(() => {
       settle()
-    })
+
+      // Covers the whole lifecycle in one place: a token refreshing in the
+      // background, a sign-out in another tab, and the sign-in this tab just did.
+      // Each one re-reads the claims rather than trusting the event's payload.
+      const { data: subscription } = supabase.auth.onAuthStateChange(() => {
+        settle()
+      })
+      unsubscribe = () => subscription.subscription.unsubscribe()
+    }
+
+    if (mustVerify || hasStoredSession()) attach()
+    else startTransition(() => setLoading(false))
+
+    // A sign-in in another tab writes the session to storage. Picking that up is
+    // what the provider's own listener did for a page that had loaded it, and it
+    // is what this does for a page that had no reason to.
+    const onStorage = (event) => {
+      if (isSessionKey(event.key)) attach()
+    }
+    window.addEventListener('storage', onStorage)
 
     return () => {
       active = false
-      subscription.subscription.unsubscribe()
+      window.removeEventListener('storage', onStorage)
+      if (unsubscribe) unsubscribe()
     }
-  }, [])
+  }, [mustVerify])
 
   const signIn = useCallback(async (email, password) => {
+    const supabase = await loadSupabase()
     const { data, error } = await withTimeout(supabase.auth.signInWithPassword({ email, password }))
     if (error) return { error: toMessage(error) }
     return { session: data?.session }
@@ -147,6 +179,7 @@ export function AuthProvider({ children }) {
    * it is reported as something to retry rather than as a failed sign-up.
    */
   const signUp = useCallback(async (email, password) => {
+    const supabase = await loadSupabase()
     const { data, error } = await withTimeout(supabase.auth.signUp({ email, password }))
     if (error) return { error: toMessage(error) }
     if (!data?.session) return { error: MESSAGES.no_session }
@@ -154,6 +187,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signOut = useCallback(async () => {
+    const supabase = await loadSupabase()
     await supabase.auth.signOut()
     setIdentity(null)
   }, [])

@@ -4,14 +4,20 @@ import LivePairChart from '../../charts/LivePairChartAsync'
 import { PRIMARY_INSTRUMENTS } from '../../../data/instruments'
 import { useInstrumentQuotes } from '../../../lib/marketData/instrumentQuotes'
 import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
+import { useArrived } from '../../../lib/arrival.js'
 
 /**
  * The four charts the desk actually carries, priced live. The count in the
  * header reports the feed rather than decorating it: with nothing arriving it
  * says so instead of showing a dot that means nothing.
+ *
+ * The stream is opened once the page is past its own arrival, which is what the
+ * count already waited on: it reads the feed rather than the clock, and the feed
+ * has never answered before then.
  */
 export default function LiveMarketSection({ ground = 'page' }) {
-  const { quotes } = useInstrumentQuotes()
+  const arrived = useArrived()
+  const { quotes } = useInstrumentQuotes({ enabled: arrived })
   const priced = quotes.length
 
   return (

@@ -1,4 +1,4 @@
-import { supabase } from '../supabase.js'
+import { loadSupabase } from '../supabase.js'
 import { fromRow } from './row.js'
 
 /**
@@ -28,6 +28,7 @@ export const PAGE_SIZE = 500
  */
 export async function fetchSignals({ signal } = {}) {
   try {
+    const supabase = await loadSupabase()
     const query = supabase
       .from('signals')
       .select('*')
