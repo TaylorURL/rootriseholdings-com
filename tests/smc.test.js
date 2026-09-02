@@ -121,6 +121,32 @@ test('a flat tape has no event and reads as Init', () => {
   assert.equal(read.barsSinceEvent, null)
 })
 
+/** A CHoCH Up that never gets a BOS behind it, then a collapse through the leg. */
+function unconfirmedThenReversedCandles() {
+  const candles = []
+  let price = 100
+  price = run(candles, price, 10, +1) // 110 — swing high forms behind the pullback
+  price = run(candles, price, 4, -1) // 106
+  price = run(candles, price, 8, +1) // 114 — breaks 110: CHoCH Up, no BOS after it
+  run(candles, price, 20, -1) // 94 — straight back down through the swing low
+  return candles
+}
+
+test('a trend started on a CHoCH reverses without needing a BOS first', () => {
+  const read = analyzeStructure(unconfirmedThenReversedCandles(), { atrLength: 5, atrMult: 2.0 })
+
+  // The break that ends an unconfirmed trend used to be consumed without being
+  // recorded, which left the trend standing while price walked away from it.
+  const types = read.events.map((event) => event.type)
+  assert.ok(types.includes('CHoCH Down'), `events were ${types.join(', ')}`)
+  assert.equal(read.trend, 'down')
+
+  // And the leg the read describes is the live one rather than the abandoned
+  // one: a leg price has retraced past is not a leg anything can be read off.
+  assert.equal(read.legInvalidated, false)
+  assert.ok(read.retracementPct <= 100)
+})
+
 test('an instrument reads on its own preset', () => {
   assert.equal(presetFor('XAUUSD').name, 'XAUUSD')
   assert.equal(presetFor('GOLD').name, 'XAUUSD')
