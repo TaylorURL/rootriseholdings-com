@@ -42,6 +42,34 @@ test('a missing extreme stays absent rather than becoming a number', () => {
   assert.equal(quote.price, 4629.8)
 })
 
+test('a zero extreme is a missing extreme rather than a price of zero', () => {
+  // Silver answers its session extremes as 0.00 for hours at a stretch, and a
+  // zero that reads as a number is a hole nothing downstream reaches past.
+  const quote = normalizeQuote(row({ symbol: 'XAG=', last: '64.0481', high: '0.00', low: '0.00' }))
+  assert.equal(quote.high, null)
+  assert.equal(quote.low, null)
+  assert.equal(quote.price, 64.0481)
+})
+
+test('a zero price is no quote at all', () => {
+  assert.equal(normalizeQuote(row({ last: '0.00' })), null)
+  assert.equal(normalizeQuote(row({ last: 0 })), null)
+})
+
+test('a payload with no extremes says so rather than saying zero', async () => {
+  const payload = toQuotePayload(normalizeQuote(row({ high: '0.00', low: '0.00' })), 'XAG=')
+  assert.equal(payload.chart.result[0].meta.regularMarketDayHigh, null)
+  const original = globalThis.fetch
+  globalThis.fetch = async () => ({ ok: true, json: async () => payload })
+  try {
+    const quote = await fetchQuote('SI=F')
+    assert.equal(quote.high, null)
+    assert.equal(quote.low, null)
+  } finally {
+    globalThis.fetch = original
+  }
+})
+
 test('every registry ticker the desk reads has a venue name', () => {
   for (const ticker of ['GC=F', '^GSPC', '^NDX', '^DJI', 'JPY=X', 'NZDUSD=X', 'NZDJPY=X']) {
     assert.ok(FALLBACK_SYMBOLS[ticker], `${ticker} is unmapped`)

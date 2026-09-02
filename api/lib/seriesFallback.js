@@ -135,6 +135,62 @@ function toNumber(text) {
 }
 
 /**
+ * A figure the venue meant as a price, or null where it had none to send.
+ *
+ * Zero prices nothing the registry carries, and the venue prints it where a
+ * figure is missing rather than leaving the field out - silver's session
+ * extremes come back as 0.00 for hours at a stretch. Read as a number it is a
+ * hole that travels: the payload's day range becomes zero to zero, and every
+ * reader downstream that would have measured the range off the bars instead
+ * finds a finite figure already there and stands down. Volume is parsed the
+ * other way round, because a bar that traded nothing really did trade nothing.
+ */
+function toPrice(text) {
+  const value = toNumber(text)
+  return value === 0 ? null : value
+}
+
+/** How many decimal places the venue printed a figure to. */
+function decimalsOf(text) {
+  const printed = String(text)
+  const point = printed.indexOf('.')
+  return point === -1 ? 0 : printed.length - point - 1
+}
+
+/**
+ * Whether the series ends with the venue's quote row rather than with a bar.
+ *
+ * Every response splices one on. It is the row the venue's own quote service
+ * answers with - the session's open, its extremes so far, the last price - and
+ * it arrives carrying the timestamp of the moment it was read rather than of
+ * any bar, at whatever interval was asked for. Nothing in the response marks
+ * it, and there is no field to ask for that would: the schema behind this query
+ * carries the bars and nothing else. So it reads as the newest candle and gets
+ * measured as one, and a candle holding a whole session's range touches nearly
+ * any level a published signal named - which is how a run of trades comes to be
+ * scored against a bar that never printed.
+ *
+ * Two things it cannot disguise give it away, and either one settles it. On the
+ * daily range it repeats the timestamp of the bar before it, because the day it
+ * summarises is the day that bar already covers, and no series holds two newest
+ * days. On every range it is printed the way a quote is rather than the way a
+ * bar is: the venue pads each bar it sends to one decimal width, held across
+ * the whole response, and passes the quote row through at whatever precision it
+ * happened to be carried at. A final bar that moves the clock forward and is
+ * printed like the bars around it is a real bar, and stays.
+ */
+function endsWithQuoteRow(entries) {
+  if (entries.length < 2) return false
+  const last = entries[entries.length - 1]
+  if (last.bar.time <= entries[entries.length - 2].bar.time) return true
+  const printed = new Set()
+  for (let index = 0; index < entries.length - 1; index += 1) {
+    for (const width of entries[index].decimals) printed.add(width)
+  }
+  return printed.size === 1 && last.decimals.some((width) => !printed.has(width))
+}
+
+/**
  * The venue's rows to bars, oldest first.
  *
  * A bar missing any of its four prices is dropped rather than patched: the
@@ -145,18 +201,24 @@ function toNumber(text) {
  * @returns {{time:number, open:number, high:number, low:number, close:number, volume:number}[]}
  */
 export function normalizeBars(rows) {
-  const bars = []
+  const entries = []
   for (const row of rows ?? []) {
     const time = tradeTimeToEpoch(row?.tradeTime)
-    const open = toNumber(row?.open)
-    const high = toNumber(row?.high)
-    const low = toNumber(row?.low)
-    const close = toNumber(row?.close)
+    const open = toPrice(row?.open)
+    const high = toPrice(row?.high)
+    const low = toPrice(row?.low)
+    const close = toPrice(row?.close)
     if (time == null || open == null || high == null || low == null || close == null) continue
-    bars.push({ time, open, high, low, close, volume: toNumber(row?.volume) ?? 0 })
+    entries.push({
+      bar: { time, open, high, low, close, volume: toNumber(row?.volume) ?? 0 },
+      decimals: [row.open, row.high, row.low, row.close].map(decimalsOf),
+    })
   }
-  bars.sort((one, other) => one.time - other.time)
-  return bars
+  // Sorting is stable, so a quote row that ties with the bar it restates keeps
+  // the position the venue sent it in, which is last.
+  entries.sort((one, other) => one.bar.time - other.bar.time)
+  if (endsWithQuoteRow(entries)) entries.pop()
+  return entries.map((entry) => entry.bar)
 }
 
 /**
@@ -236,6 +298,67 @@ async function fetchBars(venueSymbol, plan, key, fetcher) {
   }
 }
 
+const DAY_MS = 24 * 60 * MINUTE_MS
+
+/** Which New York day an instant falls on, counted from the epoch. */
+function newYorkDay(utcMs) {
+  return Math.floor((utcMs + offsetAt(utcMs)) / DAY_MS)
+}
+
+/**
+ * The session's extremes, measured across the bars sharing the last bar's day.
+ *
+ * The venue's own figure for this rides on the quote row, which is not a bar
+ * and is no longer in the series, so the range has to be measured rather than
+ * read. Leaving the field off instead would hand the job to the client, which
+ * measures across every bar the payload carries - and an intraday request
+ * carries the venue's whole multi-session window, so what the desk would read
+ * as today's range is the week's, several times wider than the session that
+ * actually printed. A range that wide is the same lie as a range eleven pips
+ * narrow, told in the other direction.
+ *
+ * The day is New York's, because that is the clock the venue stamps its bars
+ * in. A series that names no zone offers no other boundary to cut on.
+ */
+function sessionRange(bars) {
+  const last = bars[bars.length - 1]
+  const day = newYorkDay(last.time)
+  let high = last.high
+  let low = last.low
+  for (let index = bars.length - 2; index >= 0; index -= 1) {
+    if (newYorkDay(bars[index].time) !== day) break
+    high = Math.max(high, bars[index].high)
+    low = Math.min(low, bars[index].low)
+  }
+  return { high, low }
+}
+
+/**
+ * The close the session is measured against.
+ *
+ * Taken from the last bar of the previous New York day rather than the bar
+ * before the last one, which on an intraday series is five minutes ago. The
+ * desk reads this as the day's change - the figure a trader checks against
+ * their platform first - and five minutes of it is not the day's change by any
+ * reading. A daily series lands on the same answer either way, because there
+ * the bar before the last one is the previous day.
+ *
+ * When the payload holds only one day there is no previous close in it, and
+ * the field is left off rather than filled from the oldest bar to hand. The
+ * surfaces render an absent change as unavailable, which is true; a change
+ * measured against an arbitrary bar is not.
+ *
+ * @param {object[]} bars - oldest first
+ * @returns {number|null}
+ */
+function previousSessionClose(bars) {
+  const day = newYorkDay(bars[bars.length - 1].time)
+  for (let index = bars.length - 2; index >= 0; index -= 1) {
+    if (newYorkDay(bars[index].time) !== day) return bars[index].close
+  }
+  return null
+}
+
 /**
  * Folds a bar series into the chart shape every surface reads.
  *
@@ -250,7 +373,8 @@ async function fetchBars(venueSymbol, plan, key, fetcher) {
 export function toSeriesPayload(bars, symbol) {
   const venue = VENUE_NAMES[FALLBACK_SYMBOLS[symbol]] ?? null
   const last = bars[bars.length - 1]
-  const previous = bars[bars.length - 2]
+  const previousClose = previousSessionClose(bars)
+  const session = sessionRange(bars)
   return {
     chart: {
       result: [
@@ -261,9 +385,9 @@ export function toSeriesPayload(bars, symbol) {
             exchangeName: venue,
             fullExchangeName: venue,
             regularMarketPrice: last.close,
-            chartPreviousClose: previous.close,
-            regularMarketDayHigh: last.high,
-            regularMarketDayLow: last.low,
+            ...(previousClose == null ? {} : { chartPreviousClose: previousClose }),
+            regularMarketDayHigh: session.high,
+            regularMarketDayLow: session.low,
             regularMarketTime: Math.floor(last.time / 1000),
           },
           timestamp: bars.map((bar) => Math.floor(bar.time / 1000)),

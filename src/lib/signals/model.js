@@ -16,6 +16,14 @@
  * printed first, and a record that resolves its own ambiguities in its own
  * favour is worth nothing to anyone deciding whether to pay for it.
  *
+ * The bar that fills the call is read the same way and for the same reason. It
+ * can reach the target too, and whether it did so before or after touching the
+ * entry is exactly as unknowable as the stop-and-target case - so the target
+ * does not count on the fill bar. The stop still does. That asymmetry is the
+ * point: both unknowables are resolved against the call rather than one each
+ * way, because the alternative is a record that books a bar which spiked to
+ * the target and only then sold off through the entry as a win.
+ *
  * @typedef {object} Signal
  * @property {string} id
  * @property {string} symbol
@@ -29,6 +37,7 @@
  * @property {string} setup
  * @property {string[]} reasons
  * @property {number} emittedAt - epoch ms
+ * @property {string|null} venue - the feed the levels were minted against
  * @property {number|null} priceAtEmit
  * @property {'live'|'filled'|'target'|'stop'|'expired'} status
  * @property {number|null} filledAt
@@ -55,15 +64,31 @@ export function signalFingerprint({ symbol, timeframe, side, entry, stop, target
 }
 
 /**
+ * The venue is recorded because a level is only a number against the feed that
+ * produced it. The desk prices gold three ways - a broker's spot CFD, a COMEX
+ * future shifted onto spot, and a second venue's native spot print - and they
+ * do not agree to the dollar, or in the futures case to sixty-five of them. A
+ * call minted on one of them and scored against another is scored against
+ * prices that never existed on its own scale, which is how a target that never
+ * traded gets booked as a win.
+ *
  * @param {object} args
  * @param {string} args.symbol
  * @param {string} args.timeframe
  * @param {object} args.call - from {@link import('../smc/signal.js').deriveTradeCall}
  * @param {number|null} [args.price] - the live price when the call was published
+ * @param {string|null} [args.venue] - the feed the call was read off
  * @param {number} [args.now] - epoch ms
  * @returns {Signal}
  */
-export function createSignal({ symbol, timeframe, call, price = null, now = Date.now() }) {
+export function createSignal({
+  symbol,
+  timeframe,
+  call,
+  price = null,
+  venue = null,
+  now = Date.now(),
+}) {
   return {
     id: nextId(now),
     fingerprint: signalFingerprint({ symbol, timeframe, ...call }),
@@ -83,6 +108,7 @@ export function createSignal({ symbol, timeframe, call, price = null, now = Date
     alignment: call.alignment ?? null,
     reasons: [...(call.reasons ?? [])],
     emittedAt: now,
+    venue,
     priceAtEmit: price,
     status: 'live',
     filledAt: null,
@@ -114,14 +140,17 @@ export function resolveSignal(signal, candles, now = Date.now()) {
 
   for (const candle of candles) {
     if (candle.time <= signal.emittedAt) continue
+    let filledHere = false
     if (filledAt == null) {
       if (!touched(candle, signal.entry)) continue
       filledAt = candle.time
+      filledHere = true
     }
     // A bar spanning both sides is read as the stop, because the order the two
-    // printed inside it is not knowable from the bar.
+    // printed inside it is not knowable from the bar. The bar that filled the
+    // call cannot pay it out for the same reason.
     const hitStop = touched(candle, signal.stop)
-    const hitTarget = touched(candle, signal.target)
+    const hitTarget = !filledHere && touched(candle, signal.target)
     if (hitStop) {
       return { ...signal, status: 'stop', filledAt, resolvedAt: candle.time, realisedR: -1 }
     }

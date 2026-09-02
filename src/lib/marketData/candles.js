@@ -42,3 +42,16 @@ export async function fetchCandles({ providerSymbol, timeframe, signal }) {
   cache.set(key, { at: Date.now(), value: series })
   return series
 }
+
+/**
+ * Drops the cache so the next read goes to the feed.
+ *
+ * The cache is sized for a long-lived tab, where a series read minutes ago is
+ * still the series. A sweep on the host is the opposite case: the function
+ * instance it runs in may be warm from a pass two minutes ago, and serving
+ * that pass's bars would hand the engine exactly the staleness the sweep
+ * exists to avoid.
+ */
+export function clearCandleCache() {
+  cache.clear()
+}
