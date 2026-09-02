@@ -117,8 +117,3 @@ export function rebaseToSpot(payload, spot, { symbol, exchangeName } = {}) {
     },
   }
 }
-
-/** Drops the spot cache so the next read goes upstream. */
-export function clearSpotCache() {
-  cached.clear()
-}

@@ -42,8 +42,3 @@ export async function fetchCandles({ providerSymbol, timeframe, signal }) {
   cache.set(key, { at: Date.now(), value: series })
   return series
 }
-
-/** Drops the cache so the next read goes to the feed. */
-export function clearCandleCache() {
-  cache.clear()
-}

@@ -144,8 +144,3 @@ export function useInstrumentQuote(symbol) {
   const { bySymbol } = useInstrumentQuotes()
   return bySymbol[symbol] ?? null
 }
-
-/** Forces a read outside the poll interval, for a manual refresh control. */
-export function refreshQuotes() {
-  return poll()
-}

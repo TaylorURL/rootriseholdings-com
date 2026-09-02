@@ -1,4 +1,4 @@
-import { PRIMARY_INSTRUMENTS, INSTRUMENT_META } from '../../data/instruments.js'
+import { PRIMARY_INSTRUMENTS } from '../../data/instruments.js'
 import { fetchCandles } from '../marketData/candles.js'
 import { analyzeStructure } from '../smc/structure.js'
 import { presetFor } from '../smc/presets.js'
@@ -143,8 +143,3 @@ export async function sweep({ signals, abort, now = Date.now() }) {
 
 /** The instruments a sweep covers, for a surface that lists them. */
 export const PUBLISHED_INSTRUMENTS = PRIMARY_INSTRUMENTS.filter(isPublishable)
-
-/** @param {string} symbol @returns {object|undefined} */
-export function instrumentFor(symbol) {
-  return INSTRUMENT_META[symbol]
-}

@@ -8,22 +8,6 @@ export const AXIS_TICK = { fill: AXIS_COLOR, fontSize: 11, fontFamily: 'var(--ds
 export const GRID_STROKE = 'var(--ds-border)'
 export const CURSOR_STROKE = 'var(--ds-border-strong)'
 
-export const TREND_COLOR = {
-  positive: 'var(--ds-positive)',
-  negative: 'var(--ds-danger)',
-  neutral: 'var(--ds-accent-bright)',
-  accent: 'var(--ds-accent-bright)',
-}
-
-export function resolveTrend(trend, data, key = 'value') {
-  if (trend) return trend
-  if (!data || data.length < 2) return 'neutral'
-  const delta = data[data.length - 1][key] - data[0][key]
-  if (delta > 0) return 'positive'
-  if (delta < 0) return 'negative'
-  return 'neutral'
-}
-
 /** Standard draw-in animation timing for area/line/bar series. */
 export const DRAW = { isAnimationActive: true, animationDuration: 900, animationEasing: 'ease-out' }
 
