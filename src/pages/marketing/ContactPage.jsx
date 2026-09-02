@@ -6,7 +6,7 @@ import MarketingButton from '../../components/marketing/MarketingButton'
 import AuthField from '../../components/marketing/AuthField'
 import ClosingCta from '../../components/marketing/ClosingCta'
 import { COMPLIANCE } from '../../lib/brand'
-import { supabase } from '../../lib/supabase'
+import { loadSupabase } from '../../lib/supabase'
 
 const EMPTY = { name: '', email: '', message: '' }
 
@@ -43,6 +43,7 @@ export default function ContactPage() {
     }
     setStatus('sending')
     setFailure('')
+    const supabase = await loadSupabase()
     const { error } = await supabase.from('contact_messages').insert({
       name: values.name.trim(),
       email: values.email.trim(),

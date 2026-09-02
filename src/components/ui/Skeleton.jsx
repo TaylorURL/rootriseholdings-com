@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import { cn } from '../../lib/cn'
 
 /**
@@ -49,15 +50,30 @@ export function SkeletonText({ lines = 3, className }) {
 /**
  * Wraps a pending region so assistive tech is told the state once.
  *
+ * The element is forwarded because a placeholder is the only thing standing in
+ * the content's place, so a caller that has to watch where the content will go -
+ * whether it is near enough the viewport to be worth fetching, say - has nothing
+ * else to observe.
+ *
  * @param {object} props
  * @param {string} props.label - what is loading, e.g. "Loading the briefing"
  * @param {React.ReactNode} props.children
  * @param {string} [props.className]
  */
-export function SkeletonRegion({ label, children, className, ...rest }) {
+export const SkeletonRegion = forwardRef(function SkeletonRegion(
+  { label, children, className, ...rest },
+  ref
+) {
   return (
-    <div role="status" aria-busy="true" aria-label={label} className={className} {...rest}>
+    <div
+      ref={ref}
+      role="status"
+      aria-busy="true"
+      aria-label={label}
+      className={className}
+      {...rest}
+    >
       {children}
     </div>
   )
-}
+})
