@@ -217,30 +217,40 @@ export default function DailyBriefing({
           Next: {briefing.nextEditionLabel}
         </span>
         {/* Below the sm breakpoint the header has room for icons only, so the
-            labels drop out and the accessible name carries the action. */}
-        <button
-          type="button"
-          onClick={toggleAll}
-          aria-expanded={allOpen}
-          aria-label={allOpen ? 'Collapse all sections' : 'Expand all sections'}
-          className={CONTROL}
-        >
-          {allOpen ? (
-            <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
-          ) : (
-            <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
-          )}
-          <span className="hidden sm:inline">{allOpen ? 'Collapse All' : 'Expand All'}</span>
-        </button>
-        {onRefresh ? (
-          <button type="button" onClick={onRefresh} disabled={refreshing} className={CONTROL}>
-            <RefreshCw
-              className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')}
-              aria-hidden="true"
-            />
-            <span className="hidden sm:inline">{refreshing ? 'Refreshing' : 'Refresh'}</span>
+            labels drop out and the accessible name carries the action. The two
+            controls travel as one group, so a narrow header wraps the pair
+            onto the next line together rather than stranding one of them. */}
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleAll}
+            aria-expanded={allOpen}
+            aria-label={allOpen ? 'Collapse all sections' : 'Expand all sections'}
+            className={CONTROL}
+          >
+            {allOpen ? (
+              <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+            <span className="hidden sm:inline">{allOpen ? 'Collapse All' : 'Expand All'}</span>
           </button>
-        ) : null}
+          {onRefresh ? (
+            <button
+              type="button"
+              onClick={onRefresh}
+              disabled={refreshing}
+              aria-label={refreshing ? 'Refreshing the briefing' : 'Refresh the briefing'}
+              className={CONTROL}
+            >
+              <RefreshCw
+                className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')}
+                aria-hidden="true"
+              />
+              <span className="hidden sm:inline">{refreshing ? 'Refreshing' : 'Refresh'}</span>
+            </button>
+          ) : null}
+        </div>
       </header>
 
       <div className="content-enter border-b border-border px-4 py-4">

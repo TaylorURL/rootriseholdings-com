@@ -33,7 +33,14 @@ export default function ContactPage() {
 
   const onSubmit = async (event) => {
     event.preventDefault()
-    if (status === 'sending' || !validate()) return
+    if (status === 'sending') return
+    if (!validate()) {
+      // The message sits beside its field; focus goes there too, so a reader
+      // who pressed Send at the foot of the form is taken to what stopped it.
+      const form = event.currentTarget
+      requestAnimationFrame(() => form.querySelector('[aria-invalid="true"]')?.focus())
+      return
+    }
     setStatus('sending')
     setFailure('')
     const { error } = await supabase.from('contact_messages').insert({
@@ -114,7 +121,7 @@ export default function ContactPage() {
                   className="field h-auto resize-y py-3"
                   required
                 />
-                <p className="min-h-4 text-xs text-danger" role="alert">
+                <p className="min-h-4 pt-1 text-xs text-danger" role="alert">
                   {errors.message ?? ''}
                 </p>
               </div>
@@ -145,7 +152,7 @@ export default function ContactPage() {
                 to="/"
                 className="focus-ring rounded-sm text-[13px] text-text-muted transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text"
               >
-                Back to the desk
+                Back to Site
               </Link>
             </div>
           </form>

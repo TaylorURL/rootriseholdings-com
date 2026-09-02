@@ -93,7 +93,11 @@ export default function LoginPage() {
     setErrors(nextErrors)
     setTouched({ email: true, password: true })
     setFormError(null)
-    if (Object.keys(nextErrors).length > 0) return
+    if (Object.keys(nextErrors).length > 0) {
+      const form = event.currentTarget
+      requestAnimationFrame(() => form.querySelector('[aria-invalid="true"]')?.focus())
+      return
+    }
 
     setSubmitting(true)
     const action = mode === 'signup' ? signUp : signIn

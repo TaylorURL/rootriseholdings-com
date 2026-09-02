@@ -41,10 +41,10 @@ export function narrateInstrument({
   if (htf && htfTimeframe) {
     sentences.push(
       htfBias === 'Neutral'
-        ? `${htfTimeframe} structure is neutral — no stacked highs and lows in either direction.`
+        ? `${htfTimeframe} structure is neutral: no stacked highs and lows in either direction.`
         : `${htfTimeframe} bias is ${htfBias.toLowerCase()} from the swing sequence.`
     )
-    bullets.push(`${htfTimeframe} bias — ${htfBias}`)
+    bullets.push(`${htfTimeframe} bias: ${htfBias}`)
   }
 
   if (execution.lastEvent) {
@@ -52,7 +52,7 @@ export function narrateInstrument({
       `Last ${executionTimeframe} structure event: ${execution.lastEvent.type} at ${px(execution.lastEvent.level, decimals)}.`
     )
     bullets.push(
-      `${executionTimeframe} — ${execution.lastEvent.type} at ${px(execution.lastEvent.level, decimals)}`
+      `${executionTimeframe}: ${execution.lastEvent.type} at ${px(execution.lastEvent.level, decimals)}`
     )
   } else {
     sentences.push(`No confirmed ${executionTimeframe} structure break in the loaded window.`)
@@ -62,7 +62,7 @@ export function narrateInstrument({
     const trendWord = execution.trend === 'up' ? 'rally' : 'sell-off'
     if (execution.legInvalidated) {
       sentences.push(
-        `Price has retraced past 100% of the last ${trendWord} leg — the leg is invalidated.`
+        `Price has retraced past 100% of the last ${trendWord} leg, which invalidates the leg.`
       )
     } else if (execution.retracementPct < 0) {
       sentences.push(
@@ -76,19 +76,19 @@ export function narrateInstrument({
   }
 
   if (execution.oteZone && !execution.legInvalidated) {
-    const zoneText = `${px(Math.min(execution.oteZone.from, execution.oteZone.to), decimals)} – ${px(Math.max(execution.oteZone.from, execution.oteZone.to), decimals)}`
+    const zoneText = `${px(Math.min(execution.oteZone.from, execution.oteZone.to), decimals)} to ${px(Math.max(execution.oteZone.from, execution.oteZone.to), decimals)}`
     const zoneSide = execution.trend === 'up' ? 'long' : 'short'
     sentences.push(
       execution.inOte
         ? `Price is inside the ${zoneSide} OTE band (${Math.round(OTE_ZONE.from * 100)}–${Math.round(OTE_ZONE.to * 100)}%) at ${zoneText}.`
         : `The ${zoneSide} OTE band (${Math.round(OTE_ZONE.from * 100)}–${Math.round(OTE_ZONE.to * 100)}%) sits at ${zoneText}.`
     )
-    bullets.push(`OTE ${zoneSide} zone — ${zoneText}`)
+    bullets.push(`OTE ${zoneSide} zone: ${zoneText}`)
   }
 
   if (execution.premiumDiscount && execution.dealingRange) {
     sentences.push(
-      `Within the dealing range (${px(execution.dealingRange.low, decimals)} – ${px(execution.dealingRange.high, decimals)}) price sits in ${execution.premiumDiscount.toLowerCase()} at ${Math.round(execution.dealingRange.positionPct)}%.`
+      `Within the dealing range (${px(execution.dealingRange.low, decimals)} to ${px(execution.dealingRange.high, decimals)}) price sits in ${execution.premiumDiscount.toLowerCase()} at ${Math.round(execution.dealingRange.positionPct)}%.`
     )
   }
 
@@ -100,7 +100,7 @@ export function narrateInstrument({
     bullets.push(aligned ? 'Timeframes aligned' : 'Timeframes not aligned')
   }
   if (sideConstraint === 'SHORT') {
-    bullets.push('Playbook — shorts only')
+    bullets.push('Playbook: shorts only')
   }
 
   const tone =

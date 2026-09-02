@@ -140,7 +140,7 @@ export const INSTRUMENTS = [
     isPrimary: true,
     isWatchOnly: false,
     swept: true,
-    note: '1H execution — cleaner structure than the other indices intraday.',
+    note: '1H execution. Cleaner structure than the other indices intraday.',
     providerSymbol: '^DJI', // Dow Jones Industrial Average
     tickSize: 1,
     moveLabel: 'pts',
@@ -157,7 +157,7 @@ export const INSTRUMENTS = [
     isPrimary: true,
     isWatchOnly: false,
     swept: true,
-    note: 'SHORTS ONLY. Bias rule — never long this index.',
+    note: 'Shorts only. The playbook never longs this index.',
     providerSymbol: '^GSPC', // S&P 500 index
     tickSize: 0.1,
     moveLabel: 'pts',
@@ -166,11 +166,11 @@ export const INSTRUMENTS = [
   fxPair('EURUSD', { swept: true }),
   fxPair('GBPUSD', { swept: true }),
   fxPair('AUDUSD', { swept: true }),
-  fxPair('NZDUSD', watching('Monitor only — risk-sentiment proxy.')),
+  fxPair('NZDUSD', watching('Monitor only. A risk-sentiment proxy.')),
   // The public feed's own name for dollar-yen predates the six-letter form and
   // is the one both fallback venues answer to.
   fxPair('USDJPY', {
-    ...watching('Monitor only — DXY corroboration, never executed as a primary.'),
+    ...watching('Monitor only. Corroborates the dollar index and is never executed.'),
     providerSymbol: 'JPY=X',
   }),
   fxPair('USDCAD', { swept: true }),
@@ -195,7 +195,7 @@ export const INSTRUMENTS = [
   fxPair('GBPNZD'),
   fxPair('NZDCAD'),
   fxPair('NZDCHF'),
-  fxPair('NZDJPY', watching('Monitor only — composite risk barometer.')),
+  fxPair('NZDJPY', watching('Monitor only. A composite risk barometer.')),
 
   {
     symbol: 'XAGUSD',

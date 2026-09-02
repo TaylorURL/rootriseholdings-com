@@ -16,7 +16,14 @@ import {
   closedTrades,
 } from '../src/lib/journal/stats.js'
 import { evaluatePropFirm } from '../src/lib/journal/propFirm.js'
-import { loadJournal, saveJournal, emptyJournal, currentEquity } from '../src/lib/journal/store.js'
+import {
+  loadJournal,
+  saveJournal,
+  emptyJournal,
+  currentEquity,
+  serializeJournal,
+  parseJournal,
+} from '../src/lib/journal/store.js'
 
 const EQUITY = 100000
 
@@ -251,4 +258,55 @@ test('the store round-trips through an injected storage and derives equity', () 
   assert.equal(loaded.trades.length, 1)
   assert.equal(currentEquity(loaded), 50000 + loaded.trades[0].pnl)
   assert.equal(currentEquity(emptyJournal()), null)
+})
+
+test('a firm evaluation starts on its start date and watches the daily loss limit', () => {
+  const before = openAndClose({}, 2394, new Date('2026-08-20T19:30:00Z')) // -0.6R, -600
+  const after = openAndClose({}, 2409, new Date('2026-08-21T19:30:00Z')) // +0.9R, +900
+  const base = {
+    id: 'f',
+    firmName: 'Firm',
+    programName: '',
+    startingBalance: 50000,
+    profitTarget: 3000,
+    maxDrawdown: 2500,
+    drawdownType: 'static',
+    dailyLossLimit: 500,
+    consistencyCapPct: null,
+    minTradingDays: null,
+  }
+
+  const whole = evaluatePropFirm(base, [before, after], new Date('2026-08-20T21:00:00Z'))
+  assert.equal(whole.balance, 50300, 'both days count without a start date')
+  assert.equal(whole.dailyLossUsed, 600, 'today is the losing day')
+  assert.equal(whole.dailyLossBreached, true)
+  assert.equal(whole.worstDayBreached, true)
+
+  const since = evaluatePropFirm(
+    { ...base, startedAt: '2026-08-21' },
+    [before, after],
+    new Date('2026-08-21T21:00:00Z')
+  )
+  assert.equal(since.balance, 50900, "the day before the start is not the firm's")
+  assert.equal(since.daysTraded, 1)
+  assert.equal(since.dailyLossUsed, 0, 'a winning day spends none of the allowance')
+  assert.equal(since.dailyLossBreached, false)
+  assert.equal(since.worstDayBreached, false)
+})
+
+test('a backup round-trips through text and a foreign file is refused', () => {
+  const journal = emptyJournal()
+  journal.trades.push(openAndClose({}, 2430))
+  journal.settings.startingEquity = EQUITY
+  journal.plans['2026-08-21'] = { focus: 'Gold', notes: [], updatedAt: NOW.toISOString() }
+
+  const text = serializeJournal(journal, NOW)
+  assert.match(text, /"exportedAt": "2026-08-21T19:30:00.000Z"/)
+  const restored = parseJournal(text)
+  assert.deepEqual(restored, journal, 'the stamp is not carried back into the record')
+  assert.equal(currentEquity(restored), EQUITY + 3000)
+
+  assert.equal(parseJournal('not json'), null)
+  assert.equal(parseJournal('{"version":2,"trades":[]}'), null, 'a version this one cannot read')
+  assert.equal(parseJournal('{"version":1}'), null, 'a record with no trades is not a journal')
 })

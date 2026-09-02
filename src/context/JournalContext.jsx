@@ -60,7 +60,7 @@ export function JournalProvider({ children }) {
       if (!gate.allowed) {
         const blocks = gate.blocks.length
           ? gate.blocks
-          : gate.unacknowledged.map((departure) => `${departure.label} — ${departure.detail}`)
+          : gate.unacknowledged.map((departure) => `${departure.label}. ${departure.detail}`)
         return { ok: false, errors: {}, blocks }
       }
       const trade = createTrade(draft, { equity })
@@ -86,6 +86,26 @@ export function JournalProvider({ children }) {
       ...previous,
       trades: previous.trades.filter((trade) => trade.id !== tradeId),
     }))
+  }, [])
+
+  /**
+   * Puts a deleted trade back where it was. The record is kept in the order
+   * trades were opened, so the restored one is slotted by that stamp rather
+   * than appended, and a second restore of the same trade is a no-op.
+   */
+  const restoreTrade = useCallback((trade) => {
+    setJournal((previous) => {
+      if (previous.trades.some((entry) => entry.id === trade.id)) return previous
+      const trades = [...previous.trades, trade].sort(
+        (a, b) => new Date(a.openedAt) - new Date(b.openedAt)
+      )
+      return { ...previous, trades }
+    })
+  }, [])
+
+  /** Replaces the whole record, which is what restoring a backup file is. */
+  const replaceJournal = useCallback((record) => {
+    setJournal(record)
   }, [])
 
   const updateSettings = useCallback((patch) => {
@@ -137,6 +157,7 @@ export function JournalProvider({ children }) {
 
   const value = useMemo(
     () => ({
+      journal,
       trades: journal.trades,
       settings: journal.settings,
       equity,
@@ -145,6 +166,8 @@ export function JournalProvider({ children }) {
       addTrade,
       closeTrade,
       deleteTrade,
+      restoreTrade,
+      replaceJournal,
       updateSettings,
       saveFirm,
       removeFirm,
@@ -158,6 +181,8 @@ export function JournalProvider({ children }) {
       addTrade,
       closeTrade,
       deleteTrade,
+      restoreTrade,
+      replaceJournal,
       updateSettings,
       saveFirm,
       removeFirm,

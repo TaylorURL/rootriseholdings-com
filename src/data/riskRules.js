@@ -24,7 +24,7 @@ export const RISK_RULES_DESCRIPTIONS = [
   {
     id: 'daily-loss-limit',
     label: '0.5% daily loss limit',
-    detail: 'Conservative mode — if realized loss for the session hits 0.5%, the desk is done.',
+    detail: 'Conservative mode: once realized loss for the session reaches 0.5%, the desk is done.',
   },
   {
     id: 'min-rr',
@@ -56,7 +56,7 @@ export const SETUP_TYPES = [
     id: 'CHoCH',
     label: 'CHoCH',
     longLabel: 'Change of Character',
-    detail: 'First counter-trend structure break — earliest tell of a reversal.',
+    detail: 'The first counter-trend structure break, and the earliest tell of a reversal.',
   },
   {
     id: 'OTE',
