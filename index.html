@@ -309,12 +309,17 @@
               },
               function (error) {
                 if (error && error.name === 'AbortError') throw error
-                report(
-                  'network',
-                  (error && error.message ? error.message : String(error)) +
-                    ' fetching ' +
-                    target.split('?')[0]
-                )
+                // A bare 'Load failed' from Safari or 'Failed to fetch' from
+                // Chrome is the browser's network layer saying the request did
+                // not leave the device or the reply did not come back - a
+                // blocker on the way out, a page hidden mid-flight, a dropped
+                // connection - and it names no defect the site can fix. Every
+                // reader of this endpoint handles the null underneath it and
+                // the uptime monitor reads the same path from outside, so the
+                // report is swallowed for the same reason AbortError is.
+                var message = error && error.message ? error.message : String(error)
+                if (message === 'Load failed' || message === 'Failed to fetch') throw error
+                report('network', message + ' fetching ' + target.split('?')[0])
                 throw error
               }
             )
