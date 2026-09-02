@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import { titleForPath } from './navigation'
 import ThemeToggle from '../ui/ThemeToggle'
@@ -33,12 +33,16 @@ export default function Header({ onOpenDrawer }) {
 
       <ThemeToggle />
 
-      <span
-        className="accent-face flex h-8 w-8 shrink-0 items-center justify-center rounded-control font-mono text-xs font-semibold text-on-accent"
-        aria-hidden="true"
+      {/* The tile reads as the account, so it goes there: a mark in the bar's
+          last slot that answers nothing is a control a reader tries once and
+          learns not to trust. */}
+      <Link
+        to="/app/account"
+        aria-label="Account"
+        className="accent-face press focus-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-control font-mono text-xs font-semibold text-on-accent"
       >
         RR
-      </span>
+      </Link>
     </header>
   )
 }

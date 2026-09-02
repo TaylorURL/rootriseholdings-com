@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Eye } from 'lucide-react'
 import PageHeader from '../components/ui/PageHeader'
 import SegmentedTabs from '../components/ui/SegmentedTabs'
@@ -149,7 +149,7 @@ function StructureRead({ symbol, read, loading }) {
         </div>
         {analysis.lastEvent ? (
           <div className="flex items-center justify-between gap-4 border-b border-border py-2.5">
-            <dt className="text-text-faint">Last event</dt>
+            <dt className="text-text-faint">Last Event</dt>
             <dd className="font-mono tabular-nums text-text">
               {analysis.lastEvent.type}{' '}
               {formatInstrumentPrice(analysis.lastEvent.level, symbol, decimals)}
@@ -159,14 +159,14 @@ function StructureRead({ symbol, read, loading }) {
         {zone ? (
           <div className="flex items-center justify-between gap-4 border-b border-border py-2.5">
             <dt className="text-text-faint">
-              OTE zone ({analysis.trend === 'up' ? 'long' : 'short'})
+              OTE Zone ({analysis.trend === 'up' ? 'Long' : 'Short'})
             </dt>
             <dd className="font-mono tabular-nums text-text">{zone}</dd>
           </div>
         ) : null}
         {analysis.dealingRange ? (
           <div className="flex items-center justify-between gap-4 border-b border-border py-2.5">
-            <dt className="text-text-faint">Dealing range</dt>
+            <dt className="text-text-faint">Dealing Range</dt>
             <dd className="font-mono tabular-nums text-text">
               {formatInstrumentPrice(analysis.dealingRange.low, symbol, decimals)} to{' '}
               {formatInstrumentPrice(analysis.dealingRange.high, symbol, decimals)}
@@ -187,6 +187,17 @@ export default function MarketsPage() {
   const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
   const [symbol, setSymbol] = useState(OPENING_SYMBOL)
+  const detailRef = useRef(null)
+
+  // Below the large breakpoint the detail sits under the whole book, so a row
+  // picked at the top of the list would change something a screen or two
+  // down with nothing to show for it. The pick brings the detail up.
+  const select = (next) => {
+    setSymbol(next)
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   const book = useMemo(() => {
     const normalized = query.trim().toUpperCase()
@@ -223,7 +234,7 @@ export default function MarketsPage() {
             because they narrow this list and nothing else on the screen. */}
         <section
           aria-label="Instrument book"
-          className="panel-static flex min-h-0 flex-col overflow-hidden"
+          className="panel-static flex max-h-[26rem] min-h-0 flex-col overflow-hidden lg:max-h-none"
         >
           <div className="space-y-2.5 border-b border-border p-3">
             <SearchInput
@@ -252,7 +263,7 @@ export default function MarketsPage() {
                   key={entry.symbol}
                   entry={entry}
                   selected={entry.symbol === symbol}
-                  onSelect={setSymbol}
+                  onSelect={select}
                 />
               ))
             )}
@@ -265,8 +276,9 @@ export default function MarketsPage() {
 
         {/* The instrument. Its own scroll, so the book beside it stays put. */}
         <section
+          ref={detailRef}
           aria-label={`${meta?.displaySymbol ?? symbol} detail`}
-          className="ds-scroll panel-static min-h-0 overflow-y-auto"
+          className="ds-scroll panel-static min-h-0 scroll-mt-4 overflow-y-auto"
         >
           <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-border p-5">
             <div>
@@ -307,11 +319,11 @@ export default function MarketsPage() {
 
           <FigureRow className="rounded-none border-b border-border" min="7rem">
             <Figure
-              label="Session high"
+              label="Session High"
               value={quote?.high != null ? formatInstrumentPrice(quote.high, symbol) : NO_VALUE}
             />
             <Figure
-              label="Session low"
+              label="Session Low"
               value={quote?.low != null ? formatInstrumentPrice(quote.low, symbol) : NO_VALUE}
             />
             <Figure label="Class" value={meta?.category ?? NO_VALUE} />
@@ -344,7 +356,7 @@ export default function MarketsPage() {
 
           <div className="p-5">
             <h3 className="mb-4 font-mono text-[10px] uppercase tracking-label text-text-faint">
-              Structure read
+              Structure Read
             </h3>
             <StructureRead symbol={symbol} read={read} loading={loading} />
           </div>

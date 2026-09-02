@@ -27,6 +27,8 @@ const OUTCOME = {
   expired: { label: 'Expired', variant: 'neutral' },
 }
 
+const PANEL_HEAD = 'font-mono text-[10px] uppercase tracking-label text-text-faint'
+
 /**
  * The alert switch. The browser's permission prompt is bound to this click, so
  * a reader who never asks for alerts never meets it.
@@ -63,12 +65,12 @@ function AlertToggle() {
       </MarketingButton>
       <span className="text-xs text-text-faint">
         {pending
-          ? 'Waiting on the browser…'
+          ? 'Waiting on the browser.'
           : permission === 'denied'
             ? 'Notifications are blocked for this site in your browser settings.'
             : on
               ? 'A new call reaches you outside this tab.'
-              : 'Alerts are off — calls appear here only.'}
+              : 'Alerts are off. Calls appear here only.'}
       </span>
     </div>
   )
@@ -192,7 +194,7 @@ export default function SignalsPage() {
         >
           <span className="font-medium">The published record is unreachable.</span>{' '}
           <span className="text-text-muted">
-            Nothing below is the desk&rsquo;s history — it is what this page could load, which is
+            Nothing below is the desk&rsquo;s history. It is what this page could load, which is
             nothing. {recordError}
           </span>
         </div>
@@ -223,51 +225,95 @@ export default function SignalsPage() {
         <Figure
           label="Standing"
           value={stats.live + stats.open}
-          note={lastSweep ? `Swept ${formatCt(lastSweep)}` : 'Not swept yet'}
+          note={lastSweep ? `Read ${formatCt(lastSweep)}` : 'Not read yet'}
         />
       </FigureRow>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <section className="panel-static overflow-hidden">
-          <header className="flex items-center gap-3 border-b border-border px-4 py-2.5">
-            <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-              Standing Calls
-            </h2>
-            <div className="min-w-2 flex-1" />
-            <span className="text-[11px] text-text-faint">{standing.length} standing</span>
-          </header>
-          <div className="p-4">
-            {sweeping && standing.length === 0 ? (
-              <SkeletonRegion label="Reading structure across the desk" className="space-y-3">
-                <Skeleton className="h-28 rounded-card" />
-                <Skeleton className="h-28 rounded-card" />
-              </SkeletonRegion>
-            ) : (
-              <div className="grid gap-4 2xl:grid-cols-2">
-                {PUBLISHED_INSTRUMENTS.map((meta) => {
-                  const read = reads[meta.symbol]
-                  return (
+        <div className="space-y-5">
+          {/* What the record says is open: the calls a reader could be in, or
+              could still take. These are the host's, published and scored on
+              its clock, and the same on every device. */}
+          <section className="panel-static overflow-hidden">
+            <header className="flex items-center gap-3 border-b border-border px-4 py-2.5">
+              <h2 className={PANEL_HEAD}>Standing Calls</h2>
+              <div className="min-w-2 flex-1" />
+              <span className="text-[11px] text-text-faint">
+                {standing.length} standing on the record
+              </span>
+            </header>
+            <div className="p-4">
+              {standing.length === 0 ? (
+                <p className="py-6 text-center text-[13px] text-text-faint">
+                  {recordError
+                    ? 'The record could not be read.'
+                    : 'No call is standing. The sweep publishes one when structure produces it.'}
+                </p>
+              ) : (
+                <div className="grid gap-4 2xl:grid-cols-2">
+                  {standing.map((signal) => (
                     <TradeCallCard
-                      key={meta.symbol}
-                      symbol={meta.symbol}
-                      call={read?.call ?? null}
-                      standDown={
-                        read?.standDown ?? 'No structure read yet. The feed has not answered.'
-                      }
-                      timeframe={meta.primaryTimeframe}
+                      key={signal.id}
+                      symbol={signal.symbol}
+                      call={signal}
+                      timeframe={signal.timeframe}
+                      status={signal.status}
+                      publishedAt={signal.emittedAt}
                     />
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        </section>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* What structure says this minute, instrument by instrument. This is
+              a view rather than a claim: the record above is what the desk is
+              judged by, and this is what the next sweep will be reading. */}
+          <section className="panel-static overflow-hidden">
+            <header className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5">
+              <h2 className={PANEL_HEAD}>Live Read</h2>
+              <div className="min-w-2 flex-1" />
+              <span className="text-[11px] text-text-faint">
+                {sweeping
+                  ? 'Reading structure'
+                  : lastSweep
+                    ? `Read ${formatCt(lastSweep)} CT, every two minutes`
+                    : 'Not read yet'}
+              </span>
+            </header>
+            <div className="p-4">
+              {sweeping && Object.keys(reads).length === 0 ? (
+                <SkeletonRegion label="Reading structure across the desk" className="space-y-3">
+                  <Skeleton className="h-16 rounded-card" />
+                  <Skeleton className="h-16 rounded-card" />
+                  <Skeleton className="h-16 rounded-card" />
+                </SkeletonRegion>
+              ) : (
+                <div className="grid gap-3 2xl:grid-cols-2">
+                  {PUBLISHED_INSTRUMENTS.map((meta) => {
+                    const read = reads[meta.symbol]
+                    return (
+                      <TradeCallCard
+                        key={meta.symbol}
+                        symbol={meta.symbol}
+                        call={read?.call ?? null}
+                        standDown={
+                          read?.standDown ?? 'No structure read yet. The feed has not answered.'
+                        }
+                        timeframe={meta.primaryTimeframe}
+                        compact
+                      />
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
 
         <section className="panel-static h-fit overflow-hidden">
           <header className="border-b border-border px-4 py-2.5">
-            <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-              Alerts
-            </h2>
+            <h2 className={PANEL_HEAD}>Alerts</h2>
           </header>
           <div className="p-4">
             <AlertToggle />
@@ -279,9 +325,7 @@ export default function SignalsPage() {
           page, so what they act on is not a matter of inference. */}
       <section className="panel-static overflow-hidden">
         <header className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5">
-          <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-            Settled Record
-          </h2>
+          <h2 className={PANEL_HEAD}>Settled Record</h2>
           <div className="min-w-2 flex-1" />
           <SegmentedTabs
             options={HISTORY_TABS}
@@ -296,7 +340,11 @@ export default function SignalsPage() {
           rowKey={(row) => row.id}
           animate={false}
           caption="Settled signals"
-          empty="No settled signals yet. The record fills as calls resolve."
+          empty={
+            tab === 'All'
+              ? 'No settled signals yet. The record fills as calls resolve.'
+              : `No ${tab.toLowerCase()} signals on the record yet.`
+          }
         />
       </section>
     </div>

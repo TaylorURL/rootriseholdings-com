@@ -31,6 +31,26 @@ function defaultStorage() {
 }
 
 /**
+ * A parsed record in the shape this version holds, or null when it is not a
+ * journal this version can read. Missing settings and plans are filled from
+ * the empty journal, so a record written before a field existed still loads.
+ *
+ * @param {unknown} parsed
+ * @returns {object | null}
+ */
+function normalizeJournal(parsed) {
+  if (parsed?.version !== VERSION || !Array.isArray(parsed.trades)) return null
+  const base = emptyJournal()
+  return {
+    ...base,
+    version: VERSION,
+    trades: parsed.trades,
+    settings: { ...base.settings, ...(parsed.settings ?? {}) },
+    plans: parsed.plans ?? {},
+  }
+}
+
+/**
  * @param {Storage | null} [storage]
  * @returns {object} the persisted journal, or a fresh one when absent/corrupt
  */
@@ -39,17 +59,40 @@ export function loadJournal(storage = defaultStorage()) {
   try {
     const raw = storage.getItem(STORAGE_KEY)
     if (!raw) return emptyJournal()
-    const parsed = JSON.parse(raw)
-    if (parsed?.version !== VERSION || !Array.isArray(parsed.trades)) return emptyJournal()
-    const base = emptyJournal()
-    return {
-      ...base,
-      ...parsed,
-      settings: { ...base.settings, ...(parsed.settings ?? {}) },
-      plans: parsed.plans ?? {},
-    }
+    return normalizeJournal(JSON.parse(raw)) ?? emptyJournal()
   } catch {
     return emptyJournal()
+  }
+}
+
+/**
+ * The journal as a file a reader can keep.
+ *
+ * The record lives in one browser's storage and nowhere else, so the file is
+ * the only copy that survives a cleared profile or a new machine. It is the
+ * stored shape itself, stamped with when it was written, so a file restored
+ * later is exactly the journal that was saved.
+ *
+ * @param {object} journal
+ * @param {Date} [now]
+ * @returns {string} JSON text
+ */
+export function serializeJournal(journal, now = new Date()) {
+  return JSON.stringify({ ...journal, exportedAt: now.toISOString() }, null, 2)
+}
+
+/**
+ * Reads a journal back from a file's text.
+ *
+ * @param {string} text
+ * @returns {object | null} the journal, or null when the text is not one this
+ *   version can hold
+ */
+export function parseJournal(text) {
+  try {
+    return normalizeJournal(JSON.parse(text))
+  } catch {
+    return null
   }
 }
 

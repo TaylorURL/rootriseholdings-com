@@ -30,7 +30,7 @@ const TIMEOUT_MS = 4000
 const MAX_PER_SWEEP = 4
 
 function price(value, symbol) {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return '—'
+  if (typeof value !== 'number' || !Number.isFinite(value)) return '-'
   return value.toFixed(decimalsForInstrument(symbol))
 }
 
@@ -46,7 +46,7 @@ function price(value, symbol) {
 export function describeForPush(signal) {
   const meta = INSTRUMENT_META[signal.symbol]
   const name = meta?.displaySymbol ?? signal.symbol
-  const rr = Number.isFinite(signal.rewardToRisk) ? `${signal.rewardToRisk.toFixed(2)}:1` : '—'
+  const rr = Number.isFinite(signal.rewardToRisk) ? `${signal.rewardToRisk.toFixed(2)}:1` : '-'
   return [
     `${signal.side} ${name} · ${signal.grade} ${signal.setup} · ${signal.timeframe}`,
     `Entry ${price(signal.entry, signal.symbol)}`,
@@ -74,7 +74,7 @@ export async function announce(
   const going = published.slice(0, MAX_PER_SWEEP)
   const held = published.length - going.length
   const lines = going.map((signal) => describeForPush(signal))
-  if (held > 0) lines.push(`(${held} more not shown — the desk has the full record.)`)
+  if (held > 0) lines.push(`(${held} more not shown. The desk has the full record.)`)
 
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)

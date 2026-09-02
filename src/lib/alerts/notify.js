@@ -69,7 +69,7 @@ export function sendNotification({ title, body, tag }) {
 export function describeSignal(signal, displaySymbol, formatPrice) {
   const price = (value) => (formatPrice ? formatPrice(value) : String(value))
   return {
-    title: `${signal.side} ${displaySymbol} — ${signal.grade} ${signal.setup}`,
+    title: `${signal.side} ${displaySymbol} · ${signal.grade} ${signal.setup}`,
     body: `Entry ${price(signal.entry)} · Stop ${price(signal.stop)} · Target ${price(signal.target)} · ${signal.rewardToRisk.toFixed(2)}:1`,
     tag: signal.id,
   }

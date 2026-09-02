@@ -54,6 +54,7 @@ function PlanEditor({ plan, onSave, onClose }) {
             value={focus}
             onChange={(event) => setFocus(event.target.value)}
             placeholder="Which setups are on the hunt list today"
+            autoFocus
             className="field"
           />
         </div>

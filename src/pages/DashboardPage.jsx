@@ -78,7 +78,16 @@ export default function DashboardPage() {
               {equity != null ? formatCurrency(equity) : 'Not set'}
             </p>
             <p className="mt-1.5 text-[11px] text-text-faint">
-              {equity == null ? 'Set a starting equity under Account' : 'Starting plus realized'}
+              {equity == null ? (
+                <Link
+                  to="/app/account#equity"
+                  className="focus-ring rounded-sm text-accent transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-accent-bright"
+                >
+                  Set a starting equity under Account
+                </Link>
+              ) : (
+                'Starting plus realized'
+              )}
             </p>
           </div>
           <div>
