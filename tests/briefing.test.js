@@ -135,7 +135,7 @@ test('a calendar feed produces event bullets and a catalyst split', () => {
   const events = briefing.sections.find((section) => section.id === 'economic-events')
   assert.equal(events.unavailable, false)
   assert.equal(events.bullets.length, 2)
-  assert.match(events.bullets[0], /07:30 CT — USD CPI m\/m · cons\. 0\.2%/)
+  assert.match(events.bullets[0], /07:30 CT: USD CPI m\/m · cons\. 0\.2%/)
 
   // Catalysts only carry what is still ahead on the clock.
   const catalysts = briefing.sections.find((section) => section.id === 'catalysts')

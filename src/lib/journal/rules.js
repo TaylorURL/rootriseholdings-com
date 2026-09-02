@@ -59,7 +59,7 @@ export function computeDayState({ trades, equity, now = new Date() }) {
     lockouts.push({
       id: 'consecutive-loss-stop',
       label: 'Two consecutive losses',
-      detail: 'The hard stop is in force — the desk is closed for the day.',
+      detail: 'The hard stop is in force. The desk is closed for the day.',
     })
   }
 
@@ -114,13 +114,13 @@ export function evaluateTradeGate({ draft, plannedRR, dayState }) {
   const departures = []
 
   for (const lockout of dayState.lockouts) {
-    blocks.push(`${lockout.label} — ${lockout.detail}`)
+    blocks.push(`${lockout.label}. ${lockout.detail}`)
   }
 
   const riskPct = Number(draft.riskPct)
   if (Number.isFinite(riskPct) && riskPct > RISK_RULES.maxRiskPerTradePct) {
     blocks.push(
-      `Risk is ${riskPct.toFixed(2)}% — the cap is ${RISK_RULES.maxRiskPerTradePct}% per trade.`
+      `Risk is ${riskPct.toFixed(2)}%. The cap is ${RISK_RULES.maxRiskPerTradePct}% per trade.`
     )
   }
 
@@ -139,7 +139,7 @@ export function evaluateTradeGate({ draft, plannedRR, dayState }) {
   }
 
   if (dayState.consecutiveLosses === 1) {
-    warnings.push('One loss on the books — the next loss closes the day.')
+    warnings.push('One loss on the books. The next loss closes the day.')
   }
   const projectedLossPct =
     Math.abs(dayState.dailyLossPct) + (Number.isFinite(riskPct) ? riskPct : 0)

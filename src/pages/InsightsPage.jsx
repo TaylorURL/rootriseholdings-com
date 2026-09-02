@@ -13,6 +13,7 @@ import {
   CalendarClock,
   Award,
   ArrowRight,
+  OctagonAlert,
 } from 'lucide-react'
 import ChartInView from '../components/charts/ChartInView'
 import { AXIS_TICK } from '../components/charts/chartTheme'
@@ -27,6 +28,7 @@ import { INSTRUMENT_META, INSTRUMENTS } from '../data/instruments'
 import { closedTrades, summarize, breakdownBy, dailyPnl, streaks } from '../lib/journal/stats.js'
 import { evaluatePropFirm } from '../lib/journal/propFirm.js'
 import { cn } from '../lib/cn'
+import { formatCt } from '../lib/time.js'
 import { formatCurrency, formatR, signedColor, NO_VALUE } from '../lib/format'
 
 function DailyTooltip({ active, payload }) {
@@ -129,12 +131,20 @@ function ProgressTile({ label, icon: Icon, current, target, formatter, intent = 
 function PropFirmCard({ firm, trades }) {
   const snapshot = evaluatePropFirm(firm, trades)
   return (
-    <Card title="Prop Firm Tracking" action={<Badge variant="accent">{firm.programName}</Badge>}>
+    <Card
+      title="Prop Firm Tracking"
+      action={firm.programName ? <Badge variant="accent">{firm.programName}</Badge> : null}
+    >
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
             <p className="text-xs text-text-faint">Firm</p>
             <p className="font-medium text-text">{firm.firmName}</p>
+            {firm.startedAt ? (
+              <p className="text-xs text-text-faint">
+                Since {formatCt(`${firm.startedAt}T12:00:00-05:00`, { dateStyle: 'medium' })}
+              </p>
+            ) : null}
           </div>
           <div className="text-right">
             <p className="text-xs text-text-faint">Balance</p>
@@ -169,6 +179,26 @@ function PropFirmCard({ firm, trades }) {
             intent={snapshot.drawdownUsed / firm.maxDrawdown > 0.6 ? 'danger' : 'accent'}
             sub={`Floor ${formatCurrency(snapshot.drawdownFloor)} · buffer ${formatCurrency(snapshot.drawdownBuffer)}`}
           />
+          {firm.dailyLossLimit != null && (
+            <ProgressTile
+              label="Daily Loss Used"
+              icon={OctagonAlert}
+              current={snapshot.dailyLossUsed}
+              target={firm.dailyLossLimit}
+              intent={
+                snapshot.dailyLossBreached
+                  ? 'danger'
+                  : snapshot.dailyLossUsed / firm.dailyLossLimit > 0.6
+                    ? 'warning'
+                    : 'accent'
+              }
+              sub={
+                snapshot.worstDayBreached
+                  ? `Worst day ${formatCurrency(snapshot.worstDay, { signed: true })} broke the limit.`
+                  : `Today, against the firm's limit. Worst day ${formatCurrency(snapshot.worstDay, { signed: true })}.`
+              }
+            />
+          )}
           {firm.minTradingDays != null && (
             <ProgressTile
               label="Days Traded"
@@ -227,7 +257,7 @@ export default function InsightsPage() {
       breakdownBy(
         closed,
         (trade) => trade.setup,
-        SETUP_TYPES.map((entry) => ({ id: entry.id, label: `${entry.id} — ${entry.longLabel}` }))
+        SETUP_TYPES.map((entry) => ({ id: entry.id, label: `${entry.id} (${entry.longLabel})` }))
       ),
     [closed]
   )

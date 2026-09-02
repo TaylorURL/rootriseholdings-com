@@ -4,6 +4,7 @@ import { Figure, FigureRow } from './Figures'
 import { cn } from '../../lib/cn'
 import { decimalsForInstrument, INSTRUMENT_META } from '../../data/instruments'
 import { formatInstrumentPrice } from '../../lib/format'
+import { formatCt } from '../../lib/time'
 
 /**
  * A structure read stated as an order ticket.
@@ -15,6 +16,15 @@ import { formatInstrumentPrice } from '../../lib/format'
  * Every call shown here already cleared the desk's gate, so the card states
  * the scores it cleared on rather than warning about the ones it did not.
  */
+
+/** What a call from the record is doing, as a badge. */
+const STATUS = {
+  live: { label: 'Live', variant: 'warning' },
+  filled: { label: 'In Trade', variant: 'buy' },
+  target: { label: 'Target', variant: 'positive' },
+  stop: { label: 'Stopped', variant: 'danger' },
+  expired: { label: 'Expired', variant: 'neutral' },
+}
 
 function Level({ label, value, symbol, tone }) {
   return (
@@ -29,20 +39,37 @@ function Level({ label, value, symbol, tone }) {
 /**
  * @param {object} props
  * @param {string} props.symbol
- * @param {object|null} props.call - from deriveTradeCall
+ * @param {object|null} props.call - from deriveTradeCall, or a signal off the record
  * @param {string|null} [props.standDown] - why there is no call
  * @param {string} [props.timeframe]
+ * @param {string} [props.status] - a record status, drawn as a badge
+ * @param {number} [props.publishedAt] - epoch ms, drawn beside the status
  * @param {boolean} [props.compact] - drop the reasons list
  */
-export default function TradeCallCard({ symbol, call, standDown, timeframe, compact = false }) {
+export default function TradeCallCard({
+  symbol,
+  call,
+  standDown,
+  timeframe,
+  status,
+  publishedAt,
+  compact = false,
+}) {
   const meta = INSTRUMENT_META[symbol]
+  const name = meta?.displaySymbol ?? symbol
 
   if (!call) {
+    // The instrument is named on the card, because nine of these in a row
+    // with nothing but a reason on each is nine cards nobody can tell apart.
     return (
       <div className="rounded-control border border-dashed border-border px-4 py-3">
-        <div className="flex items-center gap-2">
-          <MinusCircle className="h-4 w-4 text-text-faint" aria-hidden="true" />
-          <span className="text-sm font-medium text-text">No Trade</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-mono text-sm font-semibold text-text">{name}</span>
+          {timeframe && <Badge variant="neutral">{timeframe}</Badge>}
+          <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-text-faint">
+            <MinusCircle className="h-3.5 w-3.5" aria-hidden="true" />
+            No Trade
+          </span>
         </div>
         <p className="mt-1.5 text-xs leading-relaxed text-text-muted">
           {standDown ?? 'The read does not describe a trade right now.'}
@@ -53,6 +80,8 @@ export default function TradeCallCard({ symbol, call, standDown, timeframe, comp
 
   const isBuy = call.side === 'BUY'
   const Arrow = isBuy ? ArrowUpRight : ArrowDownRight
+  const badge = status ? STATUS[status] : null
+  const reasons = call.reasons ?? []
 
   return (
     <div
@@ -71,7 +100,7 @@ export default function TradeCallCard({ symbol, call, standDown, timeframe, comp
           )}
         >
           <Arrow className="h-4 w-4" aria-hidden="true" />
-          {call.side} {meta?.displaySymbol ?? symbol}
+          {call.side} {name}
         </span>
         <Badge variant="neutral">{call.grade}</Badge>
         <Badge variant="neutral">{call.setup}</Badge>
@@ -80,7 +109,11 @@ export default function TradeCallCard({ symbol, call, standDown, timeframe, comp
             {Math.round(call.continuation)} / {Math.round(call.reversalRisk)}
           </Badge>
         )}
-        {timeframe && <span className="ml-auto text-xs text-text-faint">{timeframe}</span>}
+        {badge && <Badge variant={badge.variant}>{badge.label}</Badge>}
+        <span className="ml-auto text-xs text-text-faint">
+          {publishedAt ? `${formatCt(publishedAt)} CT` : timeframe}
+          {publishedAt && timeframe ? ` · ${timeframe}` : ''}
+        </span>
       </div>
 
       <FigureRow className="mt-3" min="5.25rem">
@@ -97,9 +130,9 @@ export default function TradeCallCard({ symbol, call, standDown, timeframe, comp
         </p>
       )}
 
-      {!compact && call.reasons.length > 0 && (
+      {!compact && reasons.length > 0 && (
         <ul className="mt-3 space-y-1 border-t border-border pt-3">
-          {call.reasons.map((reason) => (
+          {reasons.map((reason) => (
             <li key={reason} className="text-xs leading-relaxed text-text-muted">
               {reason}
             </li>

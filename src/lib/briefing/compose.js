@@ -101,7 +101,7 @@ export function composeBriefing({ now, resources, dayState, plan }) {
           : `${highImpact.length} high-impact ${highImpact.length === 1 ? 'release' : 'releases'} today. Stand aside through each print and let the reaction candle close before re-engaging.`,
     bullets: highImpact.map(
       (event) =>
-        `${event.timeCt} CT — ${event.country} ${event.title}${event.forecast ? ` · cons. ${event.forecast}` : ''}`
+        `${event.timeCt} CT: ${event.country} ${event.title}${event.forecast ? ` · cons. ${event.forecast}` : ''}`
     ),
     tone: highImpact.length > 0 ? 'mixed' : 'neutral',
   })
@@ -139,7 +139,7 @@ export function composeBriefing({ now, resources, dayState, plan }) {
     unavailable: !gold,
     body: gold?.body ?? NO_FEED_BODY,
     bullets: [
-      ...(goldQuote ? [`Last — ${formatLevel(goldQuote.price, 'XAUUSD')}`] : []),
+      ...(goldQuote ? [`Last ${formatLevel(goldQuote.price, 'XAUUSD')}`] : []),
       ...(gold?.bullets ?? []),
     ],
     tone: gold?.tone ?? 'neutral',
@@ -161,7 +161,7 @@ export function composeBriefing({ now, resources, dayState, plan }) {
             .map((entry) => `${entry.narration.label}: ${entry.narration.body}`)
             .join(' '),
     bullets: indexNarrations.flatMap((entry) =>
-      entry.narration.bullets.slice(0, 2).map((bullet) => `${entry.narration.label} — ${bullet}`)
+      entry.narration.bullets.slice(0, 2).map((bullet) => `${entry.narration.label} ${bullet}`)
     ),
     tone: indexNarrations.every((entry) => entry.narration.tone === 'bearish')
       ? 'bearish'
@@ -177,7 +177,7 @@ export function composeBriefing({ now, resources, dayState, plan }) {
     id: 'fx-watch',
     number: 5,
     title: 'FX Watch',
-    subtitle: 'USDJPY · NZDUSD · NZDJPY — context, never primaries',
+    subtitle: 'USDJPY · NZDUSD · NZDJPY, read for context and never traded',
     unavailable: fxQuotes.length === 0,
     body:
       fxQuotes.length === 0
@@ -191,7 +191,7 @@ export function composeBriefing({ now, resources, dayState, plan }) {
     bullets:
       fxQuotes.length === 0
         ? []
-        : WATCH_ONLY_INSTRUMENTS.map((meta) => `${meta.displaySymbol} — ${meta.note}`),
+        : WATCH_ONLY_INSTRUMENTS.map((meta) => `${meta.displaySymbol}: ${meta.note}`),
     tone: 'neutral',
   })
 
@@ -207,8 +207,8 @@ export function composeBriefing({ now, resources, dayState, plan }) {
         ? 'Calendar feed unreachable right now.'
         : upcomingHigh.length === 0
           ? 'No high-impact catalysts left on the clock today.'
-          : `${upcomingHigh.length} high-impact ${upcomingHigh.length === 1 ? 'event' : 'events'} still ahead — the levels above can be repriced through each one.`,
-    bullets: upcomingHigh.map((event) => `${event.timeCt} CT — ${event.country} ${event.title}`),
+          : `${upcomingHigh.length} high-impact ${upcomingHigh.length === 1 ? 'event' : 'events'} still ahead. The levels above can be repriced through each one.`,
+    bullets: upcomingHigh.map((event) => `${event.timeCt} CT: ${event.country} ${event.title}`),
     tone: upcomingHigh.length > 0 ? 'mixed' : 'neutral',
   })
 
@@ -282,8 +282,8 @@ export function composeBriefing({ now, resources, dayState, plan }) {
   }
   if (dxy != null) summaryParts.push(`DXY ${dxy.value.toFixed(2)}`)
   const deskLine = dayState.locked
-    ? `Desk locked — ${dayState.lockouts.map((lockout) => lockout.label.toLowerCase()).join(', ')}.`
-    : `Desk open — ${dayState.aPlusLeft} A+ ${dayState.aPlusLeft === 1 ? 'slot' : 'slots'} and ${dayState.dailyLossBudgetLeftPct.toFixed(2)}% loss budget left.`
+    ? `Desk locked: ${dayState.lockouts.map((lockout) => lockout.label.toLowerCase()).join(', ')}.`
+    : `Desk open: ${dayState.aPlusLeft} A+ ${dayState.aPlusLeft === 1 ? 'slot' : 'slots'} and ${dayState.dailyLossBudgetLeftPct.toFixed(2)}% loss budget left.`
   sections.push({
     id: 'rules',
     number: 9,

@@ -105,7 +105,7 @@ export default function Sidebar({ onNavigate }) {
 
       <div className="space-y-px border-t border-border p-3">
         <p className="px-3 pb-2 text-[11px] leading-relaxed text-text-faint">
-          Journal data stays in this browser&rsquo;s storage. The daily stop is{' '}
+          The journal lives in this browser. Keep a copy under Account. The daily stop is{' '}
           {RISK_RULES.dailyLossLimitPct}%.
         </p>
         <Link to="/" onClick={onNavigate} className={cn(ROW, QUIET)}>
