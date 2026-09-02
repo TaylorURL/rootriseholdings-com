@@ -1,9 +1,14 @@
-import { Suspense, lazy, useState, useEffect } from 'react'
+import { Suspense, forwardRef, lazy, useEffect, useRef, useState } from 'react'
+import { useInView } from 'framer-motion'
 import { Skeleton, SkeletonRegion } from '../ui/Skeleton'
 import { ChunkErrorBoundary, withChunkReload } from '../../lib/lazyRoute.jsx'
 import { useInstrumentQuote } from '../../lib/marketData/instrumentQuotes.js'
+import { useArrived } from '../../lib/arrival.js'
 
 const LivePairChart = lazy(withChunkReload(() => import('../ui/LivePairChart')))
+
+/** How far outside the viewport a slot counts as worth fetching the engine for. */
+const NEAR_VIEWPORT = '200px'
 
 /**
  * The placeholder, as its own component so the document written at build time
@@ -15,9 +20,14 @@ const LivePairChart = lazy(withChunkReload(() => import('../ui/LivePairChart')))
  * placeholder carries one too. Standing in for the plot alone left the rest of
  * the page to move down by the header's height when the quote landed.
  */
-function ChartPending({ height, compact }) {
+const ChartPending = forwardRef(function ChartPending({ height, compact }, ref) {
   return (
-    <SkeletonRegion label="Loading the chart" className="flex flex-col" data-chart-slot="">
+    <SkeletonRegion
+      ref={ref}
+      label="Loading the chart"
+      className="flex flex-col"
+      data-chart-slot=""
+    >
       {!compact && (
         <div className="mb-3 flex items-center justify-between">
           <Skeleton className="h-7 w-24 rounded-sm" />
@@ -27,7 +37,7 @@ function ChartPending({ height, compact }) {
       <Skeleton className="w-full" style={{ height }} />
     </SkeletonRegion>
   )
-}
+})
 
 /**
  * The sparkline with its chart engine fetched at the point of use, so a reader
@@ -40,11 +50,15 @@ function ChartPending({ height, compact }) {
  * state update landing on a Suspense boundary whose server markup was a direct
  * render rather than a fallback.
  *
- * The engine is asked for when the instrument's quote lands, because the plot
- * has nothing to draw before then and the fetch would otherwise sit on the
- * network beside the code the first screen is waiting on. An instrument the
- * feed does not serve never gets a quote, so an idle callback carries it to the
- * chart's own unavailable state rather than leaving it on a placeholder.
+ * Three things have to be true before the engine is asked for, and each answers
+ * a different question. The page has to be past its own arrival, because a
+ * hundred kilobytes of chart code parsed inside hydration is paid for by the
+ * reader waiting on the screen it is not drawing. The slot has to be near the
+ * viewport, because a chart nobody has scrolled to draws nothing either way.
+ * And the instrument has to have a price, because the plot has nothing to draw
+ * before then. An instrument the feed does not serve never gets one, so an idle
+ * callback carries it to the chart's own unavailable state rather than leaving
+ * it on a placeholder forever.
  *
  * @param {object} props
  * @param {string} props.symbol - instrument symbol, e.g. 'XAUUSD'
@@ -52,19 +66,25 @@ function ChartPending({ height, compact }) {
  * @param {boolean} [props.compact=false] - the chart hides its header row
  */
 export default function LivePairChartAsync({ symbol, height = 220, compact = false, ...rest }) {
-  const priced = Boolean(useInstrumentQuote(symbol))
-  const [idle, setIdle] = useState(false)
+  const slotRef = useRef(null)
+  const near = useInView(slotRef, { once: true, margin: NEAR_VIEWPORT })
+  const arrived = useArrived()
+  const ready = arrived && near
+  const priced = Boolean(useInstrumentQuote(symbol, { enabled: ready }))
+  const [unpriced, setUnpriced] = useState(false)
 
   useEffect(() => {
+    if (!ready) return undefined
     if (typeof window.requestIdleCallback === 'function') {
-      const handle = window.requestIdleCallback(() => setIdle(true), { timeout: 4_000 })
+      const handle = window.requestIdleCallback(() => setUnpriced(true), { timeout: 4_000 })
       return () => window.cancelIdleCallback(handle)
     }
-    const handle = window.setTimeout(() => setIdle(true), 1_200)
+    const handle = window.setTimeout(() => setUnpriced(true), 1_200)
     return () => window.clearTimeout(handle)
-  }, [])
+  }, [ready])
 
-  if (!priced && !idle) return <ChartPending height={height} compact={compact} />
+  if (!ready || (!priced && !unpriced))
+    return <ChartPending ref={slotRef} height={height} compact={compact} />
 
   return (
     <ChunkErrorBoundary>
