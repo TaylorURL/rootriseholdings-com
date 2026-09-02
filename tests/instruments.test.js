@@ -5,6 +5,7 @@ import {
   INSTRUMENT_CATEGORIES,
   INSTRUMENT_META,
   PRIMARY_INSTRUMENTS,
+  SWEPT_INSTRUMENTS,
   TRADED_INSTRUMENTS,
   WATCH_ONLY_INSTRUMENTS,
   decimalsForInstrument,
@@ -43,7 +44,7 @@ test('a pair is executed or watched, never neither and never both', () => {
   assert.equal(TRADED_INSTRUMENTS.length + WATCH_ONLY_INSTRUMENTS.length, INSTRUMENTS.length)
 })
 
-test('the calls stay on the playbook instruments', () => {
+test('the playbook instruments are the four the site leads with', () => {
   assert.deepEqual(
     PRIMARY_INSTRUMENTS.map((entry) => entry.symbol),
     ['XAUUSD', 'NAS100', 'US30', 'SP500']
@@ -51,10 +52,35 @@ test('the calls stay on the playbook instruments', () => {
   for (const entry of PRIMARY_INSTRUMENTS) {
     assert.ok(entry.tradeable && !entry.isWatchOnly, `${entry.symbol} cannot carry a call`)
   }
+})
+
+/**
+ * The swept set is deliberately wider than the primaries and deliberately
+ * narrower than the book. Wider because the desk trades the FX majors and used
+ * to publish nothing on them; narrower because every entry costs three feed
+ * reads on every pass. Both halves are asserted so neither drifts unnoticed.
+ */
+test('a call can be published on the primaries and the FX majors', () => {
+  assert.deepEqual(
+    SWEPT_INSTRUMENTS.map((entry) => entry.symbol),
+    ['XAUUSD', 'NAS100', 'US30', 'SP500', 'EURUSD', 'GBPUSD', 'AUDUSD', 'USDCAD', 'USDCHF']
+  )
   assert.deepEqual(
     PUBLISHED_INSTRUMENTS.map((entry) => entry.symbol),
-    PRIMARY_INSTRUMENTS.map((entry) => entry.symbol)
+    SWEPT_INSTRUMENTS.map((entry) => entry.symbol)
   )
+})
+
+test('nothing watch-only is ever swept', () => {
+  for (const entry of WATCH_ONLY_INSTRUMENTS) {
+    assert.equal(entry.swept, false, `${entry.symbol} is watch-only and cannot carry a call`)
+  }
+})
+
+test('every primary is swept', () => {
+  for (const entry of PRIMARY_INSTRUMENTS) {
+    assert.equal(entry.swept, true, `${entry.symbol} leads the site and must carry calls`)
+  }
 })
 
 test('the keyed feed names every instrument it carries, and no crypto', () => {

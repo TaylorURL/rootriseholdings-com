@@ -51,3 +51,6 @@ id_ed25519
 # Windows folder metadata
 desktop.ini
 .vercel
+
+# Supabase CLI scratch
+supabase/.temp/

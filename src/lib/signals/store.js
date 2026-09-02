@@ -1,20 +1,18 @@
 /**
- * Signal persistence.
+ * What this browser remembers about the record.
  *
- * The record is the product: a subscriber deciding whether the calls are worth
- * paying for reads the history, not the live panel. So it outlives the session
- * it was written in, and it is capped rather than unbounded - a browser store
- * that grows forever eventually throws, and the throw lands on the write that
- * would have recorded a loss.
+ * Which is now only the reader's own alert preference. The record itself moved
+ * to the host, because a history kept in local storage said something
+ * different on every device and vanished when the browser was cleared - and a
+ * record that cannot be reproduced is not evidence anyone should pay for.
+ * A notification toggle is the opposite: it is genuinely about this device,
+ * and it belongs here.
  */
 const STORAGE_KEY = 'rr.signals.v1'
-const VERSION = 1
+const VERSION = 2
 
-/** How many settled signals the record keeps before dropping the oldest. */
-export const HISTORY_LIMIT = 500
-
-export function emptyLedger() {
-  return { version: VERSION, signals: [], preferences: { notifications: false } }
+export function defaultPreferences() {
+  return { notifications: false }
 }
 
 function defaultStorage() {
@@ -27,41 +25,31 @@ function defaultStorage() {
 
 /**
  * @param {Storage | null} [storage]
- * @returns {object} the stored ledger, or a fresh one when absent or corrupt
+ * @returns {{notifications: boolean}}
  */
-export function loadSignals(storage = defaultStorage()) {
-  if (!storage) return emptyLedger()
+export function loadPreferences(storage = defaultStorage()) {
+  if (!storage) return defaultPreferences()
   try {
     const raw = storage.getItem(STORAGE_KEY)
-    if (!raw) return emptyLedger()
+    if (!raw) return defaultPreferences()
     const parsed = JSON.parse(raw)
-    if (parsed?.version !== VERSION || !Array.isArray(parsed.signals)) return emptyLedger()
-    const base = emptyLedger()
-    return {
-      ...base,
-      ...parsed,
-      preferences: { ...base.preferences, ...(parsed.preferences ?? {}) },
-    }
+    // Version 1 stored the whole ledger here. Its preferences are still worth
+    // carrying across; its signals are not, and are left behind deliberately.
+    return { ...defaultPreferences(), ...(parsed?.preferences ?? {}) }
   } catch {
-    return emptyLedger()
+    return defaultPreferences()
   }
 }
 
 /**
- * @param {object} ledger
+ * @param {{notifications: boolean}} preferences
  * @param {Storage | null} [storage]
  */
-export function saveSignals(ledger, storage = defaultStorage()) {
+export function savePreferences(preferences, storage = defaultStorage()) {
   if (!storage) return
   try {
-    storage.setItem(STORAGE_KEY, JSON.stringify(ledger))
+    storage.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, preferences }))
   } catch {
     // Quota or private-mode failure — the in-memory copy still drives the UI.
   }
-}
-
-/** Newest first, trimmed to the limit. */
-export function trimHistory(signals, limit = HISTORY_LIMIT) {
-  if (signals.length <= limit) return signals
-  return [...signals].sort((a, b) => b.emittedAt - a.emittedAt).slice(0, limit)
 }

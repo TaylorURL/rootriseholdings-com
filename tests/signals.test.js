@@ -8,6 +8,7 @@ import {
   signalFingerprint,
   signalStats,
 } from '../src/lib/signals/model.js'
+import { scoreAgainstRead } from '../src/lib/signals/engine.js'
 
 /**
  * A structure read that clears every gate, in the shape analyzeStructure
@@ -222,6 +223,34 @@ test('a bar spanning both sides is read as the stop', () => {
   assert.equal(resolved.status, 'stop')
 })
 
+/**
+ * The bar that fills a call reaches the target as often as any other, and
+ * whether it did so before or after touching the entry is not knowable from
+ * the bar. Booking it as a win is the same unknowable the stop-and-target case
+ * refuses to resolve in the call's favour, so it is refused here too - the
+ * call is filled and still standing, and the next bar can pay it.
+ */
+test('the bar that fills a call cannot also pay it out', () => {
+  const filled = resolveSignal(signal(), [bar(1000, 100, 121)], 3000)
+  assert.equal(filled.status, 'filled')
+  assert.equal(filled.filledAt, 1000)
+  assert.equal(filled.realisedR, null)
+})
+
+test('the bar after the fill can pay it out', () => {
+  const published = signal()
+  const resolved = resolveSignal(published, [bar(1000, 100, 121), bar(2000, 118, 121)], 3000)
+  assert.equal(resolved.status, 'target')
+  assert.equal(resolved.filledAt, 1000)
+  assert.equal(resolved.realisedR, published.rewardToRisk)
+})
+
+test('the bar that fills a call can still stop it out', () => {
+  const resolved = resolveSignal(signal(), [bar(1000, 95, 121)], 3000)
+  assert.equal(resolved.status, 'stop')
+  assert.equal(resolved.realisedR, -1)
+})
+
 test('a signal price never reached expires rather than counting as a loss', () => {
   const resolved = resolveSignal(signal(), [bar(1000, 115, 119)], 49 * 3_600_000)
   assert.equal(resolved.status, 'expired')
@@ -254,4 +283,50 @@ test('the hit rate counts only the calls that became trades', () => {
   assert.equal(stats.expired, 1)
   assert.equal(stats.live, 1)
   assert.equal(stats.totalR, 1)
+})
+
+/**
+ * The venue guard, at the level the sweep applies it.
+ *
+ * The desk prices gold three ways and they do not agree - a COMEX future
+ * shifted onto spot sits tens of dollars from a broker's spot CFD. When the
+ * feed underneath a standing call changes, its frozen levels are being
+ * compared against a different scale, and because a call's target is a level
+ * price already hovers at while its stop sits an ATR beyond a swing, the error
+ * manufactures wins far more readily than losses. So the call waits.
+ */
+test('a call is not scored against a venue it was not minted on', () => {
+  const { call } = deriveTradeCall({ execution: read(), alignment: 'Full Bull' })
+  const minted = createSignal({
+    symbol: 'XAUUSD',
+    timeframe: '1H',
+    call,
+    price: 118,
+    venue: 'OANDA',
+    now: 0,
+  })
+  assert.equal(minted.venue, 'OANDA')
+
+  const candles = [bar(1000, 104, 108), bar(2000, 118, 121)]
+  const ownVenue = scoreAgainstRead(minted, { candles, exchange: 'OANDA' }, 3000)
+  assert.equal(ownVenue.status, 'target')
+
+  const elsewhere = scoreAgainstRead(minted, { candles, exchange: 'Spot (COMEX basis)' }, 3000)
+  assert.equal(elsewhere.status, 'live')
+  assert.equal(elsewhere.realisedR, null)
+})
+
+test('a call minted without a venue is scored by whatever answered', () => {
+  const { call } = deriveTradeCall({ execution: read(), alignment: 'Full Bull' })
+  const minted = createSignal({ symbol: 'XAUUSD', timeframe: '1H', call, price: 118, now: 0 })
+  assert.equal(minted.venue, null)
+  const candles = [bar(1000, 104, 108), bar(2000, 118, 121)]
+  assert.equal(scoreAgainstRead(minted, { candles, exchange: 'Anything' }, 3000).status, 'target')
+})
+
+test('a call whose instrument went unread this pass is left alone', () => {
+  const { call } = deriveTradeCall({ execution: read(), alignment: 'Full Bull' })
+  const minted = createSignal({ symbol: 'XAUUSD', timeframe: '1H', call, price: 118, now: 0 })
+  assert.deepEqual(scoreAgainstRead(minted, null, 3000), minted)
+  assert.deepEqual(scoreAgainstRead(minted, { candles: null, exchange: 'OANDA' }, 3000), minted)
 })

@@ -1,4 +1,4 @@
-import { PRIMARY_INSTRUMENTS } from '../../data/instruments.js'
+import { SWEPT_INSTRUMENTS } from '../../data/instruments.js'
 import { fetchCandles } from '../marketData/candles.js'
 import { analyzeStructure } from '../smc/structure.js'
 import { presetFor } from '../smc/presets.js'
@@ -15,10 +15,11 @@ import { createSignal, resolveSignal, SETTLED, signalFingerprint } from './model
  * printed since. Scoring reuses the same candle read as the publishing, so a
  * sweep costs one request per instrument per timeframe and no more.
  *
- * The sweep covers the playbook's own instruments rather than the whole book.
- * The rest of the registry is priced and charted, and a call on it would be a
- * call the playbook has no rule for - and would cost the feed a read per
- * instrument per timeframe on every pass to produce it.
+ * The sweep covers the instruments the registry marks swept rather than the
+ * whole book. The rest is priced and charted, and reading it would cost the
+ * feed three more requests per instrument on every pass. Which instruments
+ * those are is the registry's decision and is argued there, alongside what
+ * each one costs.
  *
  * A call is published once. Structure holds the same leg across many bars, so
  * the engine would otherwise republish the same four numbers on every pass;
@@ -85,6 +86,33 @@ export async function readInstrument(meta, signal) {
 }
 
 /**
+ * Scores one call against this pass's read of its instrument, or declines to.
+ *
+ * A call is only scored against the feed it was read off. The desk prices gold
+ * three ways - a broker's spot CFD, a COMEX future shifted onto spot, and a
+ * second venue's native spot print - and they do not agree to the dollar, or
+ * in the futures case to sixty-five of them. When the venue changes underneath
+ * a standing call, because a token expired or an upstream started throttling,
+ * the bars are the same market on a different scale. Comparing frozen levels
+ * against them books outcomes that never happened, and not evenly: a call's
+ * target is the leg's extreme, a level price is already hovering at, while its
+ * stop sits an ATR buffer beyond a swing that price has not traded through. A
+ * scale error of a few cents reaches the target and not the stop, so the error
+ * manufactures wins. The call waits instead - until its own venue answers
+ * again, or until it expires.
+ *
+ * @param {object} signal
+ * @param {object} [read] - this pass's read of the signal's instrument
+ * @param {number} now - epoch ms
+ * @returns {object} the signal, advanced or untouched
+ */
+export function scoreAgainstRead(signal, read, now) {
+  if (!read?.candles) return signal
+  if (signal.venue && read.exchange && signal.venue !== read.exchange) return signal
+  return resolveSignal(signal, read.candles, now)
+}
+
+/**
  * One full sweep.
  *
  * @param {object} args
@@ -94,17 +122,15 @@ export async function readInstrument(meta, signal) {
  * @returns {Promise<{signals:object[], published:object[], reads:Record<string,object>}>}
  */
 export async function sweep({ signals, abort, now = Date.now() }) {
-  const instruments = PRIMARY_INSTRUMENTS.filter(isPublishable)
+  const instruments = SWEPT_INSTRUMENTS.filter(isPublishable)
   const results = await Promise.all(
     instruments.map((meta) => readInstrument(meta, abort).catch(() => null))
   )
 
   const reads = {}
-  const candlesBySymbol = {}
   for (const result of results) {
     if (!result) continue
     reads[result.symbol] = result
-    candlesBySymbol[result.symbol] = result.candles
   }
 
   const standing = new Set(
@@ -127,19 +153,18 @@ export async function sweep({ signals, abort, now = Date.now() }) {
         timeframe: result.timeframe,
         call: result.call,
         price: result.price,
+        venue: result.exchange ?? null,
         now,
       })
     )
   }
 
-  const scored = [...signals, ...published].map((entry) => {
-    const candles = candlesBySymbol[entry.symbol]
-    if (!candles) return entry
-    return resolveSignal(entry, candles, now)
-  })
+  const scored = [...signals, ...published].map((entry) =>
+    scoreAgainstRead(entry, reads[entry.symbol], now)
+  )
 
   return { signals: scored, published, reads }
 }
 
 /** The instruments a sweep covers, for a surface that lists them. */
-export const PUBLISHED_INSTRUMENTS = PRIMARY_INSTRUMENTS.filter(isPublishable)
+export const PUBLISHED_INSTRUMENTS = SWEPT_INSTRUMENTS.filter(isPublishable)
