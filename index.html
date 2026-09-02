@@ -285,7 +285,7 @@
           var original = console[level]
           console[level] = function () {
             var joined = flatten(arguments, 0)
-            if (!isStaleChunkMessage(joined)) report('console', joined)
+            if (!isStaleChunkMessage(joined) && !extensionOnly(joined)) report('console', joined)
             if (loud) original.apply(console, arguments)
           }
         })
