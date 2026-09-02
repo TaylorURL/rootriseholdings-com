@@ -203,6 +203,18 @@ export function analyzeStructure(candles, { atrLength = 14, preset, atrMult } = 
     let brokenAt = null
     let brokeIsUp = false
 
+    // A break against the standing trend is a CHoCH, whatever the trend has
+    // done up to here. It used to have to get past `bosInTrend >= 1` as well,
+    // so a trend that started on a CHoCH and never printed a BOS could not be
+    // reversed at all: the break set its fired flag on the way in, matched
+    // neither arm, and was consumed without recording anything. The trend then
+    // stood in the wrong direction for as long as the series ran - GBPUSD held
+    // `up` through three separate downside breaks and a retracement of 230% of
+    // its own leg - and every read taken off it was of a leg that was already
+    // dead. A stuck trend is not a conservative reading of the tape; it is a
+    // reading of a tape that stopped some bars ago. Whether a break is worth
+    // acting on is decided downstream, by its strength, its retest and the
+    // scores, which is where a whipsaw is supposed to be refused.
     if (brokeUp) {
       highFired = true
       const strength = classifyBreakout({
@@ -218,7 +230,7 @@ export function analyzeStructure(candles, { atrLength = 14, preset, atrMult } = 
         brokenAt = pendingHigh
         brokeIsUp = true
         if (lastSwingLow != null) trendOrigin = lastSwingLow
-      } else if (trend !== 'down' || bosInTrend >= 1) {
+      } else {
         recordEvent('CHoCH Up', pendingHigh, i, strength)
         brokenAt = pendingHigh
         brokeIsUp = true
@@ -243,7 +255,7 @@ export function analyzeStructure(candles, { atrLength = 14, preset, atrMult } = 
         brokenAt = pendingLow
         brokeIsUp = false
         if (lastSwingHigh != null) trendOrigin = lastSwingHigh
-      } else if (trend !== 'up' || bosInTrend >= 1) {
+      } else {
         recordEvent('CHoCH Down', pendingLow, i, strength)
         brokenAt = pendingLow
         brokeIsUp = false
