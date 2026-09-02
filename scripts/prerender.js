@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import Beasties from 'beasties'
 import { ORIGIN, DEFAULT_META, ROUTE_META, PRERENDERED_ROUTES } from '../src/lib/routeMeta.data.js'
 import { FAQ } from '../src/lib/faq.data.js'
 import { render } from '../dist-ssr/entry-server.js'
@@ -78,22 +79,54 @@ function stylesheetFirst(html) {
  * in. The page then sits blank while the bundle adopts markup nobody has been
  * shown, and the whole download is charged to the first paint.
  *
- * The entry keeps its early fetch, as a module preload, and loses its script
- * tag. An inline module in its place asks for the bundle one frame after the
- * first, which is the first frame the document can have been painted in and
- * the earliest the bundle can no longer hold it back.
+ * The entry loses its script tag. An inline module in its place asks for the
+ * bundle one frame after the first, which is the first frame the document can
+ * have been painted in and the earliest the bundle can no longer hold it back.
+ *
+ * The chunk graph travels with it rather than ahead of it. A module preload is
+ * a high-priority fetch the browser starts the moment it parses the tag, so
+ * two hundred kilobytes of route code declared in the head shares a phone's
+ * connection with the document the first screen is actually waiting on, and
+ * the paint is charged for all of it. Written out by the frame that imports
+ * the entry, the same files are still fetched in parallel and still arrive
+ * before anything asks for them; they simply stop queueing in front of the
+ * paint.
  */
-function paintFirst(html) {
+function paintFirst(html, extra = []) {
   const entry = html.match(/^[ \t]*<script type="module" crossorigin src="([^"]+)"><\/script>\n/m)
   if (!entry) throw new Error('prerender: the shell head carries no module entry')
   const [tag, src] = entry
-  const preload = `    <link rel="modulepreload" crossorigin href="${src}" />\n`
-  const boot = `    <script type="module">requestAnimationFrame(() => requestAnimationFrame(() => import(${JSON.stringify(src)})))</script>\n`
-  return html.replace(tag, `${preload}${boot}`)
+  let next = html
+  const graph = []
+  for (const link of html.match(/^[ \t]*<link rel="modulepreload"[^>]*>\n/gm) ?? []) {
+    graph.push(link.match(/href="([^"]+)"/)[1])
+    next = next.replace(link, '')
+  }
+  const chunks = [src, ...graph, ...extra.map((file) => `/${file}`)].filter(
+    (href, index, all) => all.indexOf(href) === index
+  )
+  const boot = `    <script type="module">
+      const chunks = ${JSON.stringify(chunks)}
+      const start = () => {
+        for (const href of chunks) {
+          const link = document.createElement('link')
+          link.rel = 'modulepreload'
+          link.crossOrigin = 'anonymous'
+          link.href = href
+          document.head.appendChild(link)
+        }
+        import(${JSON.stringify(src)})
+      }
+      requestAnimationFrame(() => requestAnimationFrame(start))
+    </script>\n`
+  return next.replace(tag, boot)
 }
 
-/** The home document alone carries the questions and preloads its own chunk. */
-function homeExtras(html) {
+/**
+ * The chunks the home route's own markup will need, which are not reachable
+ * from the entry and would otherwise be discovered only once it has run.
+ */
+function homeChunks() {
   const chunks = JSON.parse(fs.readFileSync(path.join(OUT, '.home-chunks.json'), 'utf8'))
   // A preload the host answers with a 404 costs a request, logs an error and
   // fetches nothing, and it is invisible until someone opens the console on the
@@ -105,10 +138,11 @@ function homeExtras(html) {
       )
     }
   }
-  const preloads = chunks
-    .filter((file) => !html.includes(file))
-    .map((file) => `    <link rel="modulepreload" crossorigin href="/${file}" />`)
-    .join('\n')
+  return chunks
+}
+
+/** The home document alone carries the questions. */
+function homeExtras(html) {
   const faq = JSON.stringify(
     {
       '@context': 'https://schema.org',
@@ -124,9 +158,50 @@ function homeExtras(html) {
   )
   return html.replace(
     '</head>',
-    `${preloads}\n    <script type="application/ld+json">\n${faq}\n    </script>\n  </head>`
+    `    <script type="application/ld+json">\n${faq}\n    </script>\n  </head>`
   )
 }
+
+/**
+ * Writes the rules the route's own markup needs into the document itself.
+ *
+ * A stylesheet blocks the paint: the browser draws nothing while the link in
+ * the head is still in flight, and on a phone that link is a round trip and a
+ * download standing in front of markup that is already in hand. Every route
+ * here is rendered whole at build time, so the rules its first screen needs
+ * are knowable at build time too. They go into a style element in the head,
+ * and the sheet is asked for on a media query that matches nothing - fetched
+ * without holding the paint, switched on when it lands. What arrives late is
+ * only what the page has no element for yet.
+ *
+ * The exceptions are the states the page takes on after it is served. The
+ * theme is an attribute the inline script stamps on the root before the first
+ * paint, the bar takes one when it is scrolled under, a menu takes one when it
+ * is open, and none of them is on any element at build time - so every rule
+ * keyed on a data- or aria- attribute rides along regardless.
+ *
+ * The font faces ride along too. The head preloads both files, and a preloaded
+ * file that no font-face names is text set in the fallback and then reset when
+ * the sheet lands.
+ */
+function inliner() {
+  return new Beasties({
+    path: OUT,
+    publicPath: '/',
+    preload: 'media',
+    pruneSource: false,
+    inlineFonts: true,
+    preloadFonts: false,
+    allowRules: [/\[(data|aria)-/],
+    reduceInlineStyles: false,
+    mergeStylesheets: false,
+    logLevel: 'silent',
+  })
+}
+
+// Beasties stamps the element it treated as the document; the page does not
+// need to carry that.
+const CONTAINER_STAMP = ' data-beasties-container'
 
 const ENTITIES = {
   '&amp;': '&',
@@ -167,13 +242,17 @@ if (!shell.includes('<div id="root"></div>')) {
 fs.writeFileSync(path.join(OUT, 'shell.html'), shell)
 console.log('wrote     shell.html for the routes that mount rather than hydrate')
 
+const inline = inliner()
+const home = homeChunks()
+
 for (const route of PRERENDERED_ROUTES) {
   const markup = await render(route)
-  let html = paintFirst(head(shell, route)).replace(
+  let html = paintFirst(head(shell, route), route === '/' ? home : []).replace(
     '<div id="root"></div>',
     `<div id="root">${rawText(markup)}</div>`
   )
   if (route === '/') html = homeExtras(html)
+  html = (await inline.process(html)).replace(CONTAINER_STAMP, '')
 
   const dir = route === '/' ? OUT : path.join(OUT, route.replace(/^\//, ''))
   fs.mkdirSync(dir, { recursive: true })
