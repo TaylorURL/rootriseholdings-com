@@ -13,6 +13,12 @@ import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
  * pillars are supporting text rather than three more headings. Set as boxed
  * cards under a centred headline they read as a feature grid, which is the one
  * thing this section is not.
+ *
+ * Each pillar is one ruled row, and that row is the staggered item itself
+ * rather than a grid nested inside one. A description list may hold a div
+ * between itself and its terms, and only one: a term two divs down is no
+ * longer a term of any list, which is what a reader on a screen reader is
+ * handed and what the accessibility audit reports.
  */
 export default function TrustSection({ ground = 'band' }) {
   return (
@@ -32,12 +38,13 @@ export default function TrustSection({ ground = 'band' }) {
           {TRUST_PILLARS.map((pillar) => {
             const Icon = pillar.icon
             return (
-              <StaggerItem key={pillar.title}>
-                <div className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-4 gap-y-1 border-b border-border py-6">
-                  <Icon aria-hidden="true" className="mt-0.5 h-4 w-4 text-accent" />
-                  <dt className="t-h4 text-text">{pillar.title}</dt>
-                  <dd className="t-body col-start-2 text-text-muted">{pillar.body}</dd>
-                </div>
+              <StaggerItem
+                key={pillar.title}
+                className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-4 gap-y-1 border-b border-border py-6"
+              >
+                <Icon aria-hidden="true" className="mt-0.5 h-4 w-4 text-accent" />
+                <dt className="t-h4 text-text">{pillar.title}</dt>
+                <dd className="t-body col-start-2 text-text-muted">{pillar.body}</dd>
               </StaggerItem>
             )
           })}
