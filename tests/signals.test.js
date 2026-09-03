@@ -64,27 +64,28 @@ const long = (overrides, args = {}) =>
 const short = (overrides, args = {}) =>
   deriveTradeCall({ execution: shortRead(overrides), alignment: 'Full Bear', ...args })
 
-test('a long enters at the close with the stop an ATR fraction past the swing', () => {
+test('a long enters at the close with the stop an ATR past the swing', () => {
   const { call } = long()
   assert.equal(call.side, 'BUY')
   assert.equal(call.entry, 105)
-  assert.ok(Math.abs(call.stop - 99.4) < 1e-9, 'stop is the swing low less 0.3 ATR')
-  assert.equal(call.target, 120)
-  assert.ok(Math.abs(call.rewardToRisk - 15 / 5.6) < 1e-9)
+  assert.ok(Math.abs(call.stop - 97.6) < 1e-9, 'stop is the swing low less 1.2 ATR')
+  assert.ok(Math.abs(call.target - (100 + 20 * 1.618)) < 1e-9, 'target is the 1.618 extension')
+  assert.ok(Math.abs(call.rewardToRisk - 27.36 / 7.4) < 1e-9)
 })
 
-test('a long carries the two fib extension targets', () => {
+test('a long carries the two runner targets beyond its own', () => {
   const { call } = long()
-  assert.ok(Math.abs(call.target2 - (100 + 20 * 1.618)) < 1e-9)
-  assert.equal(call.target3, 140)
+  assert.equal(call.target2, 140)
+  assert.ok(Math.abs(call.target3 - (100 + 20 * 2.618)) < 1e-9)
+  assert.ok(call.target2 > call.target && call.target3 > call.target2)
 })
 
 test('a short mirrors the long, with the stop above the swing high', () => {
   const { call } = short()
   assert.equal(call.side, 'SELL')
   assert.equal(call.entry, 115)
-  assert.ok(Math.abs(call.stop - 120.6) < 1e-9)
-  assert.equal(call.target, 100)
+  assert.ok(Math.abs(call.stop - 122.4) < 1e-9)
+  assert.ok(Math.abs(call.target - (120 - 20 * 1.618)) < 1e-9)
 })
 
 test('a setup under the minimum reward-to-risk is refused, not published', () => {
@@ -104,7 +105,17 @@ test('a pullback outside the tradeable depths is refused', () => {
   assert.equal(long({ pullbackState: 'Deep' }).call, null)
   assert.equal(long({ pullbackState: 'Invalidated' }).call, null)
   assert.equal(long({ pullbackState: 'None' }).call, null)
-  assert.ok(long({ pullbackState: 'Shallow', pullbackPct: 20 }).call)
+  // A shallow pullback has given nothing back, so there is no discount to
+  // enter at and the stop sits the width of the whole leg away.
+  assert.equal(long({ pullbackState: 'Shallow', pullbackPct: 20 }).call, null)
+  assert.ok(long({ pullbackState: 'Healthy' }).call)
+})
+
+test('a break that was never retested is refused', () => {
+  assert.equal(long({ retestState: 'No Return' }).call, null)
+  assert.equal(long({ retestState: 'Pending' }).call, null)
+  assert.match(long({ retestState: 'Pending' }).standDown, /waits for one that held/i)
+  assert.ok(long({ retestState: 'Retested' }).call)
 })
 
 test('a failed retest is refused', () => {
@@ -173,7 +184,7 @@ test('a continuation score under the floor refuses the call', () => {
 })
 
 test('reversal risk exactly at the ceiling is still allowed', () => {
-  const { call, scores } = long({ displayState: 'Range', retestState: 'No Return' })
+  const { call, scores } = long({ displayState: 'Range', premiumDiscount: 'Premium' })
   assert.equal(scores.reversalRisk, 30)
   assert.ok(call, 'the ceiling is inclusive, as the indicator has it')
 })
@@ -199,13 +210,10 @@ test('a shorts-only instrument still calls the short', () => {
 })
 
 test('the grade needs both the score and the reward', () => {
-  // 100/2.68 is an A; stretching the target to 130 pays 4.46 and makes it A+.
-  assert.equal(long().call.grade, 'A')
-  const stretched = long({
-    leg: { origin: 100, extreme: 130 },
-    swings: { lastHigh: 130, lastLow: 100 },
-  })
-  assert.equal(stretched.call.grade, 'A+')
+  // A continuation of 100 paying 3.70 is an A+; entering thirty points later
+  // leaves the same read paying 2.70, which is an A and not an A+.
+  assert.equal(long().call.grade, 'A+')
+  assert.equal(long({ lastClose: 107 }).call.grade, 'A')
 })
 
 test('alignment is a three-way vote', () => {
@@ -241,7 +249,7 @@ test('a signal stays live until price reaches the entry', () => {
 
 test('a filled signal that reaches the target scores its planned R', () => {
   const published = signal()
-  const resolved = resolveSignal(published, [bar(1000, 104, 108), bar(2000, 118, 121)], 3000)
+  const resolved = resolveSignal(published, [bar(1000, 104, 108), bar(2000, 130, 133)], 3000)
   assert.equal(resolved.status, 'target')
   assert.equal(resolved.filledAt, 1000)
   assert.equal(resolved.realisedR, published.rewardToRisk)
@@ -274,7 +282,7 @@ test('the bar that fills a call cannot also pay it out', () => {
 
 test('the bar after the fill can pay it out', () => {
   const published = signal()
-  const resolved = resolveSignal(published, [bar(1000, 100, 121), bar(2000, 118, 121)], 3000)
+  const resolved = resolveSignal(published, [bar(1000, 100, 121), bar(2000, 130, 133)], 3000)
   assert.equal(resolved.status, 'target')
   assert.equal(resolved.filledAt, 1000)
   assert.equal(resolved.realisedR, published.rewardToRisk)
@@ -342,7 +350,7 @@ test('a call is not scored against a venue it was not minted on', () => {
   })
   assert.equal(minted.venue, 'OANDA')
 
-  const candles = [bar(1000, 104, 108), bar(2000, 118, 121)]
+  const candles = [bar(1000, 104, 108), bar(2000, 130, 133)]
   const ownVenue = scoreAgainstRead(minted, { candles, exchange: 'OANDA' }, 3000)
   assert.equal(ownVenue.status, 'target')
 
@@ -355,7 +363,7 @@ test('a call minted without a venue is scored by whatever answered', () => {
   const { call } = deriveTradeCall({ execution: read(), alignment: 'Full Bull' })
   const minted = createSignal({ symbol: 'XAUUSD', timeframe: '1H', call, price: 118, now: 0 })
   assert.equal(minted.venue, null)
-  const candles = [bar(1000, 104, 108), bar(2000, 118, 121)]
+  const candles = [bar(1000, 104, 108), bar(2000, 130, 133)]
   assert.equal(scoreAgainstRead(minted, { candles, exchange: 'Anything' }, 3000).status, 'target')
 })
 
