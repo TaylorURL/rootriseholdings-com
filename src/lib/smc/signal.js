@@ -35,8 +35,29 @@ const TRADEABLE_PULLBACKS = new Set(['Shallow', 'Healthy'])
 /** Breaks decisive enough to act on. */
 const TRADEABLE_STRENGTH = new Set(['Strong', 'Moderate'])
 
-const BULL_ALIGNMENTS = new Set(['Full Bull', 'Partial Bull'])
-const BEAR_ALIGNMENTS = new Set(['Full Bear', 'Partial Bear'])
+/**
+ * The alignments that argue against a side, per side.
+ *
+ * What this gate refuses is opposition, not the absence of agreement. It used
+ * to require a reading on the side - 'Full Bull' or 'Partial Bull' to buy -
+ * which reads as prudence and is not: 'Mixed' is what `alignmentOf` returns
+ * whenever the three timeframes fail to reach a two-thirds majority, so a
+ * single neutral higher timeframe was enough to veto a setup that had cleared
+ * every other gate the desk states. It refused the desk's own criteria, which
+ * is a different thing from refusing a bad setup.
+ *
+ * Alignment is already priced. `scoreStructure` adds five to continuation when
+ * the higher timeframes agree, ten to reversal risk when they fully oppose and
+ * five when they partly do, and the continuation floor and reversal ceiling
+ * then decide. Vetoing on the same reading counted it twice, and the second
+ * count was absolute where the first was proportionate - so a mixed read cost
+ * a setup its five points and then discarded it anyway, whatever the other
+ * ninety-five said.
+ */
+const OPPOSING_ALIGNMENTS = {
+  BUY: new Set(['Full Bear', 'Partial Bear']),
+  SELL: new Set(['Full Bull', 'Partial Bull']),
+}
 
 /**
  * The grade a call carries.
@@ -94,10 +115,8 @@ export function deriveTradeCall({ execution, alignment = 'Mixed', sideConstraint
     )
   }
 
-  const alignmentOk =
-    side === 'BUY' ? BULL_ALIGNMENTS.has(alignment) : BEAR_ALIGNMENTS.has(alignment)
-  if (!alignmentOk) {
-    return result(stand(`Higher timeframes read ${alignment.toLowerCase()}, not with this side.`))
+  if (OPPOSING_ALIGNMENTS[side].has(alignment)) {
+    return result(stand(`Higher timeframes read ${alignment.toLowerCase()}, against this side.`))
   }
   if (!TRADEABLE_PULLBACKS.has(execution.pullbackState)) {
     return result(
