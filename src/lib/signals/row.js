@@ -76,6 +76,3 @@ export function toRow(signal) {
     realised_r: signal.realisedR ?? null,
   }
 }
-
-/** Epoch milliseconds as the timestamp the table stores. */
-export { iso as toTimestamp }
