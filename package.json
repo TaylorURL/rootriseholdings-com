@@ -2,7 +2,7 @@
   "name": "riseandroot-com",
   "private": true,
   "license": "UNLICENSED",
-  "version": "2026.36.26",
+  "version": "2026.36.27",
   "type": "module",
   "scripts": {
     "dev": "vite",
