@@ -113,10 +113,45 @@ test('a failed retest is refused', () => {
   assert.match(standDown, /retest/i)
 })
 
-test('higher timeframes that do not back the side refuse the call', () => {
-  assert.equal(deriveTradeCall({ execution: read(), alignment: 'Mixed' }).call, null)
+test('higher timeframes that oppose the side refuse the call', () => {
   assert.equal(deriveTradeCall({ execution: read(), alignment: 'Full Bear' }).call, null)
+  assert.match(
+    deriveTradeCall({ execution: read(), alignment: 'Partial Bear' }).standDown,
+    /against this side/i
+  )
   assert.ok(deriveTradeCall({ execution: read(), alignment: 'Partial Bull' }).call)
+})
+
+test('higher timeframes that merely disagree with each other do not refuse the call', () => {
+  // 'Mixed' is what alignmentOf returns whenever the three timeframes miss a
+  // two-thirds majority, so one neutral higher timeframe reads the same as two
+  // opposed ones. Refusing on it discarded setups that had cleared every gate
+  // the desk states - this read scores a continuation of 100 against a
+  // reversal risk of 5 - and it discarded them for a reading the score has
+  // already priced.
+  const { call, scores, standDown } = deriveTradeCall({ execution: read(), alignment: 'Mixed' })
+  assert.ok(call, standDown ?? 'a mixed read is not an opposed one')
+  assert.equal(scores.continuation, 100)
+  assert.equal(scores.reversalRisk, 5)
+  assert.equal(call.side, 'BUY')
+})
+
+test('a mixed read still has to clear the floor on its own merits', () => {
+  // Removing the veto does not lower the bar: the same alignment on a read
+  // that scores under the floor is still refused, and refused for the score.
+  const { call, standDown } = deriveTradeCall({
+    execution: read({
+      bias: 'Neutral',
+      displayState: 'Range',
+      lastStrength: 'Moderate',
+      pullbackState: 'Shallow',
+      retestState: 'Pending',
+      premiumDiscount: 'Premium',
+    }),
+    alignment: 'Mixed',
+  })
+  assert.equal(call, null)
+  assert.match(standDown, /continuation/i)
 })
 
 test('a continuation score under the floor refuses the call', () => {
