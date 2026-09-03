@@ -104,7 +104,7 @@ The published signal record lives in Postgres. `public.signals` is written by th
 
 The contact form is the only thing a reader's own browser writes to Postgres. `public.contact_messages` takes an insert from an anonymous reader and nothing else: row-level security carries an insert-only policy, and select, update, delete and truncate are revoked outright from `anon` and `authenticated`, so the publishable key in the browser bundle can add a message and never read one back. The table, its policy and its grants are in `supabase/migrations/`.
 
-Journal data (trades, settings, prop firms, day plans) persists as one versioned record in browser `localStorage` via `src/lib/journal/store.js`. That record lives in one browser and nowhere else, so the Account page can write it out as a file and read one back, confirmed before it replaces anything. What `src/lib/signals/store.js` still keeps there is the reader's alert preference and nothing else — that is genuinely about this device, where the record was not. Both take the store as a parameter rather than reaching for `localStorage` themselves, which is how the tests run them against a plain object and what any other `getItem`/`setItem` backend would slot into.
+Journal data (trades, settings, prop firms, day plans) persists as one versioned record in browser `localStorage` via `src/lib/journal/store.js`. That record lives in one browser and nowhere else, so the Account page can write it out as a file and read one back, confirmed before it replaces anything. What `src/lib/signals/store.js` still keeps there is the reader's alert preference and nothing else — that is about this device, where the record was not. Both take the store as a parameter rather than reaching for `localStorage` themselves, which is how the tests run them against a plain object and what any other `getItem`/`setItem` backend would slot into.
 
 ## Getting started
 
@@ -145,11 +145,14 @@ rootriseholdings-com/
 ├── api/lib/seriesFallback.js  The same venue's candle history, folded to the interval asked for
 ├── api/calendar.js            Function serving and caching the weekly economic calendar
 ├── api/version.js             Function reporting the commit the deployment was built from
+├── api/sweep.js               Function running the engine on the cron schedule, publishing and scoring the record
+├── api/lib/signalStore.js     The published record as the host reads and writes it, under the service role
+├── api/lib/announce.js        Posts a newly published call to the webhook, when one is set
 ├── vercel.json                SPA rewrites + the calendar and market paths
 ├── scripts/prerender.js       Writes a real document for each public route after the SSR build
 ├── scripts/routeDocuments.js  Names the chunks the home document preloads, and makes preview resolve paths as the host does
-├── supabase/migrations/       The contact table, its row-level security, and its grants
-├── tests/                     node:test suites (journal, smc, signals, instruments, spotMetal, quoteFallback, seriesFallback, marketData, briefing)
+├── supabase/migrations/       The contact and signals tables, their row-level security, and their grants
+├── tests/                     node:test suites (journal, smc, signals, signalRecord, sweep, announce, instruments, spotMetal, quoteFallback, seriesFallback, marketData, briefing)
 └── src/
     ├── App.jsx                Route groups — brand page, login, gated /app
     ├── routes.jsx             The route components, split so the build and the browser share one list
