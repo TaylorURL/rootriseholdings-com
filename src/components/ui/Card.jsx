@@ -1,3 +1,4 @@
+import { PANEL_TITLE } from './Figures'
 import { cn } from '../../lib/cn'
 
 /**
@@ -6,6 +7,12 @@ import { cn } from '../../lib/cn'
  * The edge is a ring in the shadow rather than a border, so a row of panels of
  * unequal height reads as objects on the page instead of as a broken table, and
  * the edge and the elevation move together.
+ *
+ * The head is banded rather than hairlined. A panel is barely a step off the
+ * page ground in the light theme, so the ring alone leaves a screen of small
+ * type on one flat field; a strip of the second surface at the top of each
+ * panel is a shape rather than a line, and it is what makes the panel read as
+ * an object without drawing a heavy grid over the whole product.
  *
  * @param {object} props
  * @param {React.ReactNode} [props.title] - heading, or a node when a surface needs its own
@@ -19,9 +26,9 @@ export default function Card({ title, action, children, padded = true, className
   return (
     <section className={cn('panel-static overflow-hidden', className)}>
       {(title || action) && (
-        <header className="flex items-center gap-3 border-b border-border px-5 py-3">
+        <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-5 py-3">
           {typeof title === 'string' ? (
-            <h2 className="shrink-0 text-[13px] font-semibold tracking-tight text-text">{title}</h2>
+            <h2 className={cn(PANEL_TITLE, 'shrink-0')}>{title}</h2>
           ) : (
             title
           )}

@@ -1,6 +1,50 @@
 import { cn } from '../../lib/cn'
 
 /**
+ * The treatment every label in the terminal takes.
+ *
+ * A label is the word that says what a number is, so it is the last thing on a
+ * trading screen that should be hard to read - and it was the hardest: ten
+ * pixels of letter-spaced monospace, retyped in a dozen files, each copy free
+ * to drift. One constant fixes the drift, and the treatment itself trades a
+ * little of the tracking for legibility while keeping the case, because
+ * uppercase is what tells a label apart from prose at a glance.
+ *
+ * Both forms are exported. The class is for the places that already own their
+ * element - a table head, a definition term - and the component is for the rest.
+ */
+export const RULE_LABEL = 'font-mono text-[11px] uppercase tracking-[0.1em] text-text-muted'
+
+/**
+ * What a panel calls itself, which is not what a figure calls itself.
+ *
+ * Unifying the hand-typed figure labels raised their contrast and was worth
+ * doing; carrying the same treatment up onto the panel headings cost the screen
+ * the one level of hierarchy it had, and a heading that reads quieter than the
+ * numbers underneath it is the opposite of legible. It stays in the same family
+ * - a terminal sets its furniture in mono - and takes back the weight, the
+ * size and the full-strength colour that say this names the panel rather than
+ * the value beneath it.
+ */
+export const PANEL_TITLE =
+  'font-mono text-[12px] font-semibold uppercase tracking-[0.08em] text-text'
+
+/**
+ * @param {object} props
+ * @param {React.ReactNode} props.children - the label, in Title Case
+ * @param {string} [props.title] - what an abbreviation stands for, on hover
+ * @param {'p'|'h2'|'h3'|'dt'|'span'} [props.as='p']
+ * @param {string} [props.className]
+ */
+export function RuleLabel({ children, title, as: Tag = 'p', className }) {
+  return (
+    <Tag className={cn(RULE_LABEL, className)} title={title}>
+      {children}
+    </Tag>
+  )
+}
+
+/**
  * A run of labelled figures, ruled rather than boxed.
  *
  * The count comes from the space, not from a breakpoint: a viewport query knows
@@ -11,11 +55,19 @@ import { cn } from '../../lib/cn'
  *
  * Boxing each figure would draw a grid of small cards; one hairline between
  * them says the same thing and leaves the numbers as the loudest part.
+ *
+ * The hairline is cast by each figure rather than shown through a gap in this
+ * element's own background. A gap only has a colour where a figure is next to
+ * it, and the row asks the column how many fit rather than being told, so five
+ * figures in a three-column row leave a sixth cell nothing ever fills - which
+ * painted a raw block of border colour on exactly the narrow screens the row
+ * reflows for. A ring around each figure draws the same line and an empty cell
+ * draws nothing, whatever the arithmetic comes out at.
  */
 export function FigureRow({ children, min = '6.5rem', className }) {
   return (
     <dl
-      className={cn('grid gap-px overflow-hidden rounded-card bg-border', className)}
+      className={cn('grid overflow-hidden rounded-card', className)}
       style={{ gridTemplateColumns: `repeat(auto-fit, minmax(${min}, 1fr))` }}
     >
       {children}
@@ -26,11 +78,19 @@ export function FigureRow({ children, min = '6.5rem', className }) {
 /**
  * One figure. The label is set small and quiet above a mono, tabular value, so
  * a column of them lines up on the decimal and does not jitter as it updates.
+ *
+ * @param {object} props
+ * @param {React.ReactNode} props.label - in Title Case
+ * @param {React.ReactNode} props.value
+ * @param {string} [props.tone] - a text colour class for the value
+ * @param {React.ReactNode} [props.note] - what the value is measured against
+ * @param {string} [props.title] - what an abbreviated label stands for, on hover
+ * @param {string} [props.className]
  */
-export function Figure({ label, value, tone, note, className }) {
+export function Figure({ label, value, tone, note, title, className }) {
   return (
-    <div className={cn('bg-surface px-3 py-2.5', className)}>
-      <dt className="truncate font-mono text-[10px] uppercase tracking-label text-text-faint">
+    <div className={cn('bg-surface px-3 py-2.5 shadow-[0_0_0_1px_var(--ds-border)]', className)}>
+      <dt className={cn(RULE_LABEL, 'truncate')} title={title}>
         {label}
       </dt>
       <dd

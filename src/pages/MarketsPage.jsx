@@ -4,7 +4,7 @@ import PageHeader from '../components/ui/PageHeader'
 import SegmentedTabs from '../components/ui/SegmentedTabs'
 import SearchInput from '../components/ui/SearchInput'
 import Badge from '../components/ui/Badge'
-import { Figure, FigureRow } from '../components/ui/Figures'
+import { Figure, FigureRow, RuleLabel } from '../components/ui/Figures'
 import PriceChart from '../components/charts/PriceChart'
 import ChartInView from '../components/charts/ChartInView'
 import { Skeleton, SkeletonText, SkeletonRegion } from '../components/ui/Skeleton'
@@ -14,6 +14,7 @@ import {
   INSTRUMENT_CATEGORIES,
   INSTRUMENT_META,
   decimalsForInstrument,
+  describeSideConstraint,
 } from '../data/instruments'
 import { useInstrumentQuotes } from '../lib/marketData/instrumentQuotes.js'
 import { useSignals } from '../context/SignalsContext'
@@ -42,6 +43,21 @@ const CLASS_FOR_LABEL = Object.fromEntries(
 const OPENING_SYMBOL = 'XAUUSD'
 
 /**
+ * The structure engine's own event names, in words.
+ *
+ * The engine writes for the engine, and 'BOS Up' sitting in a value slot beside
+ * a price is a token rather than a reading. The short code stays alongside for
+ * anyone who reads them at speed, and the chart keeps the code on its own,
+ * where a reference line has no room for a sentence.
+ */
+const EVENT_PROSE = {
+  'BOS Up': 'Break of structure, up',
+  'BOS Down': 'Break of structure, down',
+  'CHoCH Up': 'Change of character, up',
+  'CHoCH Down': 'Change of character, down',
+}
+
+/**
  * The height the two panes run at.
  *
  * The rail scrolls inside itself rather than with the page, so the book stays
@@ -60,7 +76,7 @@ function BookRow({ entry, selected, onSelect }) {
       onClick={() => onSelect(entry.symbol)}
       aria-current={selected ? 'true' : undefined}
       className={cn(
-        'focus-ring-inset grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5 border-b border-border px-3 py-2 text-left transition-colors duration-200 ease-out',
+        'focus-ring-inset grid w-full grid-cols-[minmax(0,1fr)_minmax(9ch,auto)] items-center gap-x-3 gap-y-0.5 border-b border-border px-3 py-2 text-left transition-colors duration-200 ease-out',
         selected ? 'bg-[var(--ds-accent-soft)]' : '[@media(hover:hover)]:hover:bg-surface-2'
       )}
     >
@@ -77,11 +93,13 @@ function BookRow({ entry, selected, onSelect }) {
           <Eye className="h-3 w-3 shrink-0 text-text-faint" aria-label="Watch only" />
         ) : null}
       </span>
-      <span className="font-mono text-[13px] tabular-nums text-text">
+      <span className="text-right font-mono text-[13px] tabular-nums text-text">
         {formatInstrumentPrice(entry.price, entry.symbol)}
       </span>
       <span className="truncate text-[11px] text-text-faint">{entry.name}</span>
-      <span className={cn('font-mono text-[11px] tabular-nums', signedColor(entry.change))}>
+      <span
+        className={cn('text-right font-mono text-[11px] tabular-nums', signedColor(entry.change))}
+      >
         {entry.changePct > 0 ? '+' : ''}
         {entry.changePct.toFixed(2)}%
       </span>
@@ -150,15 +168,20 @@ function StructureRead({ symbol, read, loading }) {
         {analysis.lastEvent ? (
           <div className="flex items-center justify-between gap-4 border-b border-border py-2.5">
             <dt className="text-text-faint">Last Event</dt>
-            <dd className="font-mono tabular-nums text-text">
-              {analysis.lastEvent.type}{' '}
-              {formatInstrumentPrice(analysis.lastEvent.level, symbol, decimals)}
+            <dd className="flex flex-wrap items-center justify-end gap-2 text-right">
+              <span className="text-text">
+                {EVENT_PROSE[analysis.lastEvent.type] ?? analysis.lastEvent.type}
+              </span>
+              <Badge variant="neutral">{analysis.lastEvent.type}</Badge>
+              <span className="font-mono tabular-nums text-text">
+                {formatInstrumentPrice(analysis.lastEvent.level, symbol, decimals)}
+              </span>
             </dd>
           </div>
         ) : null}
         {zone ? (
           <div className="flex items-center justify-between gap-4 border-b border-border py-2.5">
-            <dt className="text-text-faint">
+            <dt className="text-text-faint" title="Optimal trade entry">
               OTE Zone ({analysis.trend === 'up' ? 'Long' : 'Short'})
             </dt>
             <dd className="font-mono tabular-nums text-text">{zone}</dd>
@@ -269,9 +292,9 @@ export default function MarketsPage() {
             )}
           </div>
 
-          <p className="border-t border-border px-3 py-2 font-mono text-[10px] uppercase tracking-label text-text-faint">
+          <RuleLabel className="border-t border-border px-3 py-2">
             {book.length} of {quotes.length} shown
-          </p>
+          </RuleLabel>
         </section>
 
         {/* The instrument. Its own scroll, so the book beside it stays put. */}
@@ -288,8 +311,10 @@ export default function MarketsPage() {
                 </h2>
                 <Badge variant="neutral">{meta?.primaryTimeframe}</Badge>
                 {meta?.isWatchOnly ? <Badge variant="neutral">Watch only</Badge> : null}
-                {meta?.sideConstraint === 'SHORT' ? (
-                  <Badge variant="sell">Shorts only</Badge>
+                {meta?.sideConstraint ? (
+                  <Badge variant={meta.sideConstraint === 'SHORT' ? 'sell' : 'buy'}>
+                    {describeSideConstraint(meta.sideConstraint)}
+                  </Badge>
                 ) : null}
               </div>
               <p className="mt-1 text-[13px] text-text-muted">{meta?.name}</p>
@@ -317,7 +342,7 @@ export default function MarketsPage() {
             </div>
           </header>
 
-          <FigureRow className="rounded-none border-b border-border" min="7rem">
+          <FigureRow className="rounded-none border-b border-border" min="7.5rem">
             <Figure
               label="Session High"
               value={quote?.high != null ? formatInstrumentPrice(quote.high, symbol) : NO_VALUE}
@@ -355,9 +380,9 @@ export default function MarketsPage() {
           </div>
 
           <div className="p-5">
-            <h3 className="mb-4 font-mono text-[10px] uppercase tracking-label text-text-faint">
+            <RuleLabel as="h3" className="mb-4">
               Structure Read
-            </h3>
+            </RuleLabel>
             <StructureRead symbol={symbol} read={read} loading={loading} />
           </div>
         </section>

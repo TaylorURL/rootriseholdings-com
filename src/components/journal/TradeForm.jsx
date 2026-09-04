@@ -119,7 +119,10 @@ export default function TradeForm({ onLogged }) {
       if (field === 'symbol') {
         const meta = INSTRUMENT_META[value]
         next.timeframe = meta?.primaryTimeframe ?? previous.timeframe
+        // A restricted instrument answers the side question itself, so the
+        // form does not offer a ticket the validator is about to refuse.
         if (meta?.sideConstraint === 'SHORT') next.side = 'SELL'
+        else if (meta?.sideConstraint === 'LONG') next.side = 'BUY'
       }
       // A tick answers one set of numbers. Changing any of them retires it, so
       // an acknowledgement can never carry over to a ticket nobody read.
@@ -182,7 +185,7 @@ export default function TradeForm({ onLogged }) {
             value={draft.symbol}
             onChange={update('symbol')}
             options={INSTRUMENT_OPTIONS}
-            hint={meta?.sideConstraint === 'SHORT' ? meta.note : undefined}
+            hint={meta?.sideConstraint ? meta.note : undefined}
           />
           <div>
             <span id="trade-side-label" className={LABEL}>

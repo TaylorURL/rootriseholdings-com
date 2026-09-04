@@ -37,13 +37,14 @@ function signal(overrides = {}) {
 /**
  * The host writes the record and the browser reads it, so the two mappings have
  * to agree on every field. A round trip is the cheapest way to say that: what
- * comes back has to be what went in, with the id the table assigns.
+ * comes back has to be what went in, with the id the table assigns and the
+ * announcement it has not had yet.
  */
 test('a signal survives the round trip through a row', () => {
   const original = signal()
   const row = { id: 'a6f1e2c4-0000-4000-8000-000000000001', ...toRow(original) }
   const returned = fromRow(row)
-  assert.deepEqual(returned, { ...original, id: row.id })
+  assert.deepEqual(returned, { ...original, id: row.id, notifiedAt: null })
 })
 
 test('a row carries timestamps and the engine carries milliseconds', () => {
@@ -55,6 +56,21 @@ test('a row carries timestamps and the engine carries milliseconds', () => {
 
 test('the row leaves the id to the table', () => {
   assert.equal('id' in toRow(signal()), false)
+})
+
+/**
+ * Publishing a call and telling somebody about it are separate events, and an
+ * insert that wrote both would mark every call as announced before anything
+ * had been sent - which is exactly the silent non-delivery the announcement
+ * queue exists to end.
+ */
+test('a call is written down without being marked as told', () => {
+  assert.equal('notified_at' in toRow(signal()), false)
+  assert.equal(fromRow({ ...toRow(signal()), notified_at: null }).notifiedAt, null)
+  assert.equal(
+    fromRow({ ...toRow(signal()), notified_at: '2026-09-04T14:02:00.000Z' }).notifiedAt,
+    Date.parse('2026-09-04T14:02:00.000Z')
+  )
 })
 
 test('an unresolved signal keeps its nulls rather than becoming zero', () => {

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { DESK_TIME_ZONE, sessionForMoment } from '../../lib/time.js'
 import { COMPLIANCE } from '../../lib/brand'
+import { RULE_LABEL } from '../ui/Figures'
+import { cn } from '../../lib/cn'
 
 function useClock() {
   const [now, setNow] = useState(() => new Date())
@@ -25,7 +27,7 @@ export default function DeskRail() {
 
   return (
     <div className="flex h-[var(--ds-rail-height)] shrink-0 items-center gap-3 border-b border-border bg-bg px-4 sm:px-6">
-      <span className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-label text-text-faint">
+      <span className={cn('flex items-center gap-1.5', RULE_LABEL)}>
         <span className="relative flex h-1.5 w-1.5">
           {session && (
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />

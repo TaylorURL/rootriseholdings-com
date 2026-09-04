@@ -2,6 +2,7 @@ import { useId, useState } from 'react'
 import { PencilLine, X } from 'lucide-react'
 import PageHeader from '../components/ui/PageHeader'
 import DailyBriefing from '../components/ui/DailyBriefing'
+import { RuleLabel } from '../components/ui/Figures'
 import DayStateBanner from '../components/journal/DayStateBanner'
 import { useJournal } from '../context/JournalContext'
 import { useBriefing } from '../lib/briefing/useBriefing.js'
@@ -33,7 +34,7 @@ function PlanEditor({ plan, onSave, onClose }) {
   return (
     <form onSubmit={handleSubmit} className="panel-static p-4" aria-label="Day plan">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">Day Plan</h2>
+        <RuleLabel as="h2">Day Plan</RuleLabel>
         <button
           type="button"
           onClick={onClose}
@@ -118,10 +119,8 @@ export default function BriefingPage() {
           <DayStateBanner />
 
           <section className="panel-static overflow-hidden">
-            <header className="flex items-center gap-3 border-b border-border px-4 py-2.5">
-              <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-                Day Plan
-              </h2>
+            <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+              <RuleLabel as="h2">Day Plan</RuleLabel>
               <div className="min-w-2 flex-1" />
               <button
                 type="button"

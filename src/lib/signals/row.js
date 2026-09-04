@@ -36,6 +36,11 @@ export function fromRow(row) {
     filledAt: ms(row.filled_at),
     resolvedAt: ms(row.resolved_at),
     realisedR: row.realised_r,
+    // When the host got this call off the deployment and in front of a person.
+    // The browser reads it to know whether it still has to raise one of its
+    // own, so a reader with a tab open and a phone in their pocket hears about
+    // a call once rather than twice.
+    notifiedAt: ms(row.notified_at),
   }
 }
 
@@ -44,7 +49,10 @@ export function fromRow(row) {
  *
  * The id is left off deliberately. The engine mints one from a counter that
  * starts again with every process, which is fine inside a sweep and useless as
- * a key across them, so the row keeps the database's own.
+ * a key across them, so the row keeps the database's own. So is `notified_at`,
+ * for a different reason: a call being written down and a call having been told
+ * to somebody are separate events, and an insert that claimed both would mark
+ * every published call as announced before anything had been sent.
  *
  * @param {object} signal
  * @returns {object} a row ready to insert
