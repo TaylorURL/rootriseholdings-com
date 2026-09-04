@@ -67,6 +67,18 @@ export const SETUP_TYPES = [
 ]
 
 /**
+ * Each setup code against the words it stands for.
+ *
+ * BOS, CHoCH and OTE are the desk's own shorthand, and a surface that has room
+ * for three letters and no more still has room to say what they mean on hover.
+ * Derived here rather than retyped, so a setup added above is spelled out
+ * everywhere it appears.
+ */
+export const SETUP_NAMES = Object.fromEntries(
+  SETUP_TYPES.map((entry) => [entry.id, entry.longLabel])
+)
+
+/**
  * Trading sessions referenced across journal/briefing surfaces (ICT-style).
  * Minute windows are Central Time; Asia wraps past midnight. Listed in
  * precedence order for {@link sessionForCtMinutes} — London wins its 02:00 –

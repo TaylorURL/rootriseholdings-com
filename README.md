@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.36.29-8b5cf6?style=for-the-badge" alt="Version 2026.36.29" />
+  <img src="https://img.shields.io/badge/version-2026.36.30-8b5cf6?style=for-the-badge" alt="Version 2026.36.30" />
   <a href="https://www.rootriseholdings.com"><img src="https://img.shields.io/badge/Live-Vercel-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Live site" /></a>
   <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
   <img src="https://img.shields.io/badge/Vite-6-7c3aed?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 6" />
@@ -63,9 +63,13 @@ Every call is written down before the answer arrives and scored against the bars
 
 The sweep runs on the host, not in the tab. `api/sweep` runs the same engine on a two-minute schedule, reads the calls still standing from `public.signals`, publishes what structure has newly produced, scores what the tape has answered, and writes both back — so a setup that fires at three in the morning is found, and every device reads one history rather than the one its own browser happened to record. The endpoint is idempotent: publishing is gated on the fingerprints already standing, scoring only moves a call forward, and a partial unique index makes that true even if two sweeps overlap. It answers nothing without `CRON_SECRET`, because one sweep costs a feed read of every swept instrument at every timeframe.
 
-The browser reads that record (`src/lib/signals/remote.js`) and separately re-reads structure every two minutes for the live panels, which is a view of this minute rather than a claim anyone is asked to trust later. A call new to the record reaches the reader through the browser's own notification channel when they have switched alerts on — no mail provider, no account, no key — and the record as it already stood on load is never announced, so opening the tab does not replay everything published while they were away.
+A pass says what it did. A sweep that read every instrument and called none of them and a sweep that reached none of them both leave the record untouched, so they are told apart everywhere the difference could matter: a read of zero is a 503 naming the origin it tried rather than a 200 saying `ok`, every instrument that did not answer is listed with the reason the feed gave, the whole outcome is written to the log as one line, and a row lands in `public.sweep_runs` whether or not anything was found — which is what lets the terminal say the desk swept nine instruments at 14:02 rather than leaving an empty record to be read as a quiet morning. The feed under it distinguishes the same two facts one layer down: a ticker no upstream carries is a 404, an instrument the site carries and could not price this minute answers with `chart.error` filled and a cache measured in seconds, and every served payload names the tier that answered it, so gold quietly moving onto a backup venue is visible instead of inferred.
 
-That channel only fires while a tab is open, which is the one case it is needed for, so the sweep announces from the host as well: set `SIGNAL_WEBHOOK_URL` and each newly published call is posted as an order ticket — side, instrument, grade, setup, timeframe, entry, stop, target, reward-to-risk — to anything that takes a JSON post, a Discord webhook included. It posts after the record is written, never before: a call that reached a phone but not the record is the one failure that cannot be recovered from. A pass announces at most four and says how many it held back, and a webhook that refuses or times out is reported in the sweep's own response rather than failing the pass that found the call.
+The browser reads that record (`src/lib/signals/remote.js`) and separately re-reads structure every two minutes for the live panels, which is a view of this minute rather than a claim anyone is asked to trust later. A call new to the record also raises the browser's own notification when the reader has switched alerts on, which is the channel for somebody already sitting at the desk. It defers to the host: a call the sweep has already put in front of somebody is not raised again here, so a reader holding both a tab and a phone hears about a call once. The record as it already stood on load is never announced either, so opening the tab does not replay everything published while they were away.
+
+That channel only fires while a tab is open, which is the one case it is not needed for, so the announcement that matters leaves the host (`api/lib/announce.js`). Set `NOTIFY_SECRET` and each call goes to the studio's notifications endpoint as a branded email carrying the whole order ticket — side, instrument, grade, setup, timeframe, entry, stop, target, reward-to-risk, each price at that instrument's own precision — with an A+ marked urgent and the rest not. That endpoint holds the sending domain and the recipient list; this side holds a bearer secret and no addresses at all. `SIGNAL_WEBHOOK_URL` still posts the same ticket as one line of text to anything that takes a JSON post, a Discord webhook included, and the two are receivers of one announcement rather than alternatives.
+
+It announces after the record is written, never before: a call that reached a phone but not the record is the one failure that cannot be recovered from. What it announces is what the record says nobody has been told about rather than what the pass itself minted, which is what makes a lost message a two-minute delay instead of an alert nobody ever hears — `signals.notified_at` is stamped only on a message that actually reached somebody, and a two hundred that reached nobody is a failure here whatever the far end thinks. A pass sends at most four and says how many it held back, and what it held back is the next pass's work. A refused or unreachable endpoint is retried once under the same idempotency key, so a post that landed without answering cannot buzz a phone twice, and is then reported in the sweep's response and its log line rather than failing the pass that found the call.
 
 ### The journal
 
@@ -118,7 +122,7 @@ npm run preview  # preview the production build
 
 No secret is required to build or run: market data works keyless on the public feed, and the Supabase project the app ships against is compiled in. To point a build at a different project, copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. To serve real-time OANDA pricing, set `OANDA_API_TOKEN` (a free practice-account token) in the hosting environment — it is read by the market function, never compiled into the browser bundle.
 
-The sweep needs three more, set in the hosting environment and never in the bundle: `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` for the record it writes, and `CRON_SECRET` for the scheduler to prove itself with. `SIGNAL_WEBHOOK_URL` is optional and turns host-side alerts on. Without them `/api/sweep` answers 503 and 401 respectively rather than half-running, and the desk renders an empty record with the reason stated instead of a broken one.
+The sweep needs three more, set in the hosting environment and never in the bundle: `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` for the record it writes, and `CRON_SECRET` for the scheduler to prove itself with. `NOTIFY_SECRET` is optional and is what turns emailed alerts on — `NOTIFY_URL` and `NOTIFY_PROJECT` both default and only exist to point a deployment at a different endpoint or send it as a different project — and `SIGNAL_WEBHOOK_URL` is optional too and posts the same call to a webhook. Without them `/api/sweep` answers 503 and 401 respectively rather than half-running, and the desk renders an empty record with the reason stated instead of a broken one. `SWEEP_ORIGIN` is optional too and only points a pass somewhere other than production: the sweep reads the market function at the site's own address rather than at whichever hostname the scheduler's request arrived on, because a deployment answers on several and the generated ones sit behind access protection.
 
 ## Routes
 
@@ -147,12 +151,13 @@ rootriseholdings-com/
 ├── api/version.js             Function reporting the commit the deployment was built from
 ├── api/sweep.js               Function running the engine on the cron schedule, publishing and scoring the record
 ├── api/lib/signalStore.js     The published record as the host reads and writes it, under the service role
-├── api/lib/announce.js        Posts a newly published call to the webhook, when one is set
+├── api/lib/sweepRuns.js       One row per pass, so an empty record is never mistaken for an unread market
+├── api/lib/announce.js        Gets a call off the host — an emailed ticket through the studio's endpoint, and the webhook beside it
 ├── vercel.json                SPA rewrites + the calendar and market paths
 ├── scripts/prerender.js       Writes a real document for each public route after the SSR build
 ├── scripts/routeDocuments.js  Names the chunks the home document preloads, and makes preview resolve paths as the host does
-├── supabase/migrations/       The contact and signals tables, their row-level security, and their grants
-├── tests/                     node:test suites (journal, smc, signals, signalRecord, sweep, announce, instruments, spotMetal, quoteFallback, seriesFallback, marketData, briefing)
+├── supabase/migrations/       The contact, signals and sweep-run tables, the stamp saying a call was told to somebody, their row-level security, and their grants
+├── tests/                     node:test suites (journal, smc, signals, signalRecord, sweep, feed, announce, instruments, spotMetal, quoteFallback, seriesFallback, marketData, briefing)
 └── src/
     ├── App.jsx                Route groups — brand page, login, gated /app
     ├── routes.jsx             The route components, split so the build and the browser share one list

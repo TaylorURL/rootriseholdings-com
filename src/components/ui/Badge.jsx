@@ -1,3 +1,4 @@
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 const VARIANT_CLASSES = {
@@ -25,13 +26,15 @@ function resolveVariant(variant, children) {
  * @param {React.ReactNode} props.children - label text
  * @param {keyof typeof VARIANT_CLASSES} [props.variant] - explicit variant; inferred from text when omitted
  * @param {boolean} [props.dot=false] - show a leading status dot
+ * @param {string} [props.title] - what an abbreviated label stands for, on hover
  * @param {string} [props.className]
  */
-export default function Badge({ children, variant, dot = false, className }) {
+export default function Badge({ children, variant, dot = false, title, className }) {
   const resolved = resolveVariant(variant, children)
 
   return (
     <span
+      title={title}
       className={cn(
         'inline-flex items-center gap-1.5 rounded-sm px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.08em]',
         VARIANT_CLASSES[resolved],
@@ -41,5 +44,29 @@ export default function Badge({ children, variant, dot = false, className }) {
       {dot && <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />}
       {children}
     </span>
+  )
+}
+
+/**
+ * Which way a trade points.
+ *
+ * Purple against red is the only thing separating a long from a short wherever
+ * a side is drawn as a bare word, and that pair is the one a red-green
+ * deficiency loses first - on a phone, in daylight, which is where this is
+ * read. The arrow carries the same fact in shape, so the direction survives
+ * without colour.
+ *
+ * @param {object} props
+ * @param {'BUY'|'SELL'} props.side
+ */
+export function SideBadge({ side }) {
+  const isBuy = side === 'BUY'
+  const Arrow = isBuy ? ArrowUpRight : ArrowDownRight
+
+  return (
+    <Badge variant={isBuy ? 'buy' : 'sell'} className="gap-1">
+      <Arrow className="h-3 w-3" aria-hidden="true" />
+      {side}
+    </Badge>
   )
 }

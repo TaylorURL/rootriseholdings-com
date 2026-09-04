@@ -14,6 +14,7 @@ import {
 import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
+import { RuleLabel } from '../components/ui/Figures'
 import Select from '../components/ui/Select'
 import { useJournal } from '../context/JournalContext'
 import { useAuth } from '../context/AuthContext'
@@ -1001,10 +1002,8 @@ export default function AccountPage() {
         </section>
 
         <section id="rules" className="panel-static scroll-mt-6 overflow-hidden">
-          <header className="flex items-center gap-3 border-b border-border px-5 py-3">
-            <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-              Risk Rules
-            </h2>
+          <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-5 py-3">
+            <RuleLabel as="h2">Risk Rules</RuleLabel>
             <div className="min-w-2 flex-1" />
             <span className="text-[11px] text-text-faint">Non-negotiable</span>
           </header>
@@ -1030,10 +1029,8 @@ export default function AccountPage() {
         </section>
 
         <section id="session" className="panel-static scroll-mt-6 overflow-hidden">
-          <header className="border-b border-border px-5 py-3">
-            <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-              Session
-            </h2>
+          <header className="border-b border-border bg-surface-2 px-5 py-3">
+            <RuleLabel as="h2">Session</RuleLabel>
           </header>
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
             <p className="text-[13px] text-text-muted">Signed in as {email}.</p>

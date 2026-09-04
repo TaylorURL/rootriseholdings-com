@@ -4,14 +4,15 @@ import { Layers, Trash2, Undo2, Wallet, X } from 'lucide-react'
 import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import Table from '../components/ui/Table'
-import Badge from '../components/ui/Badge'
+import { SideBadge } from '../components/ui/Badge'
+import { PANEL_TITLE } from '../components/ui/Figures'
 import Select from '../components/ui/Select'
 import DayStateBanner from '../components/journal/DayStateBanner'
 import TradeForm from '../components/journal/TradeForm'
 import OpenTradeCard from '../components/journal/OpenTradeCard'
 import { useJournal } from '../context/JournalContext'
 import { INSTRUMENTS, INSTRUMENT_META } from '../data/instruments'
-import { SETUP_TYPES, SESSIONS } from '../data/riskRules'
+import { SETUP_TYPES, SETUP_NAMES, SESSIONS } from '../data/riskRules'
 import { closedTrades, summarize } from '../lib/journal/stats.js'
 import { cn } from '../lib/cn'
 import { formatCt } from '../lib/time.js'
@@ -153,6 +154,11 @@ export default function JournalPage() {
     {
       key: 'symbol',
       header: 'Instrument',
+      // Eleven columns scroll sideways on a phone, and the two worth scrolling
+      // to are the last two. The column that says which trade the row is has
+      // to come with them or the numbers belong to nobody.
+      className: 'sticky left-0 z-raised bg-surface group-hover:bg-surface-2',
+      headerClassName: 'sticky left-0 z-sticky',
       render: (row) => (
         <span className="flex items-center gap-2">
           <span className="font-mono font-medium text-text">
@@ -177,12 +183,21 @@ export default function JournalPage() {
     {
       key: 'side',
       header: 'Side',
-      render: (row) => <Badge variant={row.side === 'BUY' ? 'buy' : 'sell'}>{row.side}</Badge>,
+      render: (row) => <SideBadge side={row.side} />,
     },
     {
       key: 'setup',
       header: 'Setup',
-      render: (row) => <span className="font-mono text-text">{row.setup}</span>,
+      render: (row) => (
+        <span className="font-mono text-text">
+          {row.setup}
+          {SETUP_NAMES[row.setup] ? (
+            <span className="ml-1.5 font-sans text-[11px] text-text-muted">
+              {SETUP_NAMES[row.setup]}
+            </span>
+          ) : null}
+        </span>
+      ),
     },
     {
       key: 'session',
@@ -192,6 +207,7 @@ export default function JournalPage() {
     {
       key: 'closedAt',
       header: 'Closed',
+      numeric: true,
       render: (row) => (
         <span className="font-mono text-xs tabular-nums text-text-muted">
           {formatCt(row.closedAt)}
@@ -200,6 +216,7 @@ export default function JournalPage() {
     },
     {
       key: 'entry',
+      numeric: true,
       header: 'Entry',
       align: 'right',
       render: (row) => (
@@ -210,6 +227,7 @@ export default function JournalPage() {
     },
     {
       key: 'exitPrice',
+      numeric: true,
       header: 'Exit',
       align: 'right',
       render: (row) => (
@@ -220,6 +238,7 @@ export default function JournalPage() {
     },
     {
       key: 'riskPct',
+      numeric: true,
       header: 'Risk',
       align: 'right',
       render: (row) => (
@@ -228,7 +247,8 @@ export default function JournalPage() {
     },
     {
       key: 'realizedR',
-      header: 'R',
+      numeric: true,
+      header: 'R Booked',
       align: 'right',
       render: (row) => (
         <span className={cn('font-mono font-semibold tabular-nums', signedColor(row.realizedR))}>
@@ -238,6 +258,7 @@ export default function JournalPage() {
     },
     {
       key: 'pnl',
+      numeric: true,
       header: 'P&L',
       align: 'right',
       render: (row) => (
@@ -329,10 +350,8 @@ export default function JournalPage() {
           id="on-the-book"
           className="panel-static flex min-h-0 scroll-mt-4 flex-col overflow-hidden"
         >
-          <header className="flex items-center gap-3 border-b border-border px-4 py-2.5">
-            <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-              On The Book
-            </h2>
+          <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+            <h2 className={PANEL_TITLE}>On the Book</h2>
             <div className="min-w-2 flex-1" />
             <span className="inline-flex items-center gap-1.5 text-[11px] text-text-faint">
               <Layers className="h-3.5 w-3.5" aria-hidden="true" />
@@ -354,10 +373,8 @@ export default function JournalPage() {
       {/* The ledger. Its filters ride on its own head rather than in a card
           above it, so what they narrow is the thing they sit on. */}
       <section className="panel-static overflow-hidden">
-        <header className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-border px-4 py-3">
-          <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-            Closed Trades
-          </h2>
+        <header className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-border bg-surface-2 px-4 py-3">
+          <h2 className={PANEL_TITLE}>Closed Trades</h2>
           <div className="min-w-2 flex-1" />
           {closed.length > 0 ? (
             <span className="font-mono text-[11px] tabular-nums text-text-faint">

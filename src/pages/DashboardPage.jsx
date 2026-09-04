@@ -2,16 +2,19 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import PageHeader from '../components/ui/PageHeader'
-import Badge from '../components/ui/Badge'
-import { Figure, FigureRow } from '../components/ui/Figures'
+import { SideBadge } from '../components/ui/Badge'
+import { Figure, FigureRow, PANEL_TITLE, RuleLabel } from '../components/ui/Figures'
+import StandingCalls from '../components/ui/StandingCalls'
 import EquityCurveChart from '../components/ui/EquityCurveChart'
 import ChartInView from '../components/charts/ChartInView'
 import DailyBriefing from '../components/ui/DailyBriefing'
 import DayStateBanner from '../components/journal/DayStateBanner'
 import { useJournal } from '../context/JournalContext'
+import { useSignals } from '../context/SignalsContext'
 import { useBriefing } from '../lib/briefing/useBriefing.js'
-import { RISK_RULES } from '../data/riskRules'
+import { SETTLED } from '../lib/signals/model.js'
 import { INSTRUMENT_META } from '../data/instruments'
+import { SETUP_NAMES } from '../data/riskRules'
 import { closedTrades, equityCurve, summarize } from '../lib/journal/stats.js'
 import { DESK_TIME_ZONE, formatCt, sessionForMoment } from '../lib/time.js'
 import { cn } from '../lib/cn'
@@ -23,14 +26,12 @@ import {
   NO_VALUE,
 } from '../lib/format'
 
-const RULE = 'font-mono text-[10px] uppercase tracking-label text-text-faint'
-
 /** A column of rows under one quiet heading, ruled rather than boxed. */
 function Ledger({ title, action, empty, children }) {
   return (
     <section className="panel-static flex min-h-0 flex-col overflow-hidden">
-      <header className="flex items-center gap-3 border-b border-border px-4 py-2.5">
-        <h2 className={RULE}>{title}</h2>
+      <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+        <h2 className={PANEL_TITLE}>{title}</h2>
         <div className="min-w-2 flex-1" />
         {action}
       </header>
@@ -41,6 +42,7 @@ function Ledger({ title, action, empty, children }) {
 
 export default function DashboardPage() {
   const { trades, equity, settings, dayState, todayPlan } = useJournal()
+  const { signals, recordError, deskSweep } = useSignals()
   const { briefing, loading, refreshing, refresh } = useBriefing({ dayState, plan: todayPlan })
 
   const closed = useMemo(() => closedTrades(trades), [trades])
@@ -50,6 +52,13 @@ export default function DashboardPage() {
     [trades, settings.startingEquity]
   )
   const recentClosed = useMemo(() => [...closed].reverse().slice(0, 6), [closed])
+  const standing = useMemo(
+    () =>
+      signals
+        .filter((signal) => !SETTLED.has(signal.status))
+        .sort((a, b) => b.emittedAt - a.emittedAt),
+    [signals]
+  )
 
   const today = new Intl.DateTimeFormat('en-US', {
     timeZone: DESK_TIME_ZONE,
@@ -67,13 +76,33 @@ export default function DashboardPage() {
         action={<DayStateBanner />}
       />
 
+      {/* Whether there is a call, on what, and at what price is the only thing
+          on this page that is time critical. It opens the page for that reason:
+          everything under it is the record of decisions already taken, and none
+          of it needs acting on in the next thirty seconds. */}
+      <StandingCalls
+        signals={standing}
+        sweep={deskSweep}
+        recordError={recordError}
+        compact
+        action={
+          <Link
+            to="/app/signals"
+            className="focus-ring inline-flex items-center gap-1 rounded-sm text-[11px] font-medium text-accent transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-accent-bright"
+          >
+            Open Signals
+            <ArrowRight className="h-3 w-3" aria-hidden="true" />
+          </Link>
+        }
+      />
+
       {/* The curve carries the page. The two figures that decide whether today
           is going well sit in its frame rather than in a row of tiles above it,
           so the number and the shape it came from are read together. */}
       <section className="panel-static overflow-hidden">
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5 border-b border-border p-5">
           <div>
-            <p className={RULE}>Equity</p>
+            <RuleLabel>Equity</RuleLabel>
             <p className="mt-1.5 font-mono text-[2rem] font-semibold tabular-nums leading-none tracking-tighter text-text">
               {equity != null ? formatCurrency(equity) : 'Not set'}
             </p>
@@ -91,7 +120,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <div>
-            <p className={RULE}>Today</p>
+            <RuleLabel>Today</RuleLabel>
             <p
               className={cn(
                 'mt-1.5 font-mono text-[2rem] font-semibold tabular-nums leading-none tracking-tighter',
@@ -120,29 +149,18 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <FigureRow className="rounded-none border-t border-border" min="9rem">
+        {/* The day's two budgets are on the banner at the top of this page, so
+            they are not restated here. One fact stated two ways on one screen
+            is most of what makes a dense page read as noise. */}
+        <FigureRow className="rounded-none border-t border-border" min="12rem">
           <Figure
-            label="Open positions"
+            label="Open Positions"
             value={dayState.openTrades.length}
             note={`${dayState.openRiskPct.toFixed(2)}% risk on book`}
           />
           <Figure
-            label="A+ today"
-            value={`${dayState.aPlusUsed} of ${RISK_RULES.maxAPlusSetupsPerDay}`}
-            note={
-              dayState.aPlusCapHit
-                ? 'Cap reached'
-                : `${dayState.aPlusLeft} slot${dayState.aPlusLeft === 1 ? '' : 's'} left`
-            }
-          />
-          <Figure
-            label="Loss budget"
-            value={`${dayState.dailyLossBudgetLeftPct.toFixed(2)}%`}
-            note={`Limit ${RISK_RULES.dailyLossLimitPct}%`}
-            tone={dayState.dailyLossLimitHit ? 'text-danger' : undefined}
-          />
-          <Figure
             label="Expectancy"
+            title="Average R booked per closed trade"
             value={closed.length > 0 ? `${allTime.expectancyR.toFixed(2)}R` : NO_VALUE}
             note={closed.length > 0 ? `${closed.length} closed` : 'No closed trades yet'}
             tone={
@@ -183,21 +201,24 @@ export default function DashboardPage() {
                 className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 border-b border-border px-4 py-3 last:border-b-0"
               >
                 <span className="flex min-w-0 items-center gap-2">
-                  <Badge variant={trade.side === 'BUY' ? 'buy' : 'sell'}>{trade.side}</Badge>
+                  <SideBadge side={trade.side} />
                   <span className="truncate font-mono text-[13px] font-medium text-text">
                     {INSTRUMENT_META[trade.symbol]?.displaySymbol ?? trade.symbol}
                   </span>
-                  <span className="truncate font-mono text-[10px] uppercase tracking-label text-text-faint">
+                  <span
+                    title={SETUP_NAMES[trade.setup]}
+                    className="truncate font-mono text-[10px] uppercase tracking-[0.1em] text-text-faint"
+                  >
                     {trade.setup}
                   </span>
                 </span>
-                <span className="font-mono text-[13px] tabular-nums text-text">
+                <span className="text-right font-mono text-[13px] tabular-nums text-text">
                   {formatInstrumentPrice(trade.entry, trade.symbol)}
                 </span>
                 <span className="col-start-1 font-mono text-[11px] tabular-nums text-text-faint">
                   stop {formatInstrumentPrice(trade.stop, trade.symbol)}
                 </span>
-                <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                <span className="text-right font-mono text-[11px] tabular-nums text-text-faint">
                   target {formatInstrumentPrice(trade.target, trade.symbol)}
                 </span>
               </li>
@@ -223,17 +244,20 @@ export default function DashboardPage() {
                 className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 border-b border-border px-4 py-3 last:border-b-0"
               >
                 <span className="flex min-w-0 items-center gap-2">
-                  <Badge variant={trade.side === 'BUY' ? 'buy' : 'sell'}>{trade.side}</Badge>
+                  <SideBadge side={trade.side} />
                   <span className="truncate font-mono text-[13px] font-medium text-text">
                     {INSTRUMENT_META[trade.symbol]?.displaySymbol ?? trade.symbol}
                   </span>
-                  <span className="truncate font-mono text-[10px] uppercase tracking-label text-text-faint">
+                  <span
+                    title={SETUP_NAMES[trade.setup]}
+                    className="truncate font-mono text-[10px] uppercase tracking-[0.1em] text-text-faint"
+                  >
                     {trade.setup}
                   </span>
                 </span>
                 <span
                   className={cn(
-                    'font-mono text-[13px] font-semibold tabular-nums',
+                    'text-right font-mono text-[13px] font-semibold tabular-nums',
                     signedColor(trade.pnl)
                   )}
                 >
@@ -243,7 +267,10 @@ export default function DashboardPage() {
                   {formatCt(trade.closedAt)}
                 </span>
                 <span
-                  className={cn('font-mono text-[11px] tabular-nums', signedColor(trade.realizedR))}
+                  className={cn(
+                    'text-right font-mono text-[11px] tabular-nums',
+                    signedColor(trade.realizedR)
+                  )}
                 >
                   {formatR(trade.realizedR)}
                 </span>

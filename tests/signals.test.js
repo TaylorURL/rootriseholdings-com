@@ -8,7 +8,13 @@ import {
   signalFingerprint,
   signalStats,
 } from '../src/lib/signals/model.js'
-import { scoreAgainstRead } from '../src/lib/signals/engine.js'
+import {
+  WITHHELD_REASONS,
+  readInstrument,
+  scoreAgainstRead,
+  sweep,
+} from '../src/lib/signals/engine.js'
+import { clearCandleCache } from '../src/lib/marketData/candles.js'
 
 /**
  * A structure read that clears every gate, in the shape analyzeStructure
@@ -351,10 +357,14 @@ test('a call is not scored against a venue it was not minted on', () => {
   assert.equal(minted.venue, 'OANDA')
 
   const candles = [bar(1000, 104, 108), bar(2000, 130, 133)]
-  const ownVenue = scoreAgainstRead(minted, { candles, exchange: 'OANDA' }, 3000)
+  const ownVenue = scoreAgainstRead(minted, { ok: true, candles, exchange: 'OANDA' }, 3000)
   assert.equal(ownVenue.status, 'target')
 
-  const elsewhere = scoreAgainstRead(minted, { candles, exchange: 'Spot (COMEX basis)' }, 3000)
+  const elsewhere = scoreAgainstRead(
+    minted,
+    { ok: true, candles, exchange: 'Spot (COMEX basis)' },
+    3000
+  )
   assert.equal(elsewhere.status, 'live')
   assert.equal(elsewhere.realisedR, null)
 })
@@ -364,12 +374,265 @@ test('a call minted without a venue is scored by whatever answered', () => {
   const minted = createSignal({ symbol: 'XAUUSD', timeframe: '1H', call, price: 118, now: 0 })
   assert.equal(minted.venue, null)
   const candles = [bar(1000, 104, 108), bar(2000, 130, 133)]
-  assert.equal(scoreAgainstRead(minted, { candles, exchange: 'Anything' }, 3000).status, 'target')
+  assert.equal(
+    scoreAgainstRead(minted, { ok: true, candles, exchange: 'Anything' }, 3000).status,
+    'target'
+  )
 })
 
-test('a call whose instrument went unread this pass is left alone', () => {
+test('a call whose instrument went unread this pass is not scored', () => {
   const { call } = deriveTradeCall({ execution: read(), alignment: 'Full Bull' })
   const minted = createSignal({ symbol: 'XAUUSD', timeframe: '1H', call, price: 118, now: 0 })
   assert.deepEqual(scoreAgainstRead(minted, null, 3000), minted)
   assert.deepEqual(scoreAgainstRead(minted, { candles: null, exchange: 'OANDA' }, 3000), minted)
+  assert.deepEqual(scoreAgainstRead(minted, { ok: false, symbol: 'XAUUSD' }, 3000), minted)
+})
+
+/**
+ * A call ages whether or not anything is reading its instrument.
+ *
+ * Expiry used to live behind the same guard as scoring, so a standing call
+ * whose feed went quiet - a token expired, an upstream started refusing, a
+ * venue changed underneath it - was returned untouched on every pass forever.
+ * It stayed live on the published record, was re-read on every sweep, and
+ * counted itself into the standing figure a reader is shown, because the thing
+ * that would have expired it was the thing that had stopped answering.
+ */
+test('a call whose feed went quiet expires rather than standing forever', () => {
+  const { call } = deriveTradeCall({ execution: read(), alignment: 'Full Bull' })
+  const minted = createSignal({
+    symbol: 'XAUUSD',
+    timeframe: '1H',
+    call,
+    price: 118,
+    venue: 'OANDA',
+    now: 0,
+  })
+
+  const HOUR = 3_600_000
+  const withinWindow = 47 * HOUR
+  const pastWindow = 49 * HOUR
+
+  assert.equal(scoreAgainstRead(minted, null, withinWindow).status, 'live')
+  assert.equal(scoreAgainstRead(minted, null, pastWindow).status, 'expired')
+  assert.equal(
+    scoreAgainstRead(minted, { ok: false, symbol: 'XAUUSD' }, pastWindow).status,
+    'expired'
+  )
+  // A venue that does not match is still not scored against - the levels are on
+  // a different scale - but it does not hold the clock either.
+  const elsewhere = scoreAgainstRead(
+    minted,
+    { ok: true, candles: [bar(1000, 104, 108)], exchange: 'Spot (COMEX basis)' },
+    pastWindow
+  )
+  assert.equal(elsewhere.status, 'expired')
+  assert.equal(elsewhere.realisedR, null)
+})
+
+/**
+ * One setup is one call, however many passes look at it.
+ *
+ * The fingerprint used to carry the entry, which is the live price, and the
+ * stop, which carries an ATR that drifts with every bar. A setup standing for
+ * an hour therefore produced a different fingerprint on every two-minute pass,
+ * the record filled with near-identical rows, and the unique index meant to
+ * stop exactly that could not, because the fingerprints genuinely differed.
+ */
+test('a setup keeps one fingerprint while its price moves under it', () => {
+  const first = signalFingerprint({
+    symbol: 'US30',
+    timeframe: '15m',
+    side: 'BUY',
+    setup: 'BOS',
+    entry: 44_210.5,
+    stop: 44_100,
+    target: 44_600,
+  })
+  const laterInTheSameSetup = signalFingerprint({
+    symbol: 'US30',
+    timeframe: '15m',
+    side: 'BUY',
+    setup: 'BOS',
+    entry: 44_231.75,
+    stop: 44_103.2,
+    target: 44_600,
+  })
+  assert.equal(first, laterInTheSameSetup)
+})
+
+test('a setup on different structure is a different call', () => {
+  const base = { symbol: 'US30', timeframe: '15m', side: 'BUY', setup: 'BOS', target: 44_600 }
+  const fingerprint = signalFingerprint(base)
+  assert.notEqual(fingerprint, signalFingerprint({ ...base, target: 44_700 }))
+  assert.notEqual(fingerprint, signalFingerprint({ ...base, side: 'SELL' }))
+  assert.notEqual(fingerprint, signalFingerprint({ ...base, setup: 'CHoCH' }))
+  assert.notEqual(fingerprint, signalFingerprint({ ...base, timeframe: '1H' }))
+  assert.notEqual(fingerprint, signalFingerprint({ ...base, symbol: 'NAS100' }))
+})
+
+/**
+ * A pass that reached nothing has no standing to say a call's window closed
+ * unanswered. The answer may well have printed inside the blackout, and the
+ * bars that would show it are the ones the pass could not read - so the record
+ * waits rather than booking an outcome nobody observed.
+ */
+test('a pass that read nothing books nothing', async (t) => {
+  const previous = globalThis.fetch
+  globalThis.fetch = async () => {
+    throw new Error('the feed is dark')
+  }
+  t.after(() => {
+    globalThis.fetch = previous
+  })
+
+  const { call } = deriveTradeCall({ execution: read(), alignment: 'Full Bull' })
+  const standing = createSignal({
+    symbol: 'XAUUSD',
+    timeframe: '1H',
+    call,
+    price: 118,
+    venue: 'OANDA',
+    now: 0,
+  })
+
+  const wellPastTheDeadline = 500 * 3_600_000
+  const outcome = await sweep({ signals: [standing], now: wellPastTheDeadline })
+
+  assert.equal(Object.keys(outcome.reads).length, 0)
+  assert.ok(outcome.unread.length > 0)
+  assert.equal(outcome.signals[0].status, 'live')
+  assert.deepEqual(outcome.signals[0], standing)
+})
+
+/**
+ * A read thin enough that the desk did not really see the market.
+ *
+ * These are the dangerous ones, because they do not look like failures. Bars
+ * come back, structure parses, a call falls out, and the pass reports nine of
+ * nine read - while the entry was minted off a series the feed served from its
+ * own memory, or the alignment gate was cleared by a vote only one timeframe
+ * turned up to. Both are named on the read, both refuse to publish, and both
+ * still let a standing call be scored against whatever did answer.
+ */
+const bars = (count = 60) =>
+  Array.from({ length: count }, (_, at) => ({
+    time: 1_700_000_000_000 + at * 3_600_000,
+    open: 100 + at,
+    high: 103 + at,
+    low: 99 + at,
+    close: 102 + at,
+    volume: 1,
+  }))
+
+/**
+ * A feed whose reads can be posed one timeframe at a time.
+ *
+ * Posed on the interval and the range together, because 1H and 4H are both
+ * asked for as hourly bars and are told apart only by how far back they reach.
+ * The engine's own candle cache is keyed for a long-lived tab, so it is dropped
+ * around each case or the second one reads the first one's answers.
+ */
+function feedReturning(t, answer) {
+  const previous = globalThis.fetch
+  clearCandleCache()
+  globalThis.fetch = async (url) => {
+    const query = new URL(url, 'https://desk.test')
+    const shape = answer(query.searchParams.get('interval'), query.searchParams.get('range'))
+    if (!shape) return { ok: false, status: 503, json: async () => ({}) }
+    return { ok: true, status: 200, json: async () => shape }
+  }
+  t.after(() => {
+    globalThis.fetch = previous
+    clearCandleCache()
+  })
+}
+
+/** The query each of the desk's timeframes goes out as. */
+const EXECUTION = (interval, range) => interval === '1h' && range === '1mo'
+const DAILY = (interval) => interval === '1d'
+
+const chartOf = (candles, extra = {}) => ({
+  chart: {
+    result: [
+      {
+        meta: { symbol: 'GC=F', fullExchangeName: 'OANDA', regularMarketPrice: 120, ...extra },
+        timestamp: candles.map((candle) => Math.round(candle.time / 1000)),
+        indicators: {
+          quote: [
+            {
+              open: candles.map((candle) => candle.open),
+              high: candles.map((candle) => candle.high),
+              low: candles.map((candle) => candle.low),
+              close: candles.map((candle) => candle.close),
+              volume: candles.map((candle) => candle.volume),
+            },
+          ],
+        },
+      },
+    ],
+    error: null,
+  },
+})
+
+const GOLD = {
+  symbol: 'XAUUSD',
+  providerSymbol: 'GC=F',
+  primaryTimeframe: '1H',
+  biasTimeframes: ['Daily', '4H'],
+  sideConstraint: null,
+}
+
+test('a series the feed answered from memory cannot mint a call', async (t) => {
+  feedReturning(t, () => chartOf(bars(), { stale: true, staleSeconds: 2400 }))
+
+  const result = await readInstrument(GOLD)
+  assert.equal(result.ok, true, 'the read still answers, so standing calls can be scored')
+  assert.equal(result.call, null, 'nothing is minted off a price that is not the tape')
+  assert.ok(result.withheld.some((held) => held.reason === WITHHELD_REASONS.remembered))
+  assert.ok(result.standDown, 'the reason is stated where a refused setup states one')
+  // The structure reading itself survives - it is what a reader of the markets
+  // screen came for, and it is an honest reading of the bars that did arrive.
+  assert.ok(result.execution)
+  assert.ok(result.scores)
+})
+
+test('a read whose higher timeframes both failed cannot mint a call', async (t) => {
+  feedReturning(t, (interval, range) => (EXECUTION(interval, range) ? chartOf(bars()) : null))
+
+  const result = await readInstrument(GOLD)
+  assert.equal(result.ok, true)
+  assert.equal(result.call, null)
+  assert.deepEqual(result.biasMissing, ['Daily', '4H'])
+  assert.ok(result.withheld.some((held) => held.reason === WITHHELD_REASONS.unaligned))
+})
+
+test('one higher timeframe answering is a thinner vote, not an absent one', async (t) => {
+  feedReturning(t, (interval, range) => (DAILY(interval, range) ? null : chartOf(bars())))
+
+  const result = await readInstrument(GOLD)
+  assert.deepEqual(result.biasMissing, ['Daily'])
+  assert.deepEqual(result.withheld, [], 'two of three is still a majority the gate can read')
+})
+
+test('bars carrying no venue cannot mint a call that nothing could score later', async (t) => {
+  feedReturning(t, () => chartOf(bars(), { fullExchangeName: undefined, exchangeName: undefined }))
+
+  const result = await readInstrument(GOLD)
+  assert.equal(result.call, null)
+  assert.ok(result.withheld.some((held) => held.reason === WITHHELD_REASONS.unvenued))
+})
+
+test('a pass names the instruments that answered too thinly to call', async (t) => {
+  // Every execution timeframe answers and no bias timeframe does, so every
+  // swept instrument is read and none of them is fit to publish from.
+  feedReturning(t, (interval, range) =>
+    EXECUTION(interval, range) || interval === '15m' ? chartOf(bars()) : null
+  )
+
+  const outcome = await sweep({ signals: [], now: Date.now() })
+  assert.ok(Object.keys(outcome.reads).length > 0, 'the execution timeframe answered')
+  assert.equal(outcome.published.length, 0, 'nothing publishes off a one-way vote')
+  assert.ok(outcome.withheld.length > 0, 'and the pass says so rather than reporting a clean read')
+  assert.ok(outcome.withheld.every((held) => held.symbol && held.reason))
 })

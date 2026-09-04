@@ -19,7 +19,7 @@ import ChartInView from '../components/charts/ChartInView'
 import { AXIS_TICK } from '../components/charts/chartTheme'
 import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
-import { Figure, FigureRow } from '../components/ui/Figures'
+import { Figure, FigureRow, RuleLabel, RULE_LABEL } from '../components/ui/Figures'
 import Badge from '../components/ui/Badge'
 import { ChartTooltipShell } from '../components/ui/ChartTooltip'
 import { useJournal } from '../context/JournalContext'
@@ -48,7 +48,7 @@ function BreakdownCard({ title, rows, hint }) {
   return (
     <section className="bg-surface p-5">
       <header className="mb-4 flex items-center gap-3">
-        <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">{title}</h2>
+        <RuleLabel as="h2">{title}</RuleLabel>
         <div className="min-w-2 flex-1" />
         {hint ? <span className="text-[11px] text-text-faint">{hint}</span> : null}
       </header>
@@ -63,10 +63,19 @@ function BreakdownCard({ title, rows, hint }) {
               key={row.key}
               className="bg-surface-2/40 flex items-center justify-between gap-3 rounded-control border border-border px-3 py-2.5"
             >
-              <div className="leading-tight">
-                <p className="text-sm font-medium text-text">{row.label}</p>
+              {/* The count is pinned to its own width so everything after it
+                  starts in the same place, which is what lets a column of win
+                  rates be read down rather than one row at a time. */}
+              <div className="min-w-0 leading-tight">
+                <p className="truncate text-sm font-medium text-text">{row.label}</p>
                 <p className="text-xs text-text-faint">
-                  {row.trades} trades · win rate {Math.round(row.winRate * 100)}%
+                  <span className="inline-block w-[3ch] text-right font-mono tabular-nums">
+                    {row.trades}
+                  </span>{' '}
+                  trades · win rate{' '}
+                  <span className="inline-block w-[4ch] text-right font-mono tabular-nums">
+                    {Math.round(row.winRate * 100)}%
+                  </span>
                 </p>
               </div>
               <div className="text-right">
@@ -100,7 +109,7 @@ function ProgressTile({ label, icon: Icon, current, target, formatter, intent = 
   return (
     <div className="bg-surface-2/40 flex flex-col gap-2 rounded-card border border-border p-4">
       <div className="flex items-center justify-between gap-3">
-        <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-text-faint">
+        <span className={cn('inline-flex items-center gap-2', RULE_LABEL)}>
           <Icon className="h-3.5 w-3.5" aria-hidden="true" />
           {label}
         </span>
@@ -138,8 +147,8 @@ function PropFirmCard({ firm, trades }) {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <p className="text-xs text-text-faint">Firm</p>
-            <p className="font-medium text-text">{firm.firmName}</p>
+            <RuleLabel>Firm</RuleLabel>
+            <p className="mt-1 font-medium text-text">{firm.firmName}</p>
             {firm.startedAt ? (
               <p className="text-xs text-text-faint">
                 Since {formatCt(`${firm.startedAt}T12:00:00-05:00`, { dateStyle: 'medium' })}
@@ -147,10 +156,10 @@ function PropFirmCard({ firm, trades }) {
             ) : null}
           </div>
           <div className="text-right">
-            <p className="text-xs text-text-faint">Balance</p>
+            <RuleLabel>Balance</RuleLabel>
             <p
               className={cn(
-                'font-mono tabular-nums',
+                'mt-1 font-mono tabular-nums',
                 snapshot.drawdownBusted ? 'text-danger' : 'text-text'
               )}
             >
@@ -223,7 +232,7 @@ function PropFirmCard({ firm, trades }) {
                   : 'bg-surface-2/40 border-border'
               )}
             >
-              <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-text-faint">
+              <span className={cn('inline-flex items-center gap-2', RULE_LABEL)}>
                 <Award className="h-3.5 w-3.5" aria-hidden="true" />
                 Consistency Rule
               </span>
@@ -301,19 +310,19 @@ export default function InsightsPage() {
       {/* One strip of figures rather than six tiles: they are one reading of
           the same record, and six borders between them says otherwise. */}
       <FigureRow min="10rem">
-        <Figure label="Closed trades" value={stats.trades} note={`${stats.wins} won`} />
+        <Figure label="Closed Trades" value={stats.trades} note={`${stats.wins} won`} />
         <Figure
-          label="Win rate"
+          label="Win Rate"
           value={stats.trades > 0 ? `${Math.round(stats.winRate * 100)}%` : NO_VALUE}
         />
         <Figure
           label="Expectancy"
           value={stats.trades > 0 ? `${stats.expectancyR.toFixed(2)}R` : NO_VALUE}
-          note="per trade"
+          note="Average R per trade"
           tone={stats.expectancyR >= 0 ? 'text-positive' : 'text-danger'}
         />
         <Figure
-          label="Avg win / loss"
+          label="Avg Win / Loss"
           value={
             stats.trades > 0
               ? `${formatR(stats.avgWinR)} / -${stats.avgLossR.toFixed(1)}R`

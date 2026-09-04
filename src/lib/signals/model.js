@@ -57,10 +57,28 @@ function nextId(at) {
   return `S${at.toString(36)}${counter.toString(36)}`
 }
 
-/** Two calls are the same call when every number an order needs matches. */
-export function signalFingerprint({ symbol, timeframe, side, entry, stop, target }) {
+/**
+ * What makes two calls the same call.
+ *
+ * It is the setup, not the ticket. The four numbers an order needs used to be
+ * the key, and three of them move underneath a setup that has not changed: the
+ * entry is the live price, so it is different on every pass, and the stop
+ * carries an ATR that drifts with each bar. A setup standing for an hour was
+ * therefore a new fingerprint every time the sweep looked at it, the record
+ * filled with near-identical rows, and the index meant to stop exactly that
+ * could not, because the fingerprints genuinely differed.
+ *
+ * The target is the one level that is structure alone - the impulse's own
+ * extension, fixed by the leg's origin and extreme - and the leg cannot extend
+ * while a setup is publishable, because extending it puts the pullback back to
+ * nothing and the pullback gate refuses. So the target is constant across
+ * exactly the window in which one setup can be called, and moves when the
+ * structure behind it moves, which is the definition wanted. Side and setup
+ * ride alongside it because one leg can be read two ways.
+ */
+export function signalFingerprint({ symbol, timeframe, side, setup, target }) {
   const round = (value) => Number(value).toPrecision(8)
-  return [symbol, timeframe, side, round(entry), round(stop), round(target)].join('|')
+  return [symbol, timeframe, side, setup ?? '', round(target)].join('|')
 }
 
 /**

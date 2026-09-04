@@ -8,6 +8,16 @@
  * directly. One response answers both questions a surface asks, because a quote
  * is the last bar of a series: asking for today at a fine interval returns the
  * current price and the session's shape together.
+ *
+ * A read that does not produce a series says why. It used to return null for
+ * every kind of failure at once - a refused request, an unparseable body, a
+ * ticker the site does not carry, a market with nothing to report - and
+ * everything above it then had one fact to work from: no bars. That is the
+ * difference between a desk that looked at the market and found nothing and a
+ * desk that never reached the market at all, and collapsing the two is what let
+ * a feed the sweep could not reach read, on every surface and in every log, as
+ * a quiet morning. So a failure comes back as a reason, and the callers that
+ * only want a price still get to ignore it.
  */
 
 /** Where the browser reaches the proxied chart endpoint. */
@@ -94,6 +104,50 @@ export function foldCandles(candles, size) {
 }
 
 /**
+ * Why a read produced no series.
+ *
+ * The set is small on purpose: what a caller does about a failure depends on
+ * which side of the wire it happened on, and nothing finer than that. Anything
+ * needing more detail reads `detail`, which carries the upstream's own words.
+ */
+export const FEED_REASONS = {
+  /** The request did not come back at all - no network, or the host refused it. */
+  unreachable: 'unreachable',
+  /** The feed answered with a status that is not a success. */
+  refused: 'refused',
+  /** The feed answered, and said it could not price this instrument. */
+  unpriced: 'unpriced',
+  /** The body was not the chart shape, so there is nothing to read out of it. */
+  unreadable: 'unreadable',
+  /** Bars came back, but too few of them to read structure off. */
+  short: 'short',
+  /** The desk asks for a timeframe the feed has no query for. */
+  untimed: 'untimed',
+}
+
+/** What each reason says on a surface, in the desk's own words. */
+const FEED_SENTENCES = {
+  unreachable: 'The market feed could not be reached.',
+  refused: 'The market feed refused the request.',
+  unpriced: 'The market feed has no price for this instrument right now.',
+  unreadable: 'The market feed answered with something that is not a chart.',
+  short: 'The market feed returned too little history to read structure from.',
+  untimed: 'This timeframe is not one the feed is asked for.',
+}
+
+/**
+ * One sentence a reader can act on, for a failed read.
+ *
+ * @param {{reason?:string, detail?:string}} [failure] - from a feed read
+ * @returns {string}
+ */
+export function describeFeedFailure(failure) {
+  return FEED_SENTENCES[failure?.reason] ?? 'The market feed did not answer.'
+}
+
+const failed = (reason, detail = null) => ({ ok: false, reason, detail })
+
+/**
  * One chart request, returning the meta block and the parsed series.
  *
  * @param {string} providerSymbol - registry ticker, e.g. GC=F or ^NDX
@@ -101,21 +155,48 @@ export function foldCandles(candles, size) {
  * @param {string} query.interval
  * @param {string} query.range
  * @param {AbortSignal} [signal]
- * @returns {Promise<{meta:object, candles:object[]}|null>} null when the symbol
- *   is not served or the request fails
+ * @returns {Promise<{ok:true, meta:object, candles:object[]}|{ok:false, reason:string, detail:string|null}>}
  */
 export async function fetchChart(providerSymbol, { interval, range }, signal) {
   const url = `${feedOrigin}${MARKET_PATH}/${encodeURIComponent(providerSymbol)}?interval=${interval}&range=${range}`
+  let response
   try {
-    const response = await fetch(url, { signal })
-    if (!response.ok) return null
-    const payload = await response.json()
-    const result = payload?.chart?.result?.[0]
-    if (!result?.meta) return null
-    return { meta: result.meta, candles: toCandles(result) }
-  } catch {
-    return null
+    response = await fetch(url, { signal })
+  } catch (error) {
+    return failed(FEED_REASONS.unreachable, String(error?.message ?? error))
   }
+  if (!response.ok) return failed(FEED_REASONS.refused, `the feed answered ${response.status}`)
+
+  let payload
+  try {
+    payload = await response.json()
+  } catch (error) {
+    return failed(FEED_REASONS.unreadable, String(error?.message ?? error))
+  }
+
+  // The feed fills this field when it has been asked for something it carries
+  // and could not price it. An answer that carries neither a result nor a
+  // stated reason is one the desk cannot read, which is its own fault rather
+  // than the market's.
+  const stated = payload?.chart?.error
+  const result = payload?.chart?.result?.[0]
+  if (!result?.meta) {
+    if (stated) {
+      return failed(FEED_REASONS.unpriced, stated.description ?? stated.code ?? null)
+    }
+    return failed(FEED_REASONS.unreadable, 'the answer carried no chart')
+  }
+  // How far behind the tape this answer is, where the feed served it out of its
+  // own memory rather than from an upstream. A caller that only asks whether
+  // the read succeeded gets the same shape it always did; one that mints a
+  // price from the last close has to know, because a two hundred carrying a
+  // full series is exactly what a memory looks like on the wire.
+  const stale = Number.isFinite(result.meta.staleSeconds)
+    ? result.meta.staleSeconds
+    : result.meta.stale
+      ? Infinity
+      : null
+  return { ok: true, meta: result.meta, candles: toCandles(result), stale }
 }
 
 function highestOf(candles, key) {
@@ -153,7 +234,7 @@ function lowestOf(candles, key) {
  */
 export async function fetchQuote(providerSymbol, signal) {
   const chart = await fetchChart(providerSymbol, { interval: '5m', range: '1d' }, signal)
-  if (!chart) return null
+  if (!chart.ok) return null
   const { meta, candles } = chart
   const price = toNumber(meta.regularMarketPrice) ?? candles[candles.length - 1]?.close
   if (price == null) return null
@@ -184,17 +265,27 @@ export async function fetchQuote(providerSymbol, signal) {
  * @param {string} providerSymbol
  * @param {'15m'|'1H'|'4H'|'Daily'} timeframe
  * @param {AbortSignal} [signal]
- * @returns {Promise<{candles:object[], providerSymbol:string, exchange:string|null}|null>}
+ * @returns {Promise<{ok:true, candles:object[], providerSymbol:string, exchange:string|null,
+ *   stale:number|null} |{ok:false, reason:string, detail:string|null}>} `stale` is how many
+ *   seconds behind the tape the series is where the feed answered from memory, and null where
+ *   it answered from an upstream
  */
 export async function fetchSeries(providerSymbol, timeframe, signal) {
   const query = TIMEFRAME_QUERY[timeframe]
-  if (!query) return null
+  if (!query) return failed(FEED_REASONS.untimed, timeframe)
   const chart = await fetchChart(providerSymbol, query, signal)
-  if (!chart || chart.candles.length < 2) return null
+  if (!chart.ok) return chart
+  // One bar is a price, not a series, and everything above this reads it as
+  // structure. A series that short is reported as short rather than as absent,
+  // because the two are answered differently: one waits for the market, the
+  // other waits for the feed.
+  if (chart.candles.length < 2) return failed(FEED_REASONS.short, `${chart.candles.length} bars`)
   const candles = timeframe === '4H' ? foldCandles(chart.candles, FOLD_TO_4H) : chart.candles
   return {
+    ok: true,
     candles,
     providerSymbol: chart.meta.symbol ?? providerSymbol,
     exchange: chart.meta.fullExchangeName ?? chart.meta.exchangeName ?? null,
+    stale: chart.stale,
   }
 }

@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import { Check, Trash2, X } from 'lucide-react'
 import Badge from '../ui/Badge'
+import { Figure, FigureRow } from '../ui/Figures'
 import { INSTRUMENT_META } from '../../data/instruments'
 import { computeRealisedR } from '../../data/riskRules'
 import { useJournal } from '../../context/JournalContext'
@@ -10,15 +11,6 @@ import { formatCurrency, formatInstrumentPrice, formatR, signedColor } from '../
 
 const SMALL_BUTTON =
   'press focus-ring rounded-control border border-border bg-surface-2 px-2.5 py-1.5 text-xs font-medium text-text-muted transition-colors hover:border-border-hover hover:text-text'
-
-function LevelPill({ label, value, tone }) {
-  return (
-    <span className="bg-surface-2/60 inline-flex items-center gap-1.5 rounded-control border border-border px-2 py-1 text-xs">
-      <span className="text-text-faint">{label}</span>
-      <span className={cn('font-mono tabular-nums', tone)}>{value}</span>
-    </span>
-  )
-}
 
 /**
  * One open journal position. Closing happens inline: type the exit, or take
@@ -135,17 +127,20 @@ export default function OpenTradeCard({ trade, onDeleted }) {
         <span className="ml-auto font-mono text-text-faint">{formatCt(trade.openedAt)} CT</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <LevelPill label="Entry" value={price(trade.entry)} tone="text-text" />
-        <LevelPill label="SL" value={price(trade.stop)} tone="text-danger" />
-        <LevelPill label="TP" value={price(trade.target)} tone="text-positive" />
-        <LevelPill label="R:R" value={trade.plannedRR.toFixed(2)} tone="text-text" />
-        <LevelPill
+      {/* The same five readings the call card draws, in the same words and the
+          same order. A trade moving from the record to the book should not
+          change vocabulary on the way. */}
+      <FigureRow min="6rem">
+        <Figure label="Entry" value={price(trade.entry)} />
+        <Figure label="Stop" value={price(trade.stop)} tone="text-danger" />
+        <Figure label="Target" value={price(trade.target)} tone="text-positive" />
+        <Figure label="R:R" note="Reward to risk" value={trade.plannedRR.toFixed(2)} />
+        <Figure
           label="Risk"
-          value={`${trade.riskPct.toFixed(2)}% · ${formatCurrency(trade.riskAmount)}`}
-          tone="text-text"
+          value={`${trade.riskPct.toFixed(2)}%`}
+          note={formatCurrency(trade.riskAmount)}
         />
-      </div>
+      </FigureRow>
 
       {trade.note && <p className="text-xs leading-relaxed text-text-muted">{trade.note}</p>}
 

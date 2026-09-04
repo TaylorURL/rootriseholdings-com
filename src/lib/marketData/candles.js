@@ -24,12 +24,16 @@ function cacheKey(providerSymbol, timeframe) {
 }
 
 /**
+ * Only a series is held. A failure is handed back as it came and never stored,
+ * so a feed that refuses one read is asked again on the next one rather than
+ * being remembered as empty for the rest of the bar.
+ *
  * @param {object} args
  * @param {string} args.providerSymbol - the feed's ticker for this instrument
  * @param {'15m'|'1H'|'4H'|'Daily'} args.timeframe
  * @param {AbortSignal} [args.signal]
- * @returns {Promise<{candles:object[], providerSymbol:string, exchange:string|null}|null>}
- *   null when the feed does not serve this symbol at this timeframe
+ * @returns {Promise<{ok:true, candles:object[], providerSymbol:string, exchange:string|null}
+ *   |{ok:false, reason:string, detail:string|null}>}
  */
 export async function fetchCandles({ providerSymbol, timeframe, signal }) {
   const key = cacheKey(providerSymbol, timeframe)
@@ -38,7 +42,7 @@ export async function fetchCandles({ providerSymbol, timeframe, signal }) {
   if (hit && Date.now() - hit.at < ttl) return hit.value
 
   const series = await fetchSeries(providerSymbol, timeframe, signal)
-  if (!series) return null
+  if (!series.ok) return series
   cache.set(key, { at: Date.now(), value: series })
   return series
 }

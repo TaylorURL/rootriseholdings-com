@@ -2,17 +2,19 @@ import { useMemo, useState } from 'react'
 import { Bell, BellOff, RefreshCw } from 'lucide-react'
 import PageHeader from '../components/ui/PageHeader'
 import Table from '../components/ui/Table'
-import Badge from '../components/ui/Badge'
-import { Figure, FigureRow } from '../components/ui/Figures'
+import Badge, { SideBadge } from '../components/ui/Badge'
+import { Figure, FigureRow, RuleLabel } from '../components/ui/Figures'
 import SegmentedTabs from '../components/ui/SegmentedTabs'
 import MarketingButton from '../components/marketing/MarketingButton'
 import TradeCallCard from '../components/ui/TradeCallCard'
+import StandingCalls from '../components/ui/StandingCalls'
 import { Skeleton, SkeletonRegion } from '../components/ui/Skeleton'
 import { useSignals } from '../context/SignalsContext'
 import { PUBLISHED_INSTRUMENTS } from '../lib/signals/engine.js'
 import { SETTLED } from '../lib/signals/model.js'
 import { requestNotificationAccess } from '../lib/alerts/notify.js'
 import { INSTRUMENT_META, decimalsForInstrument } from '../data/instruments'
+import { SETUP_NAMES } from '../data/riskRules'
 import { formatInstrumentPrice, formatR, NO_VALUE } from '../lib/format'
 import { formatCt } from '../lib/time'
 import { cn } from '../lib/cn'
@@ -26,8 +28,6 @@ const OUTCOME = {
   stop: { label: 'Stopped', variant: 'danger' },
   expired: { label: 'Expired', variant: 'neutral' },
 }
-
-const PANEL_HEAD = 'font-mono text-[10px] uppercase tracking-label text-text-faint'
 
 /**
  * The alert switch. The browser's permission prompt is bound to this click, so
@@ -70,14 +70,15 @@ function AlertToggle() {
             ? 'Notifications are blocked for this site in your browser settings.'
             : on
               ? 'A new call reaches you outside this tab.'
-              : 'Alerts are off. Calls appear here only.'}
+              : 'Alerts are off in this browser. Calls appear on this page.'}
       </span>
     </div>
   )
 }
 
 export default function SignalsPage() {
-  const { signals, recordError, reads, stats, sweeping, lastSweep, refresh } = useSignals()
+  const { signals, recordError, deskSweep, reads, unread, stats, sweeping, lastSweep, refresh } =
+    useSignals()
   const [tab, setTab] = useState('All')
 
   const standing = useMemo(
@@ -102,6 +103,7 @@ export default function SignalsPage() {
     key,
     header: key[0].toUpperCase() + key.slice(1),
     align,
+    numeric: true,
     render: (row) => (
       <span className="font-mono tabular-nums text-text-muted">
         {formatInstrumentPrice(row[key], row.symbol, decimalsForInstrument(row.symbol))}
@@ -113,6 +115,7 @@ export default function SignalsPage() {
     {
       key: 'emittedAt',
       header: 'Published',
+      numeric: true,
       render: (row) => (
         <span className="whitespace-nowrap font-mono text-xs text-text-muted">
           {formatCt(row.emittedAt)}
@@ -128,12 +131,12 @@ export default function SignalsPage() {
         </span>
       ),
     },
-    { key: 'side', header: 'Side', render: (row) => <Badge>{row.side}</Badge> },
+    { key: 'side', header: 'Side', render: (row) => <SideBadge side={row.side} /> },
     {
       key: 'setup',
       header: 'Setup',
       render: (row) => (
-        <span className="text-text-muted">
+        <span className="text-text-muted" title={SETUP_NAMES[row.setup]}>
           {row.setup} · {row.grade}
         </span>
       ),
@@ -151,8 +154,9 @@ export default function SignalsPage() {
     },
     {
       key: 'realisedR',
-      header: 'R',
+      header: <span title="Booked in units of the risk taken">R</span>,
       align: 'right',
+      numeric: true,
       render: (row) => (
         <span
           className={cn(
@@ -205,7 +209,7 @@ export default function SignalsPage() {
       <FigureRow min="10rem">
         <Figure label="Published" value={stats.published} note={`${stats.expired} expired`} />
         <Figure
-          label="Hit rate"
+          label="Hit Rate"
           value={stats.hitRate == null ? NO_VALUE : `${(stats.hitRate * 100).toFixed(0)}%`}
           note={`${stats.wins} won, ${stats.losses} lost`}
           tone={
@@ -218,6 +222,7 @@ export default function SignalsPage() {
         />
         <Figure
           label="Total R"
+          title="Net result in units of the risk taken, across every call that reached entry"
           value={stats.triggered ? formatR(stats.totalR) : NO_VALUE}
           note={`${stats.triggered} of ${stats.published} reached entry`}
           tone={stats.totalR >= 0 ? 'text-positive' : 'text-danger'}
@@ -229,49 +234,37 @@ export default function SignalsPage() {
         />
       </FigureRow>
 
+      {/* The three panels are placed rather than nested, so one column reads in
+          the order the questions are asked - what is standing, whether it can
+          reach me, what the desk is looking at - while two columns keep the
+          switch in the rail beside the calls it acts on. */}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="space-y-5">
-          {/* What the record says is open: the calls a reader could be in, or
-              could still take. These are the host's, published and scored on
-              its clock, and the same on every device. */}
-          <section className="panel-static overflow-hidden">
-            <header className="flex items-center gap-3 border-b border-border px-4 py-2.5">
-              <h2 className={PANEL_HEAD}>Standing Calls</h2>
-              <div className="min-w-2 flex-1" />
-              <span className="text-[11px] text-text-faint">
-                {standing.length} standing on the record
-              </span>
-            </header>
-            <div className="p-4">
-              {standing.length === 0 ? (
-                <p className="py-6 text-center text-[13px] text-text-faint">
-                  {recordError
-                    ? 'The record could not be read.'
-                    : 'No call is standing. The sweep publishes one when structure produces it.'}
-                </p>
-              ) : (
-                <div className="grid gap-4 2xl:grid-cols-2">
-                  {standing.map((signal) => (
-                    <TradeCallCard
-                      key={signal.id}
-                      symbol={signal.symbol}
-                      call={signal}
-                      timeframe={signal.timeframe}
-                      status={signal.status}
-                      publishedAt={signal.emittedAt}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
+        {/* What the record says is open: the calls a reader could be in, or
+            could still take. These are the host's, published and scored on its
+            clock, and the same on every device. */}
+        <StandingCalls
+          signals={standing}
+          sweep={deskSweep}
+          recordError={recordError}
+          className="xl:col-start-1 xl:row-start-1"
+        />
 
+        <section className="panel-static h-fit overflow-hidden xl:col-start-2 xl:row-start-1">
+          <header className="border-b border-border bg-surface-2 px-4 py-2.5">
+            <RuleLabel as="h2">Alerts</RuleLabel>
+          </header>
+          <div className="p-4">
+            <AlertToggle />
+          </div>
+        </section>
+
+        <div className="xl:col-start-1 xl:row-start-2">
           {/* What structure says this minute, instrument by instrument. This is
               a view rather than a claim: the record above is what the desk is
               judged by, and this is what the next sweep will be reading. */}
           <section className="panel-static overflow-hidden">
-            <header className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5">
-              <h2 className={PANEL_HEAD}>Live Read</h2>
+            <header className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+              <RuleLabel as="h2">Live Read</RuleLabel>
               <div className="min-w-2 flex-1" />
               <span className="text-[11px] text-text-faint">
                 {sweeping
@@ -298,7 +291,9 @@ export default function SignalsPage() {
                         symbol={meta.symbol}
                         call={read?.call ?? null}
                         standDown={
-                          read?.standDown ?? 'No structure read yet. The feed has not answered.'
+                          read?.standDown ??
+                          unread[meta.symbol] ??
+                          'No structure read yet. The feed has not answered.'
                         }
                         timeframe={meta.primaryTimeframe}
                         compact
@@ -310,22 +305,13 @@ export default function SignalsPage() {
             </div>
           </section>
         </div>
-
-        <section className="panel-static h-fit overflow-hidden">
-          <header className="border-b border-border px-4 py-2.5">
-            <h2 className={PANEL_HEAD}>Alerts</h2>
-          </header>
-          <div className="p-4">
-            <AlertToggle />
-          </div>
-        </section>
       </div>
 
       {/* The tabs sit on the table they filter rather than floating above the
           page, so what they act on is not a matter of inference. */}
       <section className="panel-static overflow-hidden">
-        <header className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5">
-          <h2 className={PANEL_HEAD}>Settled Record</h2>
+        <header className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+          <RuleLabel as="h2">Settled Record</RuleLabel>
           <div className="min-w-2 flex-1" />
           <SegmentedTabs
             options={HISTORY_TABS}

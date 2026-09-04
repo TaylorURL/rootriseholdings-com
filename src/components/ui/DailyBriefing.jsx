@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Sunrise, Sunset, Clock, ChevronDown, ChevronUp, RefreshCw, PencilLine } from 'lucide-react'
 import Badge from './Badge'
+import { PANEL_TITLE, RuleLabel } from './Figures'
 import { cn } from '../../lib/cn'
 import { Skeleton, SkeletonText, SkeletonRegion } from './Skeleton'
 
@@ -46,9 +47,26 @@ function BriefingSection({ section, expanded, onToggle, onEditPlan }) {
         <span className="w-6 shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
           {String(section.number).padStart(2, '0')}
         </span>
-        <span className="w-[13rem] shrink-0 leading-tight">
-          <span className="block text-[13px] font-medium text-text">{section.title}</span>
-          <span className="block text-[11px] text-text-faint">{section.subtitle}</span>
+        <span className="min-w-0 flex-1 leading-tight lg:w-[13rem] lg:flex-none">
+          <span className="block truncate text-[13px] font-medium text-text">{section.title}</span>
+          <span className="block truncate text-[11px] text-text-faint">{section.subtitle}</span>
+          {/* Under the three-column width the reading has nowhere to sit beside
+              the title, and nine rows of headings with the words hidden is a
+              list nobody can scan. It moves under the title instead. */}
+          {/* Taken out of the flow rather than made transparent. Above the
+              three-column width this sits under the title in a column, so an
+              invisible copy of the line still holds its own height and an
+              opened section carries a blank gap under its heading. The reading
+              beside the title keeps its opacity, because that one is in a row
+              and removing it would let the title column widen underneath. */}
+          <span
+            className={cn(
+              'mt-0.5 block truncate text-[11px] text-text-muted lg:hidden',
+              expanded && 'hidden'
+            )}
+          >
+            {section.body}
+          </span>
         </span>
         <span
           className={cn(
@@ -79,7 +97,7 @@ function BriefingSection({ section, expanded, onToggle, onEditPlan }) {
               {section.bullets.map((bullet) => (
                 <li
                   key={bullet}
-                  className="rounded-tiny flex items-start gap-2 bg-surface-2 px-2.5 py-1.5 font-mono text-[11px] leading-relaxed text-text"
+                  className="flex items-start gap-2 rounded-sm bg-surface-2 px-2.5 py-1.5 font-mono text-[11px] leading-relaxed text-text"
                 >
                   <span
                     className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[var(--ds-accent-fill)]"
@@ -115,7 +133,7 @@ function BriefingSectionSkeleton() {
     <li className="border-b border-border last:border-b-0">
       <div className="flex items-center gap-4 px-4 py-3">
         <Skeleton className="h-3.5 w-6 rounded-sm" />
-        <div className="w-[13rem] shrink-0 space-y-1.5">
+        <div className="min-w-0 flex-1 space-y-1.5 lg:w-[13rem] lg:flex-none">
           <Skeleton className="h-4 w-32 rounded-sm" />
           <Skeleton className="h-3.5 w-40 rounded-sm" />
         </div>
@@ -160,11 +178,9 @@ export default function DailyBriefing({
   if (loading || !briefing) {
     return (
       <section className="panel-static overflow-hidden">
-        <header className="flex items-center gap-3 border-b border-border px-4 py-2.5">
+        <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
           <Sunrise className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-          <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-            Daily Briefing
-          </h2>
+          <h2 className={PANEL_TITLE}>Daily Briefing</h2>
           <Skeleton className="h-[18px] w-20 rounded-sm" />
           <div className="min-w-2 flex-1" />
           <Skeleton className="h-[30px] w-24 rounded-control" />
@@ -172,9 +188,7 @@ export default function DailyBriefing({
         <SkeletonRegion label="Composing the current briefing edition">
           <div className="border-b border-border px-4 py-4">
             <div className="flex h-4 items-center justify-between gap-3">
-              <p className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-                30-Second Take
-              </p>
+              <RuleLabel>30-Second Take</RuleLabel>
               <Skeleton className="hidden h-3.5 w-28 rounded-sm sm:block" />
             </div>
             <SkeletonText lines={2} className="mt-2 min-h-[46px] max-w-[78ch]" />
@@ -205,11 +219,9 @@ export default function DailyBriefing({
 
   return (
     <section className="panel-static overflow-hidden">
-      <header className="content-enter flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border px-4 py-2.5">
+      <header className="content-enter flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-surface-2 px-4 py-2.5">
         <EditionIcon className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-        <h2 className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-          Daily Briefing
-        </h2>
+        <h2 className={PANEL_TITLE}>Daily Briefing</h2>
         <span className="chip-static">{briefing.editionLabel}</span>
         <div className="min-w-2 flex-1" />
         <span className="hidden items-center gap-1.5 text-[11px] text-text-faint sm:inline-flex">
@@ -258,9 +270,7 @@ export default function DailyBriefing({
             whether the header carries a timestamp or not. The timestamp is
             supplementary and drops out where there is no room for it. */}
         <div className="flex h-4 items-center justify-between gap-3">
-          <p className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-            30-Second Take
-          </p>
+          <RuleLabel>30-Second Take</RuleLabel>
           <span className="hidden whitespace-nowrap font-mono text-[11px] text-text-faint sm:inline">
             Generated {briefing.generatedAtLabel}
           </span>

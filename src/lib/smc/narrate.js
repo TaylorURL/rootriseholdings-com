@@ -1,3 +1,4 @@
+import { describeSideConstraint } from '../../data/instruments.js'
 import { OTE_ZONE } from './structure.js'
 
 /**
@@ -22,7 +23,7 @@ function px(value, decimals) {
  * @param {object | null} args.htf - structure read on the bias timeframe
  * @param {string | null} args.htfTimeframe
  * @param {number} args.decimals - price precision for the instrument
- * @param {'SHORT' | null} [args.sideConstraint]
+ * @param {'LONG' | 'SHORT' | null} [args.sideConstraint]
  * @returns {{body:string, bullets:string[], tone:string}}
  */
 export function narrateInstrument({
@@ -99,8 +100,9 @@ export function narrateInstrument({
   if (htf && htfTimeframe) {
     bullets.push(aligned ? 'Timeframes aligned' : 'Timeframes not aligned')
   }
-  if (sideConstraint === 'SHORT') {
-    bullets.push('Playbook: shorts only')
+  const restriction = describeSideConstraint(sideConstraint)
+  if (restriction) {
+    bullets.push(`Playbook: ${restriction.toLowerCase()}`)
   }
 
   const tone =

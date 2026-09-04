@@ -272,6 +272,40 @@ export const INSTRUMENT_META = INSTRUMENTS.reduce((map, entry) => {
   return map
 }, {})
 
+/**
+ * The side a playbook restriction leaves open, and what to call it.
+ *
+ * A constraint is one field on one instrument and it has to hold in five
+ * places: the engine that mints a call, the validator that accepts a journal
+ * entry, the form that fills one in, the narrator that explains a read, and the
+ * badge on the markets screen. Written out five times it only ever held in the
+ * direction somebody remembered to write out five times - a restriction to
+ * shorts was refused everywhere and one to longs was silently ignored
+ * everywhere, so setting the field did nothing and nothing said so. Asking here
+ * instead means a constraint holds by being set.
+ *
+ * @param {'LONG'|'SHORT'|null|undefined} constraint
+ * @param {'BUY'|'SELL'} side
+ * @returns {boolean} whether the playbook allows that side on this instrument
+ */
+export function allowsSide(constraint, side) {
+  if (constraint === 'SHORT') return side === 'SELL'
+  if (constraint === 'LONG') return side === 'BUY'
+  return true
+}
+
+/**
+ * A side restriction in the words every surface says it in.
+ *
+ * @param {'LONG'|'SHORT'|null|undefined} constraint
+ * @returns {string|null} null where the instrument may be traded either way
+ */
+export function describeSideConstraint(constraint) {
+  if (constraint === 'SHORT') return 'Shorts only'
+  if (constraint === 'LONG') return 'Longs only'
+  return null
+}
+
 export function decimalsForInstrument(symbol) {
   const meta = INSTRUMENT_META[symbol]
   if (!meta) return 2
