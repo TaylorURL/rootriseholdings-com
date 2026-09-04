@@ -35,20 +35,28 @@ const USER_AGENT =
 const MINUTE_MS = 60_000
 
 /**
- * The venue's range to read for each interval the desk asks for, and the bucket
- * its bars are folded into.
+ * The venue's ranges to read for each interval the desk asks for, and the
+ * bucket its bars are folded into.
  *
- * Only two ranges are worth reading. The venue's intraday range prints
- * five-minute bars, which divides every intraday interval the desk uses, and
- * its longer ranges all print daily bars whatever they are named - so a daily
- * read asks for the longest and takes the bars as they come. A null bucket is
- * a series already at the requested interval.
+ * The venue's intraday ranges print bars fine enough to divide every intraday
+ * interval the desk uses - five-minute over five sessions, one-minute over one
+ * - and its longer ranges all print daily bars whatever they are named. A null
+ * bucket is a series already at the requested interval.
+ *
+ * Each interval names two ranges rather than one, because this venue's holes
+ * are per instrument and per range and they move. The Nasdaq has answered five
+ * sessions with nothing while answering one session with a thousand bars, and
+ * XRP has done the same thing the other way up, full at five days and empty at
+ * a year. Both are instruments the desk reads, and on the timeframe each is
+ * traded on, so a single range meant the chart was empty exactly where the
+ * instrument needed it. The second range is asked for only when the first
+ * comes back with nothing, so a healthy read still costs one request.
  */
 const SERIES_PLAN = {
-  '5m': { timeRange: '5D', bucketMs: 5 * MINUTE_MS },
-  '15m': { timeRange: '5D', bucketMs: 15 * MINUTE_MS },
-  '1h': { timeRange: '5D', bucketMs: 60 * MINUTE_MS },
-  '1d': { timeRange: '1Y', bucketMs: null },
+  '5m': { ranges: ['5D', '1D'], bucketMs: 5 * MINUTE_MS },
+  '15m': { ranges: ['5D', '1D'], bucketMs: 15 * MINUTE_MS },
+  '1h': { ranges: ['5D', '1D'], bucketMs: 60 * MINUTE_MS },
+  '1d': { ranges: ['1Y', '5Y'], bucketMs: null },
 }
 
 /** One read serves this instrument and range for this long. */
@@ -265,22 +273,25 @@ export async function readFallbackSeries(symbol, interval, fetcher = fetch) {
   const venueSymbol = FALLBACK_SYMBOLS[symbol]
   if (!plan || !venueSymbol) return null
 
-  const key = `${venueSymbol}|${plan.timeRange}`
-  const held = cache.get(key)
-  const bars =
-    held && Date.now() - held.at < TTL_MS
-      ? held.bars
-      : await fetchBars(venueSymbol, plan, key, fetcher)
-  if (!bars?.length) return null
-  const folded = foldBars(bars, plan.bucketMs)
-  // One bar is a price, not a series, and the surfaces read it as structure.
-  return folded.length >= 2 ? folded : null
+  for (const timeRange of plan.ranges) {
+    const key = `${venueSymbol}|${timeRange}`
+    const held = cache.get(key)
+    const bars =
+      held && Date.now() - held.at < TTL_MS
+        ? held.bars
+        : await fetchBars(venueSymbol, timeRange, key, fetcher)
+    if (!bars?.length) continue
+    const folded = foldBars(bars, plan.bucketMs)
+    // One bar is a price, not a series, and the surfaces read it as structure.
+    if (folded.length >= 2) return folded
+  }
+  return null
 }
 
-async function fetchBars(venueSymbol, plan, key, fetcher) {
+async function fetchBars(venueSymbol, timeRange, key, fetcher) {
   const query = new URLSearchParams({
     operationName: 'getQuoteChartData',
-    variables: JSON.stringify({ symbol: venueSymbol, timeRange: plan.timeRange }),
+    variables: JSON.stringify({ symbol: venueSymbol, timeRange }),
     query: CHART_QUERY,
   })
   try {

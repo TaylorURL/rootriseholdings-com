@@ -18,6 +18,27 @@ import { fromRow, toRow } from '../../src/lib/signals/row.js'
 /** The statuses a sweep still has work to do on. */
 const STANDING = ['live', 'filled']
 
+/**
+ * How many unannounced calls one pass reads.
+ *
+ * The announcement itself is capped far lower than this. Reading a few more
+ * than can be sent is what lets a pass say how many it held back, and holding
+ * some back is now a delay rather than a loss, because what is not announced
+ * is still unannounced on the record when the next pass looks.
+ */
+const OUTBOX_LIMIT = 20
+
+/**
+ * The codes a database gives for a column that is not there.
+ *
+ * The migration that adds `notified_at` lands separately from the deploy, so
+ * there is a window where the announcement queue cannot be asked for. That is
+ * a deployment saying so rather than a fault, and the sweep falls back to
+ * announcing what it has just written - which is what it did before there was
+ * a queue at all.
+ */
+const MISSING_COLUMN = new Set(['42703', 'PGRST204', 'PGRST205'])
+
 const iso = (value) => (value == null ? null : new Date(value).toISOString())
 
 /**
@@ -84,17 +105,23 @@ export async function readStanding(client) {
  * @param {object[]} args.published - calls found this sweep
  * @param {object[]} args.scored - every standing call, advanced
  * @param {object[]} args.before - the same calls as they were read
- * @returns {Promise<{inserted:number, updated:number}>}
+ * @returns {Promise<{inserted:number, updated:number, stored:object[]}>} the
+ *   rows as the table now holds them, carrying the ids it minted - which is
+ *   what an announcement is keyed on, and what the engine's own per-process
+ *   counter could never be
  */
 export async function persistSweep(client, { published, scored, before }) {
   let inserted = 0
+  const stored = []
   const publishedIds = new Set(published.map((signal) => signal.id))
   const fresh = scored.filter((signal) => publishedIds.has(signal.id))
 
   for (const signal of fresh) {
-    const { error } = await client.from('signals').insert(toRow(signal))
+    const { data, error } = await client.from('signals').insert(toRow(signal)).select('*')
     if (!error) {
       inserted += 1
+      const row = data?.[0]
+      if (row) stored.push(fromRow(row))
       continue
     }
     if (error.code === '23505') continue
@@ -120,5 +147,69 @@ export async function persistSweep(client, { published, scored, before }) {
     if (error) throw new Error(`scoring ${signal.id} failed: ${error.message}`)
   }
 
-  return { inserted, updated: changed.length }
+  return { inserted, updated: changed.length, stored }
+}
+
+/**
+ * The standing calls nobody has been told about yet.
+ *
+ * A sweep used to announce whatever it had just minted, which meant an
+ * announcement and the pass that produced it lived and died together: one
+ * unreachable minute and that call was never mentioned again, while the record
+ * held it as though everything had gone out. The stamp on the row is what
+ * separates them. What has not been announced is asked for again on every
+ * pass, so a delivery failure costs two minutes rather than the alert.
+ *
+ * Newest first, deliberately. A pass sends a handful and the freshest call is
+ * the one still worth acting on, so an older one that cannot be delivered
+ * never sits in front of a setup that printed this bar.
+ *
+ * @param {object} client
+ * @returns {Promise<{calls:object[]|null, state:string}>} `calls` is null when
+ *   the queue could not be read at all, which is the caller's signal to fall
+ *   back to what this pass itself wrote
+ */
+export async function readUnannounced(client) {
+  try {
+    const { data, error } = await client
+      .from('signals')
+      .select('*')
+      .in('status', STANDING)
+      .is('notified_at', null)
+      .order('emitted_at', { ascending: false })
+      .limit(OUTBOX_LIMIT)
+    if (!error) return { calls: (data ?? []).map(fromRow), state: 'read' }
+    if (MISSING_COLUMN.has(error.code)) return { calls: null, state: 'unavailable' }
+    return { calls: null, state: String(error.message ?? error) }
+  } catch (error) {
+    return { calls: null, state: String(error?.message ?? error) }
+  }
+}
+
+/**
+ * Marks the calls that reached somebody.
+ *
+ * It never fails a pass, for the same reason the announcement itself does not:
+ * the stamp is bookkeeping about the message, and the call it belongs to is
+ * already in the record. The cost of losing this write is that the next pass
+ * offers the same call again and the endpoint's own idempotency refuses it, so
+ * the failure mode is a wasted post rather than a second alert.
+ *
+ * @param {object} client
+ * @param {string[]} ids
+ * @returns {Promise<'written'|'skipped'|'unavailable'|string>}
+ */
+export async function markAnnounced(client, ids) {
+  if (!ids?.length) return 'skipped'
+  try {
+    const { error } = await client
+      .from('signals')
+      .update({ notified_at: new Date().toISOString() })
+      .in('id', ids)
+    if (!error) return 'written'
+    if (MISSING_COLUMN.has(error.code)) return 'unavailable'
+    return String(error.message ?? error)
+  } catch (error) {
+    return String(error?.message ?? error)
+  }
 }

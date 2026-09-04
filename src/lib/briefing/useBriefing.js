@@ -29,16 +29,16 @@ const REFRESH_AFTER_MS = 10 * 60 * 1000
  */
 async function readFor({ symbol, providerSymbol, executionTimeframe, htfTimeframe, signal }) {
   const execution = await fetchCandles({ providerSymbol, timeframe: executionTimeframe, signal })
-  if (!execution) return null
+  if (!execution.ok) return null
   const htf = htfTimeframe
     ? await fetchCandles({ providerSymbol, timeframe: htfTimeframe, signal })
     : null
   const preset = presetFor(symbol)
   return {
     executionTimeframe,
-    htfTimeframe: htf ? htfTimeframe : null,
+    htfTimeframe: htf?.ok ? htfTimeframe : null,
     execution: analyzeStructure(execution.candles, { preset }),
-    htf: htf ? analyzeStructure(htf.candles, { preset }) : null,
+    htf: htf?.ok ? analyzeStructure(htf.candles, { preset }) : null,
     candles: execution.candles,
     providerSymbol: execution.providerSymbol,
     exchange: execution.exchange,

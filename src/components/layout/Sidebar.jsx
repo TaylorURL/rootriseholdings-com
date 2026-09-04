@@ -5,6 +5,7 @@ import { NAV_GROUPS } from './navigation'
 import { useAuth } from '../../context/AuthContext'
 import { useJournal } from '../../context/JournalContext'
 import BrandMark from '../marketing/BrandMark'
+import { RuleLabel, RULE_LABEL } from '../ui/Figures'
 import { RISK_RULES } from '../../data/riskRules'
 
 const ROW =
@@ -55,9 +56,7 @@ export default function Sidebar({ onNavigate }) {
       <nav className="ds-scroll flex-1 overflow-y-auto px-3 py-4" aria-label="Primary">
         {NAV_GROUPS.map((group) => (
           <div key={group.heading} className="mb-5 last:mb-0">
-            <p className="px-3 pb-1.5 font-mono text-[10px] uppercase tracking-label text-text-faint">
-              {group.heading}
-            </p>
+            <RuleLabel className="px-3 pb-1.5">{group.heading}</RuleLabel>
             <div className="space-y-px">
               {group.items.map(({ to, label, icon: Icon, end }) => (
                 <NavLink
@@ -85,13 +84,13 @@ export default function Sidebar({ onNavigate }) {
 
       <dl className="grid grid-cols-2 gap-px border-t border-border bg-border">
         <div className="bg-bg-elevated px-3 py-2.5">
-          <dt className="font-mono text-[10px] uppercase tracking-label text-text-faint">Open</dt>
+          <dt className={RULE_LABEL}>Open</dt>
           <dd className="mt-0.5 font-mono text-[13px] font-semibold tabular-nums text-text">
             {dayState.openTrades.length}
           </dd>
         </div>
         <div className="bg-bg-elevated px-3 py-2.5">
-          <dt className="font-mono text-[10px] uppercase tracking-label text-text-faint">Budget</dt>
+          <dt className={RULE_LABEL}>Budget</dt>
           <dd
             className={cn(
               'mt-0.5 font-mono text-[13px] font-semibold tabular-nums',

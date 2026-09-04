@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import handler from '../api/sweep.js'
+import { SWEPT_INSTRUMENTS } from '../src/data/instruments.js'
 
 /** A response object that records what the handler said, rather than sending it. */
 function recorder() {
@@ -82,4 +83,369 @@ test('a sweep with no record to write to says so', async (t) => {
   await handler(request({ authorization: 'Bearer shibboleth' }), response)
   assert.equal(response.statusCode, 503)
   assert.match(response.body.detail, /SUPABASE_SERVICE_ROLE_KEY/)
+})
+
+/**
+ * A pass reads a book of instruments and may publish nothing from it, and that
+ * is the desk working. A pass that reaches none of them and reports the same
+ * thing is the desk broken, and for three days those were the same answer: two
+ * hundred, `ok: true`, a read of zero in a field with no consequence attached
+ * to it, and a record that stayed empty while a scheduler was told every two
+ * minutes that everything was fine. Everything below this line exists to make
+ * that particular silence impossible.
+ */
+
+/** A chart response the structure engine can read without finding a setup in it. */
+function flatChart(symbol) {
+  const timestamp = []
+  const price = []
+  for (let index = 0; index < 60; index += 1) {
+    timestamp.push(1_700_000_000 + index * 3600)
+    price.push(100)
+  }
+  return {
+    chart: {
+      result: [
+        {
+          meta: { symbol, exchangeName: 'OANDA', fullExchangeName: 'OANDA' },
+          timestamp,
+          indicators: {
+            quote: [
+              {
+                open: [...price],
+                high: [...price],
+                low: [...price],
+                close: [...price],
+                volume: price.map(() => 0),
+              },
+            ],
+          },
+        },
+      ],
+      error: null,
+    },
+  }
+}
+
+/**
+ * Stands the whole host up around one pass: a database that answers an empty
+ * record, and a market feed that answers however the test says it does.
+ */
+function host(t, feed, { queue = [], notify = null } = {}) {
+  const previous = {
+    secret: process.env.CRON_SECRET,
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    origin: process.env.SWEEP_ORIGIN,
+    hook: process.env.SIGNAL_WEBHOOK_URL,
+    notifyUrl: process.env.NOTIFY_URL,
+    notifySecret: process.env.NOTIFY_SECRET,
+    fetch: globalThis.fetch,
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  }
+  process.env.CRON_SECRET = 'shibboleth'
+  process.env.SUPABASE_URL = 'https://records.test'
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role'
+  process.env.SWEEP_ORIGIN = 'https://feed.test'
+  delete process.env.SIGNAL_WEBHOOK_URL
+  // A pass must never reach a real inbox from a test run, whatever the machine
+  // it runs on happens to have set.
+  delete process.env.NOTIFY_SECRET
+  if (notify) {
+    process.env.NOTIFY_URL = 'https://notify.test/api/notify'
+    process.env.NOTIFY_SECRET = 'secret'
+  } else {
+    delete process.env.NOTIFY_URL
+  }
+
+  const lines = []
+  console.log = (line) => lines.push(line)
+  console.warn = (line) => lines.push(line)
+  console.error = (line) => lines.push(line)
+
+  const written = []
+  const notified = []
+  globalThis.fetch = async (input, init) => {
+    const url = typeof input === 'string' ? input : input.url
+    if (url.startsWith('https://notify.test')) {
+      notified.push(JSON.parse(init.body))
+      return notify(notified.length)
+    }
+    if (url.startsWith('https://records.test')) {
+      if ((init?.method ?? 'GET') !== 'GET') written.push(url)
+      // The announcement queue is the standing calls nobody has been told
+      // about, which is a different question from what is standing.
+      const rows = url.includes('notified_at=is.null') ? queue : []
+      return new Response(JSON.stringify(rows), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+    return feed(url)
+  }
+
+  t.after(() => {
+    globalThis.fetch = previous.fetch
+    console.log = previous.log
+    console.warn = previous.warn
+    console.error = previous.error
+    for (const [name, value] of [
+      ['CRON_SECRET', previous.secret],
+      ['SUPABASE_URL', previous.url],
+      ['SUPABASE_SERVICE_ROLE_KEY', previous.key],
+      ['SWEEP_ORIGIN', previous.origin],
+      ['SIGNAL_WEBHOOK_URL', previous.hook],
+      ['NOTIFY_URL', previous.notifyUrl],
+      ['NOTIFY_SECRET', previous.notifySecret],
+    ]) {
+      if (value === undefined) delete process.env[name]
+      else process.env[name] = value
+    }
+  })
+
+  return { lines, written, notified }
+}
+
+test('a sweep that could not reach the feed is a failure, not an empty pass', async (t) => {
+  const { lines } = host(t, async () => {
+    throw new Error('getaddrinfo ENOTFOUND feed.test')
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.statusCode, 503)
+  assert.equal(response.body.ok, false)
+  assert.equal(response.body.read, 0)
+  assert.equal(response.body.instruments, SWEPT_INSTRUMENTS.length)
+  assert.match(response.body.error, /feed\.test/)
+  // Every instrument it lost is named with the reason it gave, so the next
+  // person does not have to reproduce the pass to find out what happened.
+  assert.equal(response.body.unread.length, SWEPT_INSTRUMENTS.length)
+  assert.equal(response.body.unread[0].reason, 'unreachable')
+  assert.ok(
+    lines.some((line) => line.startsWith('sweep ') && line.includes('"ok":false')),
+    'the pass wrote down that it failed'
+  )
+})
+
+test('a sweep that read the market and found nothing is a pass', async (t) => {
+  const { lines } = host(t, async (url) => {
+    const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+    const body = JSON.stringify(flatChart(symbol))
+    return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } })
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.ok, true)
+  assert.equal(response.body.read, SWEPT_INSTRUMENTS.length)
+  assert.deepEqual(response.body.unread, [])
+  assert.deepEqual(response.body.withheld, [])
+  assert.equal(response.body.published, 0)
+  assert.ok(lines.some((line) => line.startsWith('sweep ') && line.includes('"ok":true')))
+})
+
+/**
+ * The pass that looks healthiest and is not.
+ *
+ * A feed serving its own memory answers two hundred with a full series on it,
+ * so every instrument is read, `unread` is empty and the body says nine of nine
+ * - while the entry the desk would mint is a close that stopped being real
+ * hours ago. The read still counts, because standing calls are scored against
+ * the bars that did print. What it does not get to do is publish, and what the
+ * pass does not get to do is report it as an ordinary clean sweep.
+ */
+test('a pass reading the feed’s memory reports it rather than publishing from it', async (t) => {
+  const { lines } = host(t, async (url) => {
+    const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+    const payload = flatChart(symbol)
+    payload.chart.result[0].meta.stale = true
+    payload.chart.result[0].meta.staleSeconds = 1800
+    return new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.read, SWEPT_INSTRUMENTS.length, 'the bars are still read')
+  assert.deepEqual(response.body.unread, [], 'and nothing failed, which is the trap')
+  assert.equal(response.body.published, 0, 'nothing is minted off a price that is not the tape')
+  assert.equal(response.body.withheld.length, SWEPT_INSTRUMENTS.length)
+  assert.ok(response.body.withheld.every((held) => held.reason === 'remembered'))
+  // A pass carrying a book of memories is not a quiet morning, so it is logged
+  // as something worth reading rather than as an ordinary clean sweep.
+  assert.ok(lines.some((line) => line.startsWith('sweep ') && line.includes('remembered')))
+})
+
+test('a pass writes its heartbeat whether or not it found anything', async (t) => {
+  const { written } = host(t, async (url) => {
+    const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+    return new Response(JSON.stringify(flatChart(symbol)), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.body.published, 0)
+  assert.equal(response.body.heartbeat, 'written')
+  assert.ok(
+    written.some((url) => url.includes('/sweep_runs')),
+    'the pass is recorded even though it published nothing'
+  )
+})
+
+test('the feed being announced to being switched off is not a successful announcement', async (t) => {
+  host(t, async (url) => {
+    const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+    return new Response(JSON.stringify(flatChart(symbol)), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+  assert.equal(response.body.announced.configured, false)
+})
+
+/** A quiet market the engine can read without finding anything in it. */
+const quietFeed = async (url) => {
+  const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+  return new Response(JSON.stringify(flatChart(symbol)), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+/** A standing call as the table holds it, with nobody yet told about it. */
+const unannounced = (overrides = {}) => ({
+  id: '9f3c1d20-4a77-4a1e-9a8e-6d2b0c5f1e33',
+  fingerprint: 'US30|15m|SELL|BOS|53053.244',
+  symbol: 'US30',
+  timeframe: '15m',
+  side: 'SELL',
+  entry: 53414,
+  stop: 53561.62,
+  target: 53053.244,
+  reward_to_risk: 2.44,
+  grade: 'B',
+  setup: 'BOS',
+  reasons: ['Break of structure down on the 1H'],
+  emitted_at: new Date().toISOString(),
+  venue: 'OANDA',
+  status: 'live',
+  notified_at: null,
+  ...overrides,
+})
+
+/**
+ * The announcement is no longer tied to the pass that found the call. What a
+ * pass sends is what the record says nobody has been told about, so a message
+ * lost to one unreachable minute is sent by the pass two minutes later rather
+ * than never mentioned again.
+ */
+test('a standing call nobody has been told about is announced and then marked', async (t) => {
+  const { written, notified } = host(t, quietFeed, {
+    queue: [unannounced()],
+    notify: () =>
+      new Response(JSON.stringify({ id: 'N1', delivered: 1, recipients: 1, duplicate: false }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.published, 0)
+  assert.equal(notified.length, 1)
+  assert.equal(notified[0].subject, 'B SELL on US30')
+  assert.equal(notified[0].idempotency_key, 'signal:9f3c1d20-4a77-4a1e-9a8e-6d2b0c5f1e33')
+  assert.equal(response.body.announced.email.sent, 1)
+  assert.equal(response.body.announced.stamped, 'written')
+  assert.ok(
+    written.some((url) => url.includes('/signals') && url.includes('id=in.')),
+    'the call is marked as told, so the next pass does not tell it again'
+  )
+})
+
+/**
+ * The record is the product and the message is a convenience on top of it. A
+ * pass that found a call, wrote it down and could not get word out has done
+ * the part that cannot be recovered from, so it answers as the pass it was and
+ * says in its own body and its own log line what did not go out.
+ */
+test('a notifications endpoint that is down does not fail the sweep', async (t) => {
+  const { lines, notified } = host(t, quietFeed, {
+    queue: [unannounced()],
+    notify: () => new Response('{}', { status: 503 }),
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.ok, true)
+  assert.equal(response.body.read, SWEPT_INSTRUMENTS.length)
+  // Once, and then once more, because an answer that never arrived is not the
+  // same as a message that was refused.
+  assert.equal(notified.length, 2)
+  assert.equal(response.body.announced.email.sent, 0)
+  assert.match(response.body.announced.error, /503/)
+  // Nothing is marked, so the next pass offers the same call again.
+  assert.equal(response.body.announced.stamped, 'skipped')
+  assert.ok(
+    lines.some((line) => line.startsWith('sweep ') && line.includes('503')),
+    'a pass that could not get word out says so in the log'
+  )
+})
+
+/**
+ * The queue is a read of a column that lands with its own migration, so there
+ * is a window in which it is not there. A pass in that window announces what
+ * it has just written, which is what it did before the queue existed.
+ */
+test('a record with no queue yet falls back rather than announcing nothing', async (t) => {
+  const previous = globalThis.fetch
+  const { notified } = host(t, quietFeed, {
+    notify: () =>
+      new Response(JSON.stringify({ id: 'N1', delivered: 1 }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+  })
+  const withQueue = globalThis.fetch
+  globalThis.fetch = async (input, init) => {
+    const url = typeof input === 'string' ? input : input.url
+    if (url.includes('notified_at=is.null')) {
+      return new Response(
+        JSON.stringify({ code: '42703', message: 'column signals.notified_at does not exist' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+    return withQueue(input, init)
+  }
+  t.after(() => {
+    globalThis.fetch = previous
+  })
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.announced.outbox, 'unavailable')
+  assert.equal(notified.length, 0)
 })

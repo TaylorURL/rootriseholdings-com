@@ -1,5 +1,5 @@
 import { RISK_RULES, computeRewardToRisk, computeRealisedR } from '../../data/riskRules.js'
-import { INSTRUMENT_META } from '../../data/instruments.js'
+import { INSTRUMENT_META, allowsSide, describeSideConstraint } from '../../data/instruments.js'
 import { sessionForMoment } from '../time.js'
 
 /**
@@ -83,8 +83,9 @@ export function validateTradeDraft(draft) {
   }
 
   const meta = INSTRUMENT_META[draft.symbol]
-  if (meta?.sideConstraint === 'SHORT' && draft.side === 'BUY') {
-    errors.side = `${meta.displaySymbol} is shorts only in the playbook.`
+  if (meta && !allowsSide(meta.sideConstraint, draft.side)) {
+    const allowed = describeSideConstraint(meta.sideConstraint).toLowerCase()
+    errors.side = `${meta.displaySymbol} is ${allowed} in the playbook.`
   }
 
   return errors

@@ -305,3 +305,47 @@ test('the client reads the range the payload measured', async () => {
     globalThis.fetch = original
   }
 })
+
+/**
+ * This venue's holes are per instrument and per range, and they move. The
+ * Nasdaq has answered five sessions with nothing while answering one session
+ * with a thousand bars, and XRP has done it the other way up. Both are
+ * instruments the desk reads on the timeframe the empty range covers, so a plan
+ * with one range in it meant an empty chart exactly where the instrument needed
+ * one.
+ */
+test('a range with no bars in it falls through to the other one', async () => {
+  clearSeriesCache()
+  const asked = []
+  const fetcher = async (url) => {
+    const range = JSON.parse(new URL(url).searchParams.get('variables')).timeRange
+    asked.push(range)
+    const rows = range === '5D' ? [] : [bar('20260825093000', 100), bar('20260825094500', 110)]
+    return { ok: true, json: async () => ({ data: { chartData: { priceBars: rows } } }) }
+  }
+
+  const bars = await readFallbackSeries('^NDX', '15m', fetcher)
+  assert.ok(bars, 'the second range answered')
+  assert.deepEqual(asked, ['5D', '1D'])
+})
+
+test('a range that answers costs one request and no more', async () => {
+  clearSeriesCache()
+  const asked = []
+  const fetcher = async (url) => {
+    asked.push(JSON.parse(new URL(url).searchParams.get('variables')).timeRange)
+    return {
+      ok: true,
+      json: async () => ({
+        data: {
+          chartData: {
+            priceBars: [bar('20260825093000', 100), bar('20260825094500', 110)],
+          },
+        },
+      }),
+    }
+  }
+
+  assert.ok(await readFallbackSeries('^NDX', '15m', fetcher))
+  assert.deepEqual(asked, ['5D'])
+})

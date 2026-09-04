@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { RULE_LABEL } from './Figures'
 import { cn } from '../../lib/cn'
 import { EASE_OUT } from '../../lib/marketingMotion'
 
@@ -24,6 +25,7 @@ function rowDelay(index) {
  * @property {string} key - unique column key / row field accessor
  * @property {React.ReactNode} header - column header label
  * @property {'left'|'right'|'center'} [align='left']
+ * @property {boolean} [numeric] - figures a reader compares down the column
  * @property {(row:object, index:number) => React.ReactNode} [render] - custom cell renderer
  * @property {string} [className] - extra cell className
  * @property {string} [headerClassName] - extra header className
@@ -36,6 +38,10 @@ function rowDelay(index) {
  * is otherwise unlabelled. Rows answer the pointer through their cells rather
  * than through the row: a cell background paints over a row background, so a
  * row-level hover half-applies wherever a cell carries a tint of its own.
+ *
+ * Tabular figures follow the `numeric` flag rather than the alignment, because
+ * where a column sits and whether it holds numbers a reader compares down it
+ * are two different decisions - a timestamp reads left and still has to line up.
  *
  * @param {object} props
  * @param {TableColumn[]} props.columns
@@ -60,7 +66,8 @@ export default function Table({ columns, rows, rowKey, footer, empty, animate = 
                 key={column.key}
                 scope="col"
                 className={cn(
-                  'sticky top-0 z-raised whitespace-nowrap border-b border-border bg-surface px-4 py-2.5 font-mono text-[10px] font-medium uppercase tracking-label text-text-faint',
+                  'sticky top-0 z-raised whitespace-nowrap border-b border-border bg-surface px-4 py-2.5 font-medium',
+                  RULE_LABEL,
                   ALIGN_CLASSES[column.align ?? 'left'],
                   column.headerClassName
                 )}
@@ -99,7 +106,7 @@ export default function Table({ columns, rows, rowKey, footer, empty, animate = 
                   className={cn(
                     'whitespace-nowrap px-4 py-2.5 text-text transition-colors duration-200 ease-out group-hover:bg-surface-2',
                     ALIGN_CLASSES[column.align ?? 'left'],
-                    column.align === 'right' && 'font-mono tabular-nums',
+                    (column.numeric ?? column.align === 'right') && 'font-mono tabular-nums',
                     column.className
                   )}
                 >

@@ -1,3 +1,4 @@
+import { allowsSide, describeSideConstraint } from '../../data/instruments.js'
 import { RISK_RULES, computeRewardToRisk } from '../../data/riskRules.js'
 import { MAX_REVERSAL_RISK, MIN_CONTINUATION_SCORE, scoreStructure } from './score.js'
 
@@ -115,7 +116,7 @@ const stand = (reason) => ({ call: null, standDown: reason })
  * @param {object} args
  * @param {object} args.execution - analyzeStructure on the execution timeframe
  * @param {string} args.alignment - from alignmentOf() across execution and both bias timeframes
- * @param {'SHORT'|null} [args.sideConstraint] - a playbook restriction on this instrument
+ * @param {'LONG'|'SHORT'|null} [args.sideConstraint] - a playbook restriction on this instrument
  * @param {number|null} [args.price] - the live price, when it differs from the last close
  * @returns {{call: TradeCall|null, standDown: string|null, scores: {continuation:number, reversalRisk:number}}}
  */
@@ -128,8 +129,10 @@ export function deriveTradeCall({ execution, alignment = 'Mixed', sideConstraint
   }
 
   const side = execution.trend === 'up' ? 'BUY' : 'SELL'
-  if (sideConstraint === 'SHORT' && side === 'BUY') {
-    return result(stand('Structure is bullish, and the playbook allows shorts only here.'))
+  if (!allowsSide(sideConstraint, side)) {
+    const reading = side === 'BUY' ? 'bullish' : 'bearish'
+    const allowed = side === 'BUY' ? 'shorts' : 'longs'
+    return result(stand(`Structure is ${reading}, and the playbook allows ${allowed} only here.`))
   }
 
   const { origin, extreme } = execution.leg ?? {}
@@ -236,7 +239,8 @@ export function deriveTradeCall({ execution, alignment = 'Mixed', sideConstraint
   reasons.push(
     `Continuation ${Math.round(scores.continuation)}, reversal risk ${Math.round(scores.reversalRisk)}`
   )
-  if (sideConstraint === 'SHORT') reasons.push('Playbook allows shorts only here')
+  const restriction = describeSideConstraint(sideConstraint)
+  if (restriction) reasons.push(`Playbook allows ${restriction.toLowerCase()} here`)
 
   return result({
     call: {
