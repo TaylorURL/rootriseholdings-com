@@ -378,6 +378,14 @@ export default function MarketingNav() {
             <MarketingButton to={ctaTo} size="lg" className="mt-6 w-full">
               {ctaLabel}
             </MarketingButton>
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(false)}
+              className="focus-ring mt-3 flex w-full items-center justify-center gap-2 rounded-control py-3 text-sm font-medium text-text-muted"
+            >
+              <X aria-hidden="true" className="h-4 w-4" />
+              Close Menu
+            </button>
           </motion.div>
         ) : null}
       </AnimatePresence>

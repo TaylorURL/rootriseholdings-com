@@ -1,7 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import Beasties from 'beasties'
-import { ORIGIN, DEFAULT_META, ROUTE_META, PRERENDERED_ROUTES } from '../src/lib/routeMeta.data.js'
+import {
+  ORIGIN,
+  DEFAULT_META,
+  ROUTE_META,
+  BREADCRUMB_TRAILS,
+  BREADCRUMB_SCRIPT_ID,
+  PRERENDERED_ROUTES,
+} from '../src/lib/routeMeta.data.js'
 import { FAQ } from '../src/lib/faq.data.js'
 import { render } from '../dist-ssr/entry-server.js'
 
@@ -141,6 +148,39 @@ function homeChunks() {
   return chunks
 }
 
+/**
+ * Writes the trail a route shows into the document that carries it.
+ *
+ * The trail describes navigation the reader is shown, so the crawler reading
+ * the document should have it in the same breath as the markup it describes -
+ * and the hook that keeps the head in step runs only after the bundle has, by
+ * which time the crawler is gone. The element carries the id the hook looks
+ * for, so what the hook finds on hydration is this node rather than an empty
+ * head to append a second one to.
+ */
+function breadcrumb(html, route) {
+  const trail = BREADCRUMB_TRAILS[route]
+  if (!trail) return html
+  const list = JSON.stringify(
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: trail.map((crumb, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: crumb.name,
+        item: `${ORIGIN}${crumb.path}`,
+      })),
+    },
+    null,
+    2
+  )
+  return html.replace(
+    '</head>',
+    `    <script type="application/ld+json" id="${BREADCRUMB_SCRIPT_ID}">\n${list}\n    </script>\n  </head>`
+  )
+}
+
 /** The home document alone carries the questions. */
 function homeExtras(html) {
   const faq = JSON.stringify(
@@ -235,11 +275,26 @@ if (!shell.includes('<div id="root"></div>')) {
   throw new Error('prerender: the shell no longer has an empty #root to render into')
 }
 
+/**
+ * The shell as the gated routes are served it.
+ *
+ * Every path under the terminal is answered with this one file, so the
+ * canonical the template carries would name the home page from every one of
+ * them. It goes, and the document says outright that there is nothing here to
+ * index: robots.txt already disallows the path, so the tags are read only by a
+ * crawler that fetched it anyway.
+ */
+function gated(html) {
+  const canonical = /^[ \t]*<link rel="canonical"[^>]*>\n/m
+  if (!canonical.test(html)) throw new Error('prerender: the shell head carries no canonical link')
+  return html.replace(canonical, '    <meta name="robots" content="noindex" />\n')
+}
+
 // The gated routes are not written out - nothing about them is public - so they
 // are served the empty shell and mount into it. Handing them a document that
 // holds another route's markup would have the app adopt the wrong page and then
 // rebuild it, which is the one thing hydrating is meant to avoid.
-fs.writeFileSync(path.join(OUT, 'shell.html'), shell)
+fs.writeFileSync(path.join(OUT, 'shell.html'), gated(shell))
 console.log('wrote     shell.html for the routes that mount rather than hydrate')
 
 const inline = inliner()
@@ -251,6 +306,7 @@ for (const route of PRERENDERED_ROUTES) {
     '<div id="root"></div>',
     `<div id="root">${rawText(markup)}</div>`
   )
+  html = breadcrumb(html, route)
   if (route === '/') html = homeExtras(html)
   html = (await inline.process(html)).replace(CONTAINER_STAMP, '')
 

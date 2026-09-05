@@ -8,8 +8,8 @@ import { COMPLIANCE } from '../../lib/brand'
  * on the same ground and the bands between them read as the rhythm.
  */
 export default function ClosingCta({
-  title = 'The desk is behind the door.',
-  subtitle = 'Briefing, journal, and the rule book. The terminal is where the day starts and ends.',
+  title = 'The desk is behind the sign-in.',
+  subtitle = 'The briefing, the journal, and the rule book. The terminal is where the day starts and ends.',
 }) {
   return (
     <section

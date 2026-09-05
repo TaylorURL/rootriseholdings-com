@@ -25,7 +25,7 @@ export default function ContactPage() {
     const next = {}
     if (!values.name.trim()) next.name = 'Tell the desk who is writing.'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim()))
-      next.email = 'That address will not reach you.'
+      next.email = 'Enter a valid email address.'
     if (!values.message.trim()) next.message = 'Say what the message is about.'
     setErrors(next)
     return Object.keys(next).length === 0
@@ -147,7 +147,7 @@ export default function ContactPage() {
 
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <MarketingButton type="submit" size="lg" disabled={status === 'sending'}>
-                {status === 'sending' ? 'Sending' : 'Send Message'}
+                {status === 'sending' ? 'Sending…' : 'Send Message'}
               </MarketingButton>
               <Link
                 to="/"

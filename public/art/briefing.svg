@@ -3,7 +3,7 @@
     <path d="M0 56h400M0 112h400M0 168h400M0 224h400"/>
     <path d="M80 0v280M160 0v280M240 0v280M320 0v280"/>
   </g>
-  <text x="24" y="36" font-family="ui-monospace, monospace" font-size="10" font-weight="600" fill="#8f89ff" letter-spacing="1.4">LONDON EDITION</text>
+  <text x="24" y="36" font-family="ui-monospace, monospace" font-size="10" font-weight="600" fill="#8f89ff" letter-spacing="1.4">MORNING OPEN EDITION</text>
   <path d="M24 46h352" stroke="#ffffff" stroke-opacity="0.18"/>
   <g>
     <rect x="24" y="60" width="352" height="34" rx="6" fill="#103254"/>

@@ -22,7 +22,7 @@ const PLATES = {
   },
   briefing: {
     file: 'briefing.svg',
-    alt: 'The London edition of the daily briefing: a high-impact CPI release, the dollar index down a third of a percent, a long-only bias, the 1H structure line with its break marked, and the remaining sections listed beneath.',
+    alt: 'The Morning Open edition of the daily briefing: a high-impact CPI release, the dollar index down a third of a percent, a long-only bias, the 1H structure line with its break marked, and the remaining sections listed beneath.',
   },
 }
 
