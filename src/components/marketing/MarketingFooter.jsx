@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import BrandMark from './BrandMark'
-import { COMPLIANCE, FOOTER_LINKS, FOOTER_STATEMENT, LEGAL_LINKS, PRODUCT } from '../../lib/brand'
+import {
+  CHART_CREDIT,
+  COMPLIANCE,
+  FOOTER_LINKS,
+  FOOTER_STATEMENT,
+  LEGAL_LINKS,
+  PRODUCT,
+} from '../../lib/brand'
 import { ctParts } from '../../lib/time'
 import Reveal from '../motion/Reveal'
 
@@ -60,12 +67,23 @@ export default function MarketingFooter({ children }) {
           <p>
             {'©'} {year} {PRODUCT.name}
           </p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {LEGAL_LINKS.map((link) => (
               <Link key={link.label} to={link.to} className={LINK_CLASS}>
                 {link.label}
               </Link>
             ))}
+            {/* The charting engine's licence, paid here rather than with its
+                mark drawn across every chart on the site. */}
+            <a
+              href={CHART_CREDIT.href}
+              target="_blank"
+              rel="noreferrer noopener"
+              title={CHART_CREDIT.notice}
+              className={LINK_CLASS}
+            >
+              {CHART_CREDIT.label}
+            </a>
           </div>
         </div>
       </div>

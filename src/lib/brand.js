@@ -106,6 +106,22 @@ export const FOOTER_LINKS = [
   { to: '/contact', label: 'Contact' },
 ]
 
+/**
+ * What the charting engine's licence asks for in return for using it.
+ *
+ * lightweight-charts is Apache-2.0 and asks for the attribution notice and a
+ * link to TradingView on a page a reader can reach. It offers a mark drawn on
+ * the chart pane as one way of meeting that, which puts another company's logo
+ * on the desk's own charts; this is the other way, and it is why the mark is
+ * turned off in `lwcTheme`. Remove this and the charts are no longer licensed,
+ * so the two move together.
+ */
+export const CHART_CREDIT = {
+  label: 'Charts by TradingView',
+  href: 'https://www.tradingview.com/',
+  notice: 'Charting by Lightweight Charts\u2122, Copyright 2023 TradingView, Inc.',
+}
+
 /** Held apart from the rest so the legal row reads as one. */
 export const LEGAL_LINKS = [
   { to: '/privacy', label: 'Privacy' },
