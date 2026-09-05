@@ -21,6 +21,7 @@ import {
   JournalPage,
   MarketsPage,
   SignalsPage,
+  DemoAccountPage,
   InsightsPage,
   AccountPage,
 } from './routes.jsx'
@@ -76,6 +77,7 @@ export function AppRoutes() {
                   <Route path="journal" element={<JournalPage />} />
                   <Route path="markets" element={<MarketsPage />} />
                   <Route path="signals" element={<SignalsPage />} />
+                  <Route path="demo" element={<DemoAccountPage />} />
                   <Route path="insights" element={<InsightsPage />} />
                   <Route path="account" element={<AccountPage />} />
                   <Route path="positions" element={<Navigate to="/app/journal" replace />} />
