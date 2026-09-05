@@ -21,12 +21,12 @@ const ROUTE_META = {
   '/login': {
     title: 'Sign In · Root & Rise Trading Desk',
     description:
-      'Sign in to the Root & Rise terminal. The daily briefing, the rule-gated journal, and the desk rule book pick up where the last session ended.',
+      'Sign in to the Root & Rise terminal. The briefing, the journal, and the rule book pick up where the last session ended, and one account holds every edition.',
   },
   '/privacy': {
     title: 'Privacy · Root & Rise Trading Desk',
     description:
-      'What the Root & Rise platform stores and where: an email for the account, journal data in your own browser, and nothing sold or shared.',
+      'What the Root & Rise platform stores and where: an email for the account, the journal on that account and copies in the browser, no advertising identifiers.',
   },
   '/terms': {
     title: 'Terms · Root & Rise Trading Desk',
@@ -36,7 +36,7 @@ const ROUTE_META = {
   '/contact': {
     title: 'Contact · Root & Rise Trading Desk',
     description:
-      'Reach the Root & Rise desk about the platform, the rule book, or access. Messages go straight to the person who runs it.',
+      'Reach the Root & Rise desk about the platform, the rule book, or access. One inbox, read by the person who runs it: no form routing, queue, or sales follow-up.',
   },
   '/app': {
     title: 'Dashboard · Root & Rise Terminal',
@@ -46,7 +46,7 @@ const ROUTE_META = {
   '/app/briefing': {
     title: 'Briefing · Root & Rise Terminal',
     description:
-      'The nine-section briefing: economic calendar, DXY, gold and index structure, FX watch, sentiment, the day plan, and the risk rules.',
+      'The nine-section briefing: economic events, DXY, gold, the indices, FX watch, catalysts, sentiment, the day plan, and the risk rules.',
   },
   '/app/journal': {
     title: 'Journal · Root & Rise Terminal',
@@ -66,7 +66,7 @@ const ROUTE_META = {
   '/app/demo': {
     title: 'Demo Account · Root & Rise Terminal',
     description:
-      'Every call the desk has published, sized at one per cent risk against a fifty-thousand-dollar book: balance, equity curve, drawdown and the trade-by-trade ledger.',
+      'Every call the desk has published, sized at 1% risk against a $50,000 book: balance, equity curve, drawdown and the trade-by-trade ledger.',
   },
   '/app/insights': {
     title: 'Insights · Root & Rise Terminal',
@@ -79,6 +79,29 @@ const ROUTE_META = {
       'The account screen: starting equity, point values, prop-firm parameters, market data feed status, and the desk risk rules.',
   },
 }
+
+/**
+ * The routes that render a breadcrumb trail, and the trail each one renders.
+ * The structured data is written for these alone, so it always describes a path
+ * the reader can see.
+ */
+export const BREADCRUMB_TRAILS = {
+  '/privacy': [
+    { name: 'Root & Rise', path: '/' },
+    { name: 'Privacy', path: '/privacy' },
+  ],
+  '/terms': [
+    { name: 'Root & Rise', path: '/' },
+    { name: 'Terms', path: '/terms' },
+  ],
+}
+
+/**
+ * The element the trail is written into. The build writes it and the hook finds
+ * it by this id and rewrites it, so a route that arrives with a trail never
+ * gains a second one on hydration.
+ */
+export const BREADCRUMB_SCRIPT_ID = 'route-breadcrumb-jsonld'
 
 /** The public routes written out as their own document at build time. */
 export const PRERENDERED_ROUTES = ['/', '/login', '/privacy', '/terms', '/contact']

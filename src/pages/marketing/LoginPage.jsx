@@ -31,7 +31,7 @@ const COPY = {
     submit: 'Sign In',
     pending: 'Signing in…',
     switchPrompt: 'No account yet?',
-    switchAction: 'Create One',
+    switchAction: 'Create Account',
     autoComplete: 'current-password',
   },
   signup: {
@@ -40,6 +40,8 @@ const COPY = {
     subtitle: 'One account holds the journal, the rule book, and every briefing edition.',
     submit: 'Create Account',
     pending: 'Creating…',
+    /** The floor is stated where it binds; an existing account already clears it. */
+    passwordPlaceholder: `At least ${MIN_PASSWORD} characters`,
     switchPrompt: 'Already have an account?',
     switchAction: 'Sign In',
     autoComplete: 'new-password',
@@ -133,7 +135,7 @@ export default function LoginPage() {
           type={showPassword ? 'text' : 'password'}
           name="password"
           icon={Lock}
-          placeholder="••••••••"
+          placeholder={copy.passwordPlaceholder}
           autoComplete={copy.autoComplete}
           value={values.password}
           onChange={update('password')}

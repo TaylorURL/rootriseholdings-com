@@ -1,28 +1,14 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { ORIGIN, DEFAULT_META, ROUTE_META } from './routeMeta.data.js'
+import {
+  ORIGIN,
+  DEFAULT_META,
+  ROUTE_META,
+  BREADCRUMB_TRAILS,
+  BREADCRUMB_SCRIPT_ID,
+} from './routeMeta.data.js'
 
-/**
- * The routes that render a breadcrumb trail, and the trail each one renders.
- * The markup below is emitted only for these, so the structured data always
- * describes a path the reader can see.
- */
-export const BREADCRUMB_TRAILS = {
-  '/privacy': [
-    { name: 'Root & Rise', path: '/' },
-    { name: 'Privacy', path: '/privacy' },
-  ],
-  '/terms': [
-    { name: 'Root & Rise', path: '/' },
-    { name: 'Terms', path: '/terms' },
-  ],
-  '/contact': [
-    { name: 'Root & Rise', path: '/' },
-    { name: 'Contact', path: '/contact' },
-  ],
-}
-
-const BREADCRUMB_SCRIPT_ID = 'route-breadcrumb-jsonld'
+export { BREADCRUMB_TRAILS }
 
 function setMeta(selector, value) {
   const tag = document.head.querySelector(selector)

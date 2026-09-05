@@ -4,7 +4,7 @@
 
 ## Pages
 
-- [Home](https://www.rootriseholdings.com/): the brand page - the desk's method, the platform, and live market previews.
+- [Home](https://www.rootriseholdings.com/): the brand page, carrying the desk's method, the platform, and live market previews.
 - [Sign In](https://www.rootriseholdings.com/login): account sign-in and sign-up for the terminal.
 - [Privacy](https://www.rootriseholdings.com/privacy): what the platform stores and where.
 - [Terms](https://www.rootriseholdings.com/terms): what the platform is, and that nothing on it is investment advice.
@@ -14,4 +14,8 @@
 
 - Root & Rise is a private trading desk and the software it runs on.
 - It does not manage outside money or sell trade signals.
-- Journal data stays in the reader's own browser.
+- The desk trades gold on the 1H, NAS100 and SP500 on the 15m, and US30 on the 1H. An FX watch list is read for context and never traded.
+- Bias is set on the Daily and 4H from market structure. On the 1H and 15m the desk waits for a Break of Structure or a Change of Character, then for the pullback into the 62 to 79 percent Optimal Trade Entry zone before a ticket is written.
+- Every trade risks at most 1 percent of equity and targets at least 2R. A 0.5 percent down day or two consecutive losses closes the desk for the session.
+- The journal refuses a ticket over the 1 percent cap, a third A+ setup, and any ticket written on a locked day. A ticket below the 2R minimum logs with the departure marked against it.
+- The journal is saved to the reader's account, so it follows them to any browser they sign in on. No other account can read that copy. The browser keeps records of its own as well, including a snapshot from before the first sync, and anyone using that browser can read them until the browser's site data is cleared.

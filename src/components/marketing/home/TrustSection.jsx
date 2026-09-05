@@ -26,7 +26,7 @@ export default function TrustSection({ ground = 'band' }) {
       <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <Reveal>
           <div className="lg:sticky lg:top-32">
-            <Eyebrow accent>Where The Desk Stands</Eyebrow>
+            <Eyebrow accent>Where the Desk Stands</Eyebrow>
             <h2 className="t-h2 mt-5 max-w-[15ch] text-balance text-text">
               An edge is a rule, not a prediction.
             </h2>

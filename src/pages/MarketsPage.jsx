@@ -217,7 +217,7 @@ export default function MarketsPage() {
   // down with nothing to show for it. The pick brings the detail up.
   const select = (next) => {
     setSymbol(next)
-    if (window.matchMedia('(max-width: 1023px)').matches) {
+    if (!window.matchMedia('(min-width: 1024px)').matches) {
       detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
