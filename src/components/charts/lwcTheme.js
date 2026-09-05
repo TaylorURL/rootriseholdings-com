@@ -73,6 +73,14 @@ export function chartOptions(
       fontFamily:
         'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
       fontSize: 11,
+      // The engine draws a TradingView mark on the pane by default. Its licence
+      // asks for the attribution notice and a link to tradingview.com somewhere
+      // a reader can reach, and offers the mark as one way of doing that; the
+      // credit in the footer and on the account screen is the other, and it is
+      // the one that does not put another company's logo on the desk's own
+      // charts. Turning this off without carrying that credit would breach the
+      // licence, so the two belong together and neither moves alone.
+      attributionLogo: false,
     },
     grid: {
       vertLines: { visible: false },
