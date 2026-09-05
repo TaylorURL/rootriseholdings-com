@@ -6,6 +6,7 @@ import {
   TrendingUp,
   Lightbulb,
   User,
+  Wallet,
 } from 'lucide-react'
 
 /**
@@ -32,6 +33,7 @@ export const NAV_GROUPS = [
   {
     heading: 'Account For',
     items: [
+      { to: '/app/demo', label: 'Demo Account', icon: Wallet },
       { to: '/app/insights', label: 'Insights', icon: Lightbulb },
       { to: '/app/account', label: 'Account', icon: User },
     ],

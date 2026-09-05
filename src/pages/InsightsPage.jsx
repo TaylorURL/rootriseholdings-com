@@ -1,6 +1,16 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import {
   Hash,
   Trophy,
@@ -16,7 +26,7 @@ import {
   OctagonAlert,
 } from 'lucide-react'
 import ChartInView from '../components/charts/ChartInView'
-import { AXIS_TICK } from '../components/charts/chartTheme'
+import { AXIS_TICK, GRID_STROKE } from '../components/charts/chartTheme'
 import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import { Figure, FigureRow, RuleLabel, RULE_LABEL } from '../components/ui/Figures'
@@ -350,6 +360,7 @@ export default function InsightsPage() {
             {() => (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={byDay} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                  <CartesianGrid stroke={GRID_STROKE} strokeDasharray="3 3" vertical={false} />
                   <defs>
                     <linearGradient id="dayUp" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--ds-accent-bright)" stopOpacity={1} />
@@ -365,9 +376,20 @@ export default function InsightsPage() {
                     tick={AXIS_TICK}
                     tickLine={false}
                     axisLine={false}
-                    minTickGap={24}
+                    minTickGap={40}
                   />
-                  <YAxis tick={AXIS_TICK} tickLine={false} axisLine={false} width={52} />
+                  <YAxis
+                    tick={AXIS_TICK}
+                    tickLine={false}
+                    axisLine={false}
+                    width={56}
+                    tickFormatter={(value) =>
+                      Math.abs(value) >= 1000 ? `$${(value / 1000).toFixed(1)}k` : `$${value}`
+                    }
+                  />
+                  {/* Break-even. Without it a column of losses reads as a column
+                      of bars and the sign has to be taken off the axis. */}
+                  <ReferenceLine y={0} stroke="var(--ds-border-strong)" strokeWidth={1} />
                   <Tooltip
                     content={<DailyTooltip />}
                     cursor={{ fill: 'var(--ds-accent-softer)' }}

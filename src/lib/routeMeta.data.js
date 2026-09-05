@@ -63,6 +63,11 @@ const ROUTE_META = {
     description:
       'Every published call with its entry, stop and target, alerts when a new one fires, and the outcome of each one scored against the tape.',
   },
+  '/app/demo': {
+    title: 'Demo Account · Root & Rise Terminal',
+    description:
+      'Every call the desk has published, sized at one per cent risk against a fifty-thousand-dollar book: balance, equity curve, drawdown and the trade-by-trade ledger.',
+  },
   '/app/insights': {
     title: 'Insights · Root & Rise Terminal',
     description:
