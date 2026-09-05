@@ -820,11 +820,11 @@ function DataCard() {
 /**
  * The journal as a file, and a file as the journal.
  *
- * Everything the desk has logged lives in one browser's storage, so a cleared
- * profile or a new machine is the whole record gone. A download is the copy
- * that survives that; a restore is the same copy read back, confirmed before
- * it replaces anything, because a restore is the one action here that cannot
- * be undone.
+ * The record follows the account now, so a new machine signs in and finds its
+ * own journal waiting. A download is still the copy that answers to nobody -
+ * the one a reader keeps whatever happens to this desk - and a restore is that
+ * copy read back, confirmed before it replaces anything, because a restore is
+ * the one action here that cannot be undone.
  */
 function BackupCard() {
   const { journal, trades, replaceJournal } = useJournal()
@@ -874,8 +874,9 @@ function BackupCard() {
     <Card title="Backup">
       <div className="space-y-4">
         <p className="max-w-[72ch] text-sm leading-relaxed text-text-muted">
-          The journal lives in this browser and nowhere else. A copy is the only thing that survives
-          a cleared browser or a new machine, so take one after a session.
+          The journal is saved to your account, so it follows you to any browser you sign in on. A
+          downloaded copy is the one that answers to nobody, so it is still worth taking after a
+          session.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={download} className={PRIMARY_BUTTON}>
@@ -922,7 +923,7 @@ function BackupCard() {
               {pending.record.trades.length} trades, {pendingClosed} closed, and{' '}
               {pending.record.settings.firms.length}{' '}
               {pending.record.settings.firms.length === 1 ? 'firm' : 'firms'}. Restoring it replaces
-              everything in this browser, and that cannot be undone.
+              the whole journal on this account, and that cannot be undone.
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
