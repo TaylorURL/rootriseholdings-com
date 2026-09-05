@@ -24,7 +24,7 @@ export const RISK_RULES_DESCRIPTIONS = [
   {
     id: 'daily-loss-limit',
     label: '0.5% daily loss limit',
-    detail: 'Conservative mode: once realized loss for the session reaches 0.5%, the desk is done.',
+    detail: 'Once realized loss for the session reaches 0.5%, the desk is done.',
   },
   {
     id: 'min-rr',
@@ -35,7 +35,7 @@ export const RISK_RULES_DESCRIPTIONS = [
   {
     id: 'consecutive-loss-stop',
     label: 'Hard stop after 2 consecutive losses',
-    detail: 'Two losers in a row closes the trading day, no exceptions.',
+    detail: 'Two losers in a row closes the trading day.',
   },
   {
     id: 'aplus-cap',

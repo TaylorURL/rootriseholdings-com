@@ -8,8 +8,9 @@ import { useArrived } from '../../../lib/arrival.js'
 
 /**
  * The four charts the desk actually carries, priced live. The count in the
- * header reports the feed rather than decorating it: with nothing arriving it
- * says so instead of showing a dot that means nothing.
+ * header reports the feed rather than decorating it: with nothing arriving
+ * there is no count, and the header carries nothing in its place, so the
+ * prerendered document holds no line a crawler would read as content.
  *
  * The stream is opened once the page is past its own arrival, which is what the
  * count already waited on: it reads the feed rather than the clock, and the feed
@@ -26,9 +27,11 @@ export default function LiveMarketSection({ ground = 'page' }) {
         title="Four charts carry the whole desk."
         description="XAUUSD on the 1H, NAS100 and SP500 on the 15m, US30 on the 1H, plus an FX watch list read for context and never traded."
         meta={
-          <p className="font-mono text-[11px] uppercase tracking-label text-text-faint">
-            {priced > 0 ? `Live · ${priced} instruments` : 'Reading the feed'}
-          </p>
+          priced > 0 ? (
+            <p className="font-mono text-[11px] uppercase tracking-label text-text-faint">
+              {`Live · ${priced} ${priced === 1 ? 'instrument' : 'instruments'}`}
+            </p>
+          ) : null
         }
       />
 

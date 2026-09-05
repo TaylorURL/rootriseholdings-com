@@ -7,7 +7,7 @@ export const PRODUCT = {
   heroLine:
     'Structure read the Smart Money way on gold and the US indices, with a rule gate on every trade.',
   valueProp:
-    'One desk, four charts, hard rules. Structure gets read the Smart Money way on gold and the US indices: BOS, CHoCH, OTE. Every trade passes a rule gate before it is taken, and a nine-section briefing frames each session.',
+    'One desk, four charts, hard rules. The desk reads structure the Smart Money way on gold and the US indices: BOS, CHoCH, OTE. Every trade passes a rule gate before it is taken, and a nine-section briefing frames each session.',
 }
 
 /** The compliance framing repeated across the site. A private desk, not a fund. */
@@ -38,23 +38,24 @@ export const NAV_GROUPS = [
     items: [
       {
         to: '/#method',
-        label: 'Bias From The Higher Timeframes',
+        label: 'Bias from the Higher Timeframes',
         summary: 'The sequence of highs and lows sets the only direction the desk will trade.',
       },
       {
         to: '/#method',
-        label: 'Entries At Structure',
+        label: 'Entries at Structure',
         summary: 'A break or a change of character first, then the pullback into the OTE band.',
       },
       {
         to: '/#method',
         label: 'Risk Under Hard Rules',
-        summary: 'One percent a trade, two R minimum, and a day that locks itself when it should.',
+        summary:
+          'One percent a trade, two R minimum, and a day that locks after two consecutive losses.',
       },
     ],
     feature: {
       to: '/#method',
-      label: 'Read One Chart End To End',
+      label: 'Read One Chart End to End',
       summary:
         'Gold on the hour, with the change of character, the break, and the entry band marked where the desk saw them.',
     },
@@ -67,7 +68,8 @@ export const NAV_GROUPS = [
       {
         to: '/#platform',
         label: 'The Journal',
-        summary: 'Logs a trade in seconds and refuses the ones that break the book.',
+        summary:
+          'Logs a trade in seconds and refuses the ones over the risk cap or on a locked day.',
       },
       {
         to: '/#platform',
@@ -87,7 +89,7 @@ export const NAV_GROUPS = [
     ],
     feature: {
       to: '/login',
-      label: 'See A Ticket Get Gated',
+      label: 'See a Ticket Get Gated',
       summary:
         'Every entry is measured against the risk cap, the R minimum, and the state of the day before it is written.',
     },

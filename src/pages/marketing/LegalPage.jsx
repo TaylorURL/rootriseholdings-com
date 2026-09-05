@@ -16,7 +16,7 @@ const PAGES = {
     siblingTo: '/terms',
     siblingLabel: 'the terms',
     intro:
-      'The account is an email address and a password, the journal lives in your own browser, and nothing the platform holds is sold or shared.',
+      'The account is an email address and a password, the journal is saved to that account, and nothing the platform holds is sold or shared.',
     sections: [
       {
         heading: 'What the account holds',
@@ -24,7 +24,11 @@ const PAGES = {
       },
       {
         heading: 'Where journal data lives',
-        body: 'Trades, settings, prop-firm parameters, and day plans persist in your own browser’s local storage. They never leave the device they were entered on, and clearing the browser’s site data removes them entirely.',
+        body: 'Trades, settings, prop-firm parameters, and day plans are saved to your account, so they follow you to any browser you sign in on. No other account can read that copy. The browser keeps records of its own as well: the current journal, and a snapshot of what it held before the first sync, which is not rewritten afterwards. Anyone using that browser can read them, and clearing the browser’s site data removes them entirely.',
+      },
+      {
+        heading: 'What the contact form stores',
+        body: 'Sending a message from the contact page stores the name, email address, and message you enter, along with the time it was sent. Sending is all the site can do with them: no page here reads those messages back.',
       },
       {
         heading: 'Market data requests',
@@ -60,7 +64,7 @@ const PAGES = {
       },
       {
         heading: 'Your data and your account',
-        body: 'Journal data stays in your browser and can be removed by clearing the browser’s site data. The account exists only to gate the terminal and can be abandoned at any time.',
+        body: 'Journal data is saved to your account and follows you to any browser you sign in on, and no other account can read that copy. The browser keeps records of its own as well, including a snapshot from before the first sync that is not rewritten afterwards. Anyone using that browser can read them, and clearing the browser’s site data removes them entirely. The account gates the terminal and holds the journal, so abandoning it leaves the record behind with it.',
       },
       {
         heading: 'Warranty',

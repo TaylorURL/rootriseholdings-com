@@ -799,7 +799,7 @@ function DataCard() {
         ) : (
           <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
         )}
-        {open ? 'Hide the List' : 'Show Every Instrument'}
+        {open ? 'Hide Instruments' : 'Show All Instruments'}
       </button>
       {open ? (
         <ul className="mt-3 space-y-2 border-t border-border pt-3 text-sm">
@@ -887,7 +887,7 @@ function BackupCard() {
       <div className="space-y-4">
         <p className="max-w-[72ch] text-sm leading-relaxed text-text-muted">
           The journal is saved to your account, so it follows you to any browser you sign in on. A
-          downloaded copy is the one that answers to nobody, so it is still worth taking after a
+          downloaded copy does not depend on the account, so it is still worth taking after a
           session.
         </p>
         <div className="flex flex-wrap items-center gap-3">
@@ -897,7 +897,7 @@ function BackupCard() {
           </button>
           <label htmlFor={fileId} className={cn(SECONDARY_BUTTON, 'cursor-pointer')}>
             <Upload className="h-4 w-4" aria-hidden="true" />
-            Restore From File
+            Restore from File
           </label>
           <input
             id={fileId}

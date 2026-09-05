@@ -28,15 +28,15 @@ export const METHOD_STEPS = [
     title: 'Entries at structure, in the zone',
     summary: 'BOS confirms continuation, CHoCH flags reversal, OTE times the entry.',
     detail:
-      'On the 1H and 15m the desk waits for a Break of Structure or a Change of Character, then for the pullback into the 62–79% retracement of the leg. That band is the Optimal Trade Entry, and a ticket is written inside it or not at all.',
+      'On the 1H and 15m the desk waits for a Break of Structure or a Change of Character, then for the pullback into the 62 to 79 percent retracement of the leg. That band is the Optimal Trade Entry, and a ticket is written inside it.',
   },
   {
     id: '03',
     icon: ListChecks,
     title: 'Risk under hard rules',
-    summary: 'One percent per trade, half a percent per day, two losses and done.',
+    summary: 'One percent per trade, half a percent per day, and two losses closes the desk.',
     detail:
-      'Every trade risks at most 1% of equity and targets at least 2R. A 0.5% down day, two consecutive losses, or two A+ executions closes the desk, and the platform enforces all of it at entry.',
+      'Every trade risks at most 1% of equity and targets at least 2R. A 0.5% down day or two consecutive losses closes the desk. At entry the platform refuses anything over the 1% cap, a third A+ setup, or any ticket on a locked day, and a ticket below 2R logs with the departure marked against it.',
   },
 ]
 
@@ -45,12 +45,12 @@ export const PLATFORM_FEATURES = [
   {
     icon: NotebookPen,
     title: 'A journal that says no',
-    body: 'Trades log in seconds with R:R, risk, setup, and session attached, and the rule book gates every entry. Tickets that break the 1% cap, the 2R minimum, or a locked day are refused, not flagged.',
+    body: 'Trades log in seconds with R:R, risk, setup, and session attached, and the rule book gates every entry. Tickets that break the 1% cap, the A+ cap, or a locked day are refused, not flagged, and one below the 2R minimum logs with the departure marked against it.',
   },
   {
     icon: Newspaper,
     title: 'The nine-section briefing',
-    body: 'Economic calendar, DXY, gold and index structure, FX watch, sentiment, day plan, and rules, composed twice a day from live feeds with every level computed rather than typed.',
+    body: 'Economic calendar, DXY, gold, index structure, FX watch, catalysts, sentiment, day plan, and rules, composed twice a day from live feeds with every level computed rather than typed.',
   },
   {
     icon: LineChart,
@@ -79,6 +79,6 @@ export const TRUST_PILLARS = [
   {
     icon: ListChecks,
     title: 'Rules over feelings',
-    body: 'The risk rules are enforced by software at the moment of entry, not remembered under pressure.',
+    body: 'The risk rules are enforced by software at the moment of entry.',
   },
 ]

@@ -22,6 +22,6 @@ export const FAQ = [
   {
     question: 'What are the risk rules?',
     answer:
-      'Every trade risks at most 1 percent of equity and targets at least 2R. A 0.5 percent down day, two consecutive losses, or two A+ executions closes the desk for the session, and the journal refuses the tickets that break those limits rather than flagging them.',
+      'Every trade risks at most 1 percent of equity and targets at least 2R. A 0.5 percent down day or two consecutive losses closes the desk for the session. The journal refuses a ticket over the 1 percent cap, a third A+ setup, or any ticket written on a locked day rather than flagging it, and a ticket below the 2R minimum logs with the departure marked against it.',
   },
 ]
