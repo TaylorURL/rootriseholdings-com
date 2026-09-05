@@ -8,6 +8,19 @@
 const STORAGE_KEY = 'rr.journal.v1'
 const VERSION = 1
 
+/**
+ * Where the browser's own copy is kept the moment before the account's copy
+ * first replaces it.
+ *
+ * The sync merges rather than overwrites, so in theory nothing is ever lost
+ * and this is never read. It exists because "in theory" is doing real work in
+ * that sentence: the merge is the first thing in this app to take two records
+ * somebody typed and produce a third, and the cost of being wrong once is a
+ * trading journal. One untouched copy of what the browser had, written before
+ * anything is adopted, makes that recoverable rather than final.
+ */
+const BACKUP_KEY = 'rr.journal.v1.pre-sync'
+
 export function emptyJournal() {
   return {
     version: VERSION,
@@ -68,10 +81,12 @@ export function loadJournal(storage = defaultStorage()) {
 /**
  * The journal as a file a reader can keep.
  *
- * The record lives in one browser's storage and nowhere else, so the file is
- * the only copy that survives a cleared profile or a new machine. It is the
- * stored shape itself, stamped with when it was written, so a file restored
- * later is exactly the journal that was saved.
+ * The account holds the record now and this storage is the cache in front of
+ * it, so a cleared profile is no longer the end of a journal. The file is still
+ * worth having: it is the only copy that is not ours to lose, and the only one
+ * a reader can read without us. It is the stored shape itself, stamped with
+ * when it was written, so a file restored later is exactly the journal that was
+ * saved.
  *
  * @param {object} journal
  * @param {Date} [now]
@@ -106,6 +121,52 @@ export function saveJournal(journal, storage = defaultStorage()) {
     storage.setItem(STORAGE_KEY, JSON.stringify(journal))
   } catch {
     // Quota or private-mode failure — the in-memory copy still drives the UI.
+  }
+}
+
+/**
+ * Keeps one untouched copy of what this browser held, once.
+ *
+ * Written before the first sync adopts anything and never overwritten
+ * afterwards, because the copy worth keeping is the one from before any merge
+ * ran - a second write would replace it with a record the sync had already
+ * touched, which is the opposite of what it is for.
+ *
+ * @param {object} journal
+ * @param {Storage | null} [storage]
+ * @returns {boolean} whether this call is what wrote it
+ */
+export function backupJournalOnce(journal, storage = defaultStorage()) {
+  if (!storage) return false
+  try {
+    if (storage.getItem(BACKUP_KEY)) return false
+    storage.setItem(
+      BACKUP_KEY,
+      JSON.stringify({ ...journal, backedUpAt: new Date().toISOString() })
+    )
+    return true
+  } catch {
+    // A browser that will not take the backup still gets the sync; the account
+    // copy is the durable one either way.
+    return false
+  }
+}
+
+/**
+ * The pre-sync copy, for a reader who needs to see what their browser held
+ * before the account's record arrived.
+ *
+ * @param {Storage | null} [storage]
+ * @returns {object | null}
+ */
+export function loadBackupJournal(storage = defaultStorage()) {
+  if (!storage) return null
+  try {
+    const raw = storage.getItem(BACKUP_KEY)
+    if (!raw) return null
+    return normalizeJournal(JSON.parse(raw))
+  } catch {
+    return null
   }
 }
 

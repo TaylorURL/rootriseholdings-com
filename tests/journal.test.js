@@ -23,6 +23,8 @@ import {
   currentEquity,
   serializeJournal,
   parseJournal,
+  backupJournalOnce,
+  loadBackupJournal,
 } from '../src/lib/journal/store.js'
 
 const EQUITY = 100000
@@ -309,4 +311,47 @@ test('a backup round-trips through text and a foreign file is refused', () => {
   assert.equal(parseJournal('not json'), null)
   assert.equal(parseJournal('{"version":2,"trades":[]}'), null, 'a version this one cannot read')
   assert.equal(parseJournal('{"version":1}'), null, 'a record with no trades is not a journal')
+})
+
+/**
+ * The pre-sync backup is the safety net under the merge: one untouched copy of
+ * what this browser held, taken before the account's record is allowed to
+ * replace anything. It is written once, because a second write would replace
+ * the pre-merge copy with one the sync had already touched.
+ */
+test('the pre-sync backup is written once and holds what the browser had first', () => {
+  const backing = new Map()
+  const storage = {
+    getItem: (key) => backing.get(key) ?? null,
+    setItem: (key, value) => backing.set(key, value),
+  }
+
+  const first = emptyJournal()
+  first.settings.startingEquity = 50000
+  first.trades.push(openAndClose({ riskPct: 1 }, 2430))
+
+  assert.equal(backupJournalOnce(first, storage), true, 'the first call writes it')
+
+  const second = emptyJournal()
+  second.settings.startingEquity = 999
+  assert.equal(backupJournalOnce(second, storage), false, 'a later call leaves it alone')
+
+  const held = loadBackupJournal(storage)
+  assert.equal(held.settings.startingEquity, 50000, 'the copy is the one from before any merge')
+  assert.equal(held.trades.length, 1)
+})
+
+test('a browser with no backup reads back nothing rather than throwing', () => {
+  const storage = { getItem: () => null, setItem: () => {} }
+  assert.equal(loadBackupJournal(storage), null)
+})
+
+test('storage that refuses a write does not take the sync down with it', () => {
+  const storage = {
+    getItem: () => null,
+    setItem: () => {
+      throw new Error('QuotaExceededError')
+    },
+  }
+  assert.equal(backupJournalOnce(emptyJournal(), storage), false)
 })

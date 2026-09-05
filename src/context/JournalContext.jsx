@@ -1,5 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { loadJournal, saveJournal, currentEquity } from '../lib/journal/store.js'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { loadJournal, saveJournal, backupJournalOnce, currentEquity } from '../lib/journal/store.js'
+import { reconcile, sameRecord } from '../lib/journal/merge.js'
+import { fetchJournal, pushJournal } from '../lib/journal/remote.js'
+import { loadSupabase } from '../lib/supabase'
+import { useAuth } from './AuthContext.jsx'
 import {
   createTrade,
   closeTrade as closeTradeModel,
@@ -27,13 +31,131 @@ function useMinuteTick() {
   }, [])
 }
 
+/** How long a burst of edits settles for before the account is written to. */
+const PUSH_DEBOUNCE_MS = 1500
+
 export function JournalProvider({ children }) {
   const [journal, setJournal] = useState(loadJournal)
+  const { user } = useAuth()
+  const userId = user?.id ?? null
   useMinuteTick()
+
+  /**
+   * What the account is known to hold.
+   *
+   * Until the first sync answers, this is null and nothing is written up - a
+   * browser that pushed before it had read would overwrite an account it had
+   * never looked at, which on a new device is every trade the reader owns.
+   */
+  const syncedFor = useRef(null)
+  /** The record the account is known to be holding, so an unchanged one is not resent. */
+  const lastPushed = useRef(null)
+  const [sync, setSync] = useState({ state: 'idle', outcome: null, error: null })
 
   useEffect(() => {
     saveJournal(journal)
   }, [journal])
+
+  /**
+   * Bring the account's journal and this browser's together, once per sign-in.
+   *
+   * Signed out, this does nothing at all and the desk works exactly as it did:
+   * one record in local storage, no network, no account. Signed in, the account
+   * becomes the record - the browser copy stays underneath it as a cache that
+   * survives a refresh and an aeroplane - and the first sign-in on an account
+   * that has never held a journal carries the browser's up rather than starting
+   * empty, which is what stops this change losing anybody's history.
+   */
+  useEffect(() => {
+    if (!userId) {
+      syncedFor.current = null
+      lastPushed.current = null
+      setSync({ state: 'idle', outcome: null, error: null })
+      return
+    }
+    if (syncedFor.current === userId) return
+
+    let active = true
+    setSync({ state: 'syncing', outcome: null, error: null })
+
+    const run = async () => {
+      const supabase = await loadSupabase()
+      const remote = await fetchJournal(supabase, userId)
+      if (!active) return
+
+      // Read against the record as it stands now rather than the one this
+      // effect closed over: an edit made while the fetch was in flight is work
+      // somebody just did, and it has to be on the side that gets merged.
+      let decision = null
+      setJournal((current) => {
+        decision = reconcile(current, remote)
+        if (!decision.adopt) return current
+        // The untouched copy goes down before anything replaces it.
+        backupJournalOnce(current)
+        return decision.adopt
+      })
+
+      if (!active || !decision) return
+
+      if (decision.push) {
+        const written = await pushJournal(supabase, userId, decision.push, {
+          migrated: decision.migrated,
+        })
+        if (!active) return
+        if (!written.ok) {
+          setSync({ state: 'failed', outcome: decision.outcome, error: written.error })
+          return
+        }
+      }
+
+      lastPushed.current = decision.push ?? decision.adopt ?? remote.record
+      syncedFor.current = userId
+      setSync({
+        state: remote.state === 'unavailable' || remote.state === 'error' ? 'failed' : 'synced',
+        outcome: decision.outcome,
+        error: remote.error,
+      })
+    }
+
+    run()
+    return () => {
+      active = false
+    }
+  }, [userId])
+
+  /**
+   * Every later change, carried up after the typing stops.
+   *
+   * Debounced because a trade form writes on each keystroke that reaches the
+   * record, and a request per keystroke is a request per keystroke. It waits on
+   * the first sync having answered, so an edit can never land on the account
+   * before the merge that decided what the account should hold.
+   */
+  useEffect(() => {
+    if (!userId || syncedFor.current !== userId) return
+    // The sync that just ran already wrote whatever it decided to write, and a
+    // journal nobody has touched since is not a change. Without this the first
+    // render after a sign-in posts the record straight back.
+    if (lastPushed.current !== null && sameRecord(lastPushed.current, journal)) return
+
+    let active = true
+    const timer = setTimeout(async () => {
+      const supabase = await loadSupabase()
+      if (!active) return
+      const written = await pushJournal(supabase, userId, journal)
+      if (!active) return
+      if (written.ok) lastPushed.current = journal
+      setSync((previous) =>
+        written.ok
+          ? { state: 'synced', outcome: previous.outcome, error: null }
+          : { state: 'failed', outcome: previous.outcome, error: written.error }
+      )
+    }, PUSH_DEBOUNCE_MS)
+    return () => {
+      active = false
+      clearTimeout(timer)
+    }
+  }, [journal, userId, sync.state])
 
   const equity = currentEquity(journal)
   const dayState = useMemo(
@@ -163,6 +285,7 @@ export function JournalProvider({ children }) {
       equity,
       dayState,
       todayPlan,
+      sync,
       addTrade,
       closeTrade,
       deleteTrade,
@@ -178,6 +301,7 @@ export function JournalProvider({ children }) {
       equity,
       dayState,
       todayPlan,
+      sync,
       addTrade,
       closeTrade,
       deleteTrade,
