@@ -62,6 +62,15 @@ const NOTIFY_TIMEOUT_MS = 8000
 const WEBHOOK_TIMEOUT_MS = 4000
 
 /**
+ * How long the credential check gets.
+ *
+ * Less than a send, because it carries nothing and asks the endpoint only to
+ * look one row up. A pass should never lose a call it found because the check
+ * that no call was owed took too long.
+ */
+const PROBE_TIMEOUT_MS = 4000
+
+/**
  * How long to wait before the single retry.
  *
  * One retry, and only one. A post that timed out may well have landed - the
@@ -258,6 +267,100 @@ async function post(notification, { url, secret, project, fetcher }) {
     return { ok: false, retry: false, error: `the notification reached nobody${said}` }
   } catch (error) {
     return { ok: false, retry: true, error: String(error?.message ?? error) }
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+/**
+ * Whether the credential this deployment holds still opens the door, asked
+ * without sending anything.
+ *
+ * The credential is the one part of the alert path that can go wrong while
+ * every surface keeps reading healthy. The endpoint holds the digest of the
+ * secret and the deployment holds the secret, and the two live in different
+ * places that are changed by different hands: the digest is a row in a
+ * database, and the secret is an environment variable Vercel snapshots at
+ * deploy time. Set a new secret without redeploying and the running deployment
+ * keeps the old one; change the row without setting a new secret and the same
+ * gap opens from the other side. Either way the desk goes on sweeping, the
+ * record goes on filling, and the first thing that says so is a call that
+ * nobody hears about.
+ *
+ * So this asks. The endpoint answers a GET with the project's own record and
+ * mails nobody doing it, which makes it the one question that can be put every
+ * two minutes without cost. A refusal is the stale-secret case and the caller
+ * is expected to treat it as a failed pass; anything else that went wrong on
+ * the way is reported as unreachable, because a studio endpoint having a bad
+ * minute is not this desk being broken and must not be allowed to look like it.
+ *
+ * The recipient count comes back with it, since it arrives in the same answer.
+ * A project whose list is empty delivers every alert to nobody, which is a
+ * different fault with the same silence on it.
+ *
+ * @param {object} [options]
+ * @param {string} [options.url] - the notifications endpoint
+ * @param {string} [options.project] - which project it sends as
+ * @param {string} [options.secret] - the bearer secret to test
+ * @param {typeof fetch} [options.fetcher]
+ * @returns {Promise<{state:'ok'|'refused'|'unreachable'|'unconfigured',
+ *   status:number|null, recipients:number|null, error:string|null}>}
+ */
+export async function verifyNotifyCredential(options = {}) {
+  const {
+    url = process.env.NOTIFY_URL || DEFAULT_NOTIFY_URL,
+    project = process.env.NOTIFY_PROJECT || DEFAULT_NOTIFY_PROJECT,
+    secret = process.env.NOTIFY_SECRET,
+    fetcher = fetch,
+  } = options
+
+  const answer = { state: 'unconfigured', status: null, recipients: null, error: null }
+  if (!secret || !url) return answer
+
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS)
+  try {
+    const response = await fetcher(url, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${secret}`, 'X-Notify-Project': project },
+      signal: controller.signal,
+    })
+    if (response.ok) {
+      const record = await readJson(response)
+      const recipients = Number(record?.recipients ?? 0)
+      return {
+        state: 'ok',
+        status: response.status,
+        recipients: Number.isFinite(recipients) ? recipients : null,
+        error: null,
+      }
+    }
+    // The endpoint answers a missing header, an unrecognised secret and a slug
+    // that does not belong to it with the same sentence, deliberately, so this
+    // cannot say which of the three it was - only that what this deployment
+    // holds is not what the endpoint expects, which is the whole of what a
+    // reader needs to go and look.
+    if (response.status === 401 || response.status === 403) {
+      return {
+        state: 'refused',
+        status: response.status,
+        recipients: null,
+        error: `the notifications endpoint refused this deployment's credential for ${project}, so an alert would not be delivered`,
+      }
+    }
+    return {
+      state: 'unreachable',
+      status: response.status,
+      recipients: null,
+      error: `the notifications endpoint answered ${response.status} to a credential check`,
+    }
+  } catch (error) {
+    return {
+      state: 'unreachable',
+      status: null,
+      recipients: null,
+      error: String(error?.message ?? error),
+    }
   } finally {
     clearTimeout(timer)
   }

@@ -1,6 +1,11 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { announce, describeForPush, notificationFor } from '../api/lib/announce.js'
+import {
+  announce,
+  describeForPush,
+  notificationFor,
+  verifyNotifyCredential,
+} from '../api/lib/announce.js'
 
 function signal(overrides = {}) {
   return {
@@ -539,4 +544,85 @@ test('a webhook-only host still drains the queue and stamps what it carried', as
     ['OLD', 'NEW'],
     'both are stamped by the only channel there is'
   )
+})
+
+/**
+ * The credential check is the guard against the one failure that leaves every
+ * other surface reading healthy: the endpoint holding one secret and the
+ * deployment holding another. It has to mail nobody to run, and it has to tell
+ * a refusal apart from a bad minute, because only the first is this desk's
+ * fault and only the first should turn a pass red.
+ */
+test('a credential the endpoint accepts reads ok and carries the recipient count', async () => {
+  const asked = []
+  const outcome = await verifyNotifyCredential({
+    url: 'https://studio.test/api/notify',
+    project: 'root-rise',
+    secret: 'live-secret',
+    fetcher: async (url, init) => {
+      asked.push({ url, init })
+      return { ok: true, status: 200, json: async () => ({ project: 'root-rise', recipients: 2 }) }
+    },
+  })
+  assert.equal(asked.length, 1)
+  assert.equal(asked[0].init.method, 'GET', 'a check that posts is a check that could send')
+  assert.equal(asked[0].init.headers.Authorization, 'Bearer live-secret')
+  assert.equal(asked[0].init.headers['X-Notify-Project'], 'root-rise')
+  assert.equal(outcome.state, 'ok')
+  assert.equal(outcome.recipients, 2)
+  assert.equal(outcome.error, null)
+})
+
+test('a stale secret reads refused and says an alert would not arrive', async () => {
+  const outcome = await verifyNotifyCredential({
+    url: 'https://studio.test/api/notify',
+    project: 'root-rise',
+    secret: 'the-old-one',
+    fetcher: async () => ({
+      ok: false,
+      status: 401,
+      json: async () => ({ error: 'not authorized' }),
+    }),
+  })
+  assert.equal(outcome.state, 'refused')
+  assert.equal(outcome.status, 401)
+  assert.match(outcome.error, /would not be delivered/)
+})
+
+/**
+ * A studio endpoint having a bad minute is not this desk being broken, and a
+ * guard that cannot tell the two apart is one that cries wolf until it is
+ * ignored.
+ */
+test('an endpoint that is merely unwell reads unreachable rather than refused', async () => {
+  const answered = await verifyNotifyCredential({
+    url: 'https://studio.test/api/notify',
+    secret: 'live-secret',
+    fetcher: async () => ({ ok: false, status: 502, json: async () => ({}) }),
+  })
+  assert.equal(answered.state, 'unreachable')
+
+  const threw = await verifyNotifyCredential({
+    url: 'https://studio.test/api/notify',
+    secret: 'live-secret',
+    fetcher: async () => {
+      throw new Error('socket hang up')
+    },
+  })
+  assert.equal(threw.state, 'unreachable')
+  assert.match(threw.error, /socket hang up/)
+})
+
+test('a host holding no secret reads unconfigured and asks nothing', async () => {
+  let asked = 0
+  const outcome = await verifyNotifyCredential({
+    url: 'https://studio.test/api/notify',
+    secret: undefined,
+    fetcher: async () => {
+      asked += 1
+      return { ok: true, status: 200, json: async () => ({}) }
+    },
+  })
+  assert.equal(asked, 0)
+  assert.equal(outcome.state, 'unconfigured')
 })

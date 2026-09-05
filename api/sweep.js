@@ -43,7 +43,7 @@ import {
   signalClient,
 } from './lib/signalStore.js'
 import { recordSweepRun } from './lib/sweepRuns.js'
-import { announce } from './lib/announce.js'
+import { announce, verifyNotifyCredential } from './lib/announce.js'
 
 /**
  * How long the platform lets one pass run.
@@ -177,8 +177,21 @@ export default async function handler(request, response) {
       stamped: await markAnnounced(client, delivery.delivered),
     }
 
+    // A pass that delivered has just proved the credential the only way that
+    // counts, so it is not asked again. Every other pass asks, because on a
+    // quiet desk that is every pass there is - and a credential that only gets
+    // exercised when a call arrives is one that is first found broken by the
+    // call it loses. The check mails nobody.
+    announced.credential =
+      delivery.email.sent > 0
+        ? { state: 'ok', status: 200, recipients: null, error: null, proven: 'by delivery' }
+        : await verifyNotifyCredential()
+
     const ms = Date.now() - startedAt
     const blind = read === 0 && outcome.attempted > 0
+    // The endpoint knows this deployment's credential is wrong and nothing else
+    // does. Read the whole book, store every call, and the desk is still deaf.
+    const deaf = announced.credential.state === 'refused'
     const heartbeat = await recordSweepRun(client, {
       origin,
       instruments: outcome.attempted,
@@ -188,12 +201,12 @@ export default async function handler(request, response) {
       updated: written.updated,
       unread: outcome.unread,
       withheld: outcome.withheld,
-      ok: !blind,
+      ok: !blind && !deaf,
       ms,
     })
 
     const body = {
-      ok: !blind,
+      ok: !blind && !deaf,
       origin,
       standing: before.length,
       instruments: outcome.attempted,
@@ -223,11 +236,31 @@ export default async function handler(request, response) {
       return
     }
 
+    // A deaf pass read the market perfectly and can tell nobody what it found,
+    // which is a failure with no other way of being noticed - the record fills,
+    // the site changes nothing, and the alert that does not arrive is the only
+    // evidence. It is reported the same way a blind pass is, and for the same
+    // reason: the only reader here is a scheduler, and a scheduler can only be
+    // told by the status.
+    if (deaf) {
+      body.error = announced.credential.error
+      console.error(`sweep ${JSON.stringify(body)}`)
+      response.setHeader('Cache-Control', 'no-store')
+      response.status(503).json(body)
+      return
+    }
+
     const line = `sweep ${JSON.stringify(body)}`
     // An announcement that failed is worth a warning even on a pass that read
     // the whole book, because it is the half of the desk with no surface of
     // its own: nothing on the site changes when an alert does not arrive.
-    if (outcome.unread.length > 0 || outcome.withheld.length > 0 || announced.error)
+    if (
+      outcome.unread.length > 0 ||
+      outcome.withheld.length > 0 ||
+      announced.error ||
+      announced.credential.state === 'unreachable' ||
+      announced.credential.recipients === 0
+    )
       console.warn(line)
     else console.log(line)
 
