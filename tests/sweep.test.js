@@ -131,7 +131,7 @@ function flatChart(symbol) {
  * Stands the whole host up around one pass: a database that answers an empty
  * record, and a market feed that answers however the test says it does.
  */
-function host(t, feed, { queue = [], notify = null } = {}) {
+function host(t, feed, { queue = [], notify = null, probe = null } = {}) {
   const previous = {
     secret: process.env.CRON_SECRET,
     url: process.env.SUPABASE_URL,
@@ -167,9 +167,23 @@ function host(t, feed, { queue = [], notify = null } = {}) {
 
   const written = []
   const notified = []
+  const probes = []
   globalThis.fetch = async (input, init) => {
     const url = typeof input === 'string' ? input : input.url
     if (url.startsWith('https://notify.test')) {
+      // The credential check is a GET carrying nothing. It shares the endpoint
+      // with the sends, so the harness has to tell them apart the same way the
+      // endpoint does - by the method - or a probe arrives here as a send with
+      // no body and takes the pass down on a JSON parse.
+      if ((init?.method ?? 'GET') === 'GET') {
+        probes.push(url)
+        return probe
+          ? probe(probes.length)
+          : new Response(JSON.stringify({ project: 'root-rise', recipients: 1 }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            })
+      }
       notified.push(JSON.parse(init.body))
       return notify(notified.length)
     }
@@ -205,7 +219,7 @@ function host(t, feed, { queue = [], notify = null } = {}) {
     }
   })
 
-  return { lines, written, notified }
+  return { lines, written, notified, probes }
 }
 
 test('a sweep that could not reach the feed is a failure, not an empty pass', async (t) => {
@@ -448,4 +462,101 @@ test('a record with no queue yet falls back rather than announcing nothing', asy
   assert.equal(response.statusCode, 200)
   assert.equal(response.body.announced.outbox, 'unavailable')
   assert.equal(notified.length, 0)
+})
+
+/**
+ * The failure with no surface of its own.
+ *
+ * The endpoint holds the digest of a secret and the deployment holds the
+ * secret, and they are changed by different hands in different places - a row
+ * in a database, and an environment variable Vercel snapshots at deploy time.
+ * When they stop agreeing the desk goes on sweeping and the record goes on
+ * filling, and the only evidence is an alert that never arrives. So a pass that
+ * reads the whole market and cannot be heard is a failed pass, and says so in
+ * the one field its only reader can act on.
+ */
+test('a pass whose credential the endpoint refuses is a failure, not a quiet pass', async (t) => {
+  const { lines, probes } = host(
+    t,
+    async (url) => {
+      const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+      const body = JSON.stringify(flatChart(symbol))
+      return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } })
+    },
+    {
+      notify: () => new Response(JSON.stringify({ delivered: 1 }), { status: 200 }),
+      probe: () =>
+        new Response(JSON.stringify({ error: 'not authorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+    }
+  )
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(probes.length, 1, 'a quiet pass asks, because a quiet pass is every pass there is')
+  assert.equal(response.statusCode, 503)
+  assert.equal(response.body.ok, false)
+  // The market half was fine, which is exactly why nothing else would have said so.
+  assert.equal(response.body.read, SWEPT_INSTRUMENTS.length)
+  assert.deepEqual(response.body.unread, [])
+  assert.equal(response.body.announced.credential.state, 'refused')
+  assert.match(response.body.error, /would not be delivered/)
+  assert.ok(
+    lines.some((line) => line.startsWith('sweep ') && line.includes('"ok":false')),
+    'the heartbeat wrote down that the desk is deaf'
+  )
+})
+
+test('a healthy credential is checked, reported, and does not fail the pass', async (t) => {
+  const { probes } = host(
+    t,
+    async (url) => {
+      const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+      const body = JSON.stringify(flatChart(symbol))
+      return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } })
+    },
+    { notify: () => new Response(JSON.stringify({ delivered: 1 }), { status: 200 }) }
+  )
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(probes.length, 1)
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.ok, true)
+  assert.equal(response.body.announced.credential.state, 'ok')
+  assert.equal(response.body.announced.credential.recipients, 1)
+})
+
+/**
+ * A studio endpoint having a bad minute is not this desk being broken. Turning
+ * the pass red for it would teach a reader to ignore the field that matters.
+ */
+test('an endpoint having a bad minute is reported without failing the pass', async (t) => {
+  const { lines } = host(
+    t,
+    async (url) => {
+      const symbol = decodeURIComponent(url.split('/data/market/')[1].split('?')[0])
+      const body = JSON.stringify(flatChart(symbol))
+      return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } })
+    },
+    {
+      notify: () => new Response(JSON.stringify({ delivered: 1 }), { status: 200 }),
+      probe: () => new Response(JSON.stringify({ error: 'nope' }), { status: 502 }),
+    }
+  )
+
+  const response = recorder()
+  await handler(request({ authorization: 'Bearer shibboleth' }), response)
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.ok, true)
+  assert.equal(response.body.announced.credential.state, 'unreachable')
+  assert.ok(
+    lines.some((line) => line.startsWith('sweep ') && line.includes('"unreachable"')),
+    'it is still written down'
+  )
 })
