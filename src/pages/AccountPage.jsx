@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { CHART_CREDIT } from '../lib/brand'
 import {
   ChevronDown,
   ChevronUp,
@@ -775,6 +776,17 @@ function DataCard() {
         subscription sits in that path. Index and FX quotes carry the venue&rsquo;s own delay, so
         confirm a level on the execution platform before working it. An instrument no feed can serve
         reads as No Feed rather than falling back to a number.
+      </p>
+      <p className="mt-2 max-w-[68ch] text-xs leading-relaxed text-text-faint">
+        {CHART_CREDIT.notice.replace(/\.$/, '')}, used under the Apache 2.0 licence.{' '}
+        <a
+          href={CHART_CREDIT.href}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="focus-ring rounded-sm underline underline-offset-2 transition-colors [@media(hover:hover)]:hover:text-text"
+        >
+          tradingview.com
+        </a>
       </p>
       <button
         type="button"
