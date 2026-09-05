@@ -5,7 +5,7 @@ import SegmentedTabs from '../components/ui/SegmentedTabs'
 import SearchInput from '../components/ui/SearchInput'
 import Badge from '../components/ui/Badge'
 import { Figure, FigureRow, RuleLabel } from '../components/ui/Figures'
-import PriceChart from '../components/charts/PriceChart'
+import CandleChart from '../components/charts/CandleChart'
 import ChartInView from '../components/charts/ChartInView'
 import { Skeleton, SkeletonText, SkeletonRegion } from '../components/ui/Skeleton'
 import TradeCallCard from '../components/ui/TradeCallCard'
@@ -359,12 +359,11 @@ export default function MarketsPage() {
             {read?.candles ? (
               <ChartInView height={300} label={`${meta?.displaySymbol ?? symbol} price`}>
                 {() => (
-                  <PriceChart
+                  <CandleChart
                     candles={read.candles}
                     analysis={read.execution}
                     height={300}
                     decimals={decimalsForInstrument(symbol)}
-                    moveLabel={meta?.moveLabel ?? 'pts'}
                   />
                 )}
               </ChartInView>
