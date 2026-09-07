@@ -1,7 +1,7 @@
 import { Container } from './Section'
 import MarketingButton from './MarketingButton'
 import Reveal from '../motion/Reveal'
-import { COMPLIANCE } from '../../lib/brand'
+import { COMPLIANCE } from '../../lib/copy/brand'
 
 /**
  * The closing slab. Pinned dark like the masthead, so the page opens and shuts

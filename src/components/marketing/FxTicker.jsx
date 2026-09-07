@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { cn } from '../../lib/cn'
 import { Skeleton, SkeletonRegion } from '../ui/Skeleton'
-import { ChunkErrorBoundary, withChunkReload } from '../../lib/lazyRoute.jsx'
+import { ChunkErrorBoundary, withChunkReload } from '../../lib/routing/lazyRoute.jsx'
 import { useArrived } from '../../lib/arrival.js'
 
 const FxTickerRows = lazy(withChunkReload(() => import('./FxTickerRows')))

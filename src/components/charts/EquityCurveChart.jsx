@@ -11,7 +11,7 @@ import {
 } from 'recharts'
 import { formatCurrency } from '../../lib/format'
 import { ChartTooltipShell } from './ChartTooltip'
-import { AXIS_TICK, CURSOR_STROKE, DRAW, GRID_STROKE } from '../charts/chartTheme'
+import { AXIS_TICK, CURSOR_STROKE, DRAW, GRID_STROKE } from './chartTheme'
 
 /**
  * The equity curve.

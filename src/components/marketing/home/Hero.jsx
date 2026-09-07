@@ -2,7 +2,7 @@ import { Container } from '../Section'
 import Eyebrow from '../Eyebrow'
 import MarketingButton from '../MarketingButton'
 import LivePairChart from '../../charts/LivePairChartAsync'
-import { PRODUCT } from '../../../lib/brand'
+import { PRODUCT } from '../../../lib/copy/brand'
 import { RISK_RULES } from '../../../data/riskRules'
 
 /** The four figures the rule book is, shown as the desk states them. */

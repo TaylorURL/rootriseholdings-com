@@ -1,5 +1,5 @@
 import { Section, SectionHeading } from '../Section'
-import { FAQ } from '../../../lib/faq.data'
+import { FAQ } from '../../../lib/copy/faq.data'
 import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 
 /**

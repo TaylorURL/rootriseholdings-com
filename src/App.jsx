@@ -2,11 +2,11 @@ import { Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
-import MarketingLayout from './layouts/MarketingLayout'
+import MarketingLayout from './components/marketing/layout/MarketingLayout'
 import ClickRipple from './components/ui/ClickRipple'
 import RoutePending from './components/layout/RoutePending'
-import { ChunkErrorBoundary } from './lib/lazyRoute.jsx'
-import { useRouteMeta } from './lib/routeMeta.js'
+import { ChunkErrorBoundary } from './lib/routing/lazyRoute.jsx'
+import { useRouteMeta } from './lib/routing/routeMeta.js'
 import {
   HomePage,
   LoginPage,

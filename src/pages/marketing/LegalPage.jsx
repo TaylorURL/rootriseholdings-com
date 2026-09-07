@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Section } from '../../components/marketing/Section'
-import PageMasthead from '../../components/marketing/PageMasthead'
-import { PRODUCT, COMPLIANCE } from '../../lib/brand'
-import { BREADCRUMB_TRAILS } from '../../lib/routeMeta.js'
+import PageMasthead from '../../components/marketing/layout/PageMasthead'
+import { PRODUCT, COMPLIANCE } from '../../lib/copy/brand'
+import { BREADCRUMB_TRAILS } from '../../lib/routing/routeMeta.js'
 
 /**
  * The privacy and terms pages, rendered from one shape inside the marketing

@@ -1,5 +1,5 @@
 import { cn } from '../../lib/cn'
-import { PRODUCT } from '../../lib/brand'
+import { PRODUCT } from '../../lib/copy/brand'
 
 const SIZES = {
   sm: { box: 'h-7 w-7 rounded-sm', word: 'text-[14px]' },

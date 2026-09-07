@@ -1,8 +1,8 @@
 import { Section } from '../Section'
 import Eyebrow from '../Eyebrow'
 import Reveal from '../../motion/Reveal'
-import { COMPLIANCE } from '../../../lib/brand'
-import { TRUST_PILLARS } from '../../../lib/content'
+import { COMPLIANCE } from '../../../lib/copy/brand'
+import { TRUST_PILLARS } from '../../../lib/copy/content'
 import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 
 /**

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DESK_TIME_ZONE, sessionForMoment } from '../../lib/time.js'
-import { COMPLIANCE } from '../../lib/brand'
+import { COMPLIANCE } from '../../lib/copy/brand'
 import { RULE_LABEL } from '../ui/Figures'
 import { cn } from '../../lib/cn'
 

@@ -8,8 +8,8 @@ import {
   BREADCRUMB_TRAILS,
   BREADCRUMB_SCRIPT_ID,
   PRERENDERED_ROUTES,
-} from '../src/lib/routeMeta.data.js'
-import { FAQ } from '../src/lib/faq.data.js'
+} from '../src/lib/routing/routeMeta.data.js'
+import { FAQ } from '../src/lib/copy/faq.data.js'
 import { render } from '../dist-ssr/entry-server.js'
 
 /**
