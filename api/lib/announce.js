@@ -43,7 +43,7 @@
  */
 
 import { INSTRUMENT_META, decimalsForInstrument } from '../../src/data/instruments.js'
-import { ORIGIN } from '../../src/lib/routeMeta.data.js'
+import { ORIGIN } from '../../src/lib/routing/routeMeta.data.js'
 
 /** Where the notifications endpoint lives when the host does not name one. */
 const DEFAULT_NOTIFY_URL = 'https://www.taylorurl.com/api/notify'

@@ -162,10 +162,9 @@ rootriseholdings-com/
     ├── App.jsx                Route groups — brand page, login, gated /app
     ├── routes.jsx             The route components, split so the build and the browser share one list
     ├── entry-server.jsx       SSR entry the prerender build renders through
-    ├── components/            journal, layout, charts, ui, motion, marketing, auth
+    ├── components/            journal, layout, charts, ui, motion, marketing, auth, briefing, signals
     ├── context/               JournalContext, SignalsContext, AuthContext, ThemeContext
     ├── data/                  Instrument registry, risk rules, sessions
-    ├── layouts/               MarketingLayout — the public shell
     ├── pages/                 Dashboard, Briefing, Journal, Markets, Signals, Insights, Account + marketing/
     ├── styles/                tokens.css (design system) + index.css
     └── lib/
@@ -173,20 +172,16 @@ rootriseholdings-com/
         ├── smc/               Structure engine, narration, trade-call derivation
         ├── signals/           Signal record, outcome scoring, persistence, the sweep
         ├── alerts/            Browser notification delivery
+        ├── demo/              The published record walked forward as an account balance
         ├── marketData/        Feed client, OANDA translation, quotes, candles, calendar, DXY
         ├── briefing/          Nine-section composer + fetch hook
+        ├── routing/           Route chunks, what a document preloads, per-route head values, focus on navigation
+        ├── copy/              Brand facts and nav, brand-page copy, the questions
         ├── supabase.js        Auth client for the project
         ├── time.js            Central Time helpers (trading days, sessions)
-        ├── brand.js           Brand facts + nav — single source of truth
-        ├── content.js         Brand-page copy
-        ├── routeMeta.js       Per-route titles, descriptions, canonicals
-        ├── routeMeta.data.js  The values themselves, read by the build as well as the hook
-        ├── faq.data.js        The brand page's questions, and the FAQPage markup they source
-        ├── lazyRoute.jsx      A lazy route that renders straight from a preloaded module
-        ├── preloadRoute.js    What each written-out document needs in hand before hydration
         ├── format.js          Price / currency / R formatting
         ├── marketingMotion.js The durations, easings and reveal variants every surface animates on
-        ├── useRouteFocus.js   Moves focus to main on a route change
+        ├── arrival.js         Holds a live surface's first read until the page is past its own arrival
         └── cn.js              clsx + tailwind-merge helper
 ```
 

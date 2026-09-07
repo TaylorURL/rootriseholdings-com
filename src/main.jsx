@@ -1,8 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import App from './App.jsx'
-import { preloadRoute } from './lib/preloadRoute.js'
-import { reloadOnce } from './lib/lazyRoute.jsx'
+import { preloadRoute } from './lib/routing/preloadRoute.js'
+import { reloadOnce } from './lib/routing/lazyRoute.jsx'
 import './styles/index.css'
 
 // Hydration mismatches React itself recovers from -- an early transition into a

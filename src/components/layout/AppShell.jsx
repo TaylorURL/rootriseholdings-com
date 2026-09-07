@@ -8,7 +8,7 @@ import DeskRail from './DeskRail'
 import SkipLink from './SkipLink'
 import RoutePending from './RoutePending'
 import { useTheme } from '../../context/ThemeContext'
-import { useRouteFocus } from '../../lib/useRouteFocus'
+import { useRouteFocus } from '../../lib/routing/useRouteFocus'
 import { EASE_DRAWER, EASE_OUT } from '../../lib/marketingMotion'
 
 export default function AppShell() {

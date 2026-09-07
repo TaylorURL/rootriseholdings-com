@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Sunrise, Sunset, Clock, ChevronDown, ChevronUp, RefreshCw, PencilLine } from 'lucide-react'
-import Badge from './Badge'
-import { PANEL_TITLE, RuleLabel } from './Figures'
+import Badge from '../ui/Badge'
+import { PANEL_TITLE, RuleLabel } from '../ui/Figures'
 import { cn } from '../../lib/cn'
-import { Skeleton, SkeletonText, SkeletonRegion } from './Skeleton'
+import { Skeleton, SkeletonText, SkeletonRegion } from '../ui/Skeleton'
 
 const TONE_TO_VARIANT = {
   bullish: 'buy',

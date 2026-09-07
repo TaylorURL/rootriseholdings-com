@@ -1,5 +1,5 @@
 import { Section, SectionHeading } from '../Section'
-import { METHOD_STEPS } from '../../../lib/content'
+import { METHOD_STEPS } from '../../../lib/copy/content'
 import { StaggerGroup, StaggerItem } from '../../motion/Stagger'
 
 /**

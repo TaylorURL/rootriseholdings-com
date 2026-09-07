@@ -5,7 +5,7 @@ import { cn } from '../../lib/cn'
 import { useInstrumentQuote } from '../../lib/marketData/instrumentQuotes.js'
 import { formatInstrumentPrice } from '../../lib/format'
 import { useTheme } from '../../context/ThemeContext'
-import { chartOptions, resolveTokens } from '../charts/lwcTheme'
+import { chartOptions, resolveTokens } from './lwcTheme'
 import { formatCt } from '../../lib/time.js'
 
 /**

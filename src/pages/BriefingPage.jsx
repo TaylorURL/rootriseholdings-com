@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { PencilLine, X } from 'lucide-react'
 import PageHeader from '../components/ui/PageHeader'
-import DailyBriefing from '../components/ui/DailyBriefing'
+import DailyBriefing from '../components/briefing/DailyBriefing'
 import { RuleLabel } from '../components/ui/Figures'
 import DayStateBanner from '../components/journal/DayStateBanner'
 import { useJournal } from '../context/JournalContext'

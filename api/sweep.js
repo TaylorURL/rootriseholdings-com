@@ -34,7 +34,7 @@
 import { sweep } from '../src/lib/signals/engine.js'
 import { setFeedOrigin } from '../src/lib/marketData/chartFeed.js'
 import { clearCandleCache } from '../src/lib/marketData/candles.js'
-import { ORIGIN } from '../src/lib/routeMeta.data.js'
+import { ORIGIN } from '../src/lib/routing/routeMeta.data.js'
 import {
   markAnnounced,
   persistSweep,

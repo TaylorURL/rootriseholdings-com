@@ -1,6 +1,6 @@
 import { ArrowDownRight, ArrowUpRight, MinusCircle } from 'lucide-react'
-import Badge from './Badge'
-import { Figure, FigureRow, RULE_LABEL } from './Figures'
+import Badge from '../ui/Badge'
+import { Figure, FigureRow, RULE_LABEL } from '../ui/Figures'
 import { cn } from '../../lib/cn'
 import { decimalsForInstrument, INSTRUMENT_META } from '../../data/instruments'
 import { SETUP_NAMES } from '../../data/riskRules'

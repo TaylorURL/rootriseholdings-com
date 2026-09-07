@@ -1,12 +1,12 @@
 import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import MarketingNav from '../components/marketing/MarketingNav'
-import MarketingFooter from '../components/marketing/MarketingFooter'
-import SkipLink from '../components/layout/SkipLink'
-import RoutePending from '../components/layout/RoutePending'
+import MarketingNav from './MarketingNav'
+import MarketingFooter from './MarketingFooter'
+import SkipLink from '../../layout/SkipLink'
+import RoutePending from '../../layout/RoutePending'
 import SplitRail from '@taylorurl/split-rail'
-import { useTheme } from '../context/ThemeContext'
-import { useRouteFocus } from '../lib/useRouteFocus'
+import { useTheme } from '../../../context/ThemeContext'
+import { useRouteFocus } from '../../../lib/routing/useRouteFocus'
 
 /** Scroll to the top on route change, or to the section a #hash names. */
 function useScrollOnNavigate() {
