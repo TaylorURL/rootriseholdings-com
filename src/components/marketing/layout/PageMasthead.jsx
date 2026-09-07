@@ -1,7 +1,7 @@
-import { Container } from './Section'
-import Eyebrow from './Eyebrow'
-import Reveal from '../motion/Reveal'
-import { cn } from '../../lib/cn'
+import { Container } from '../Section'
+import Eyebrow from '../Eyebrow'
+import Reveal from '../../motion/Reveal'
+import { cn } from '../../../lib/cn'
 
 /**
  * What every interior page opens with. It is the navy slab the bar rides

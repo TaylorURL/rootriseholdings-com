@@ -1,6 +1,6 @@
 import { Section, SectionHeading } from '../Section'
 import Plate from '../Plate'
-import { PLATFORM_FEATURES } from '../../../lib/content'
+import { PLATFORM_FEATURES } from '../../../lib/copy/content'
 import { SpotlightCard } from '../../motion/Spotlight'
 import Reveal from '../../motion/Reveal'
 

@@ -1,5 +1,5 @@
 import TradeCallCard from './TradeCallCard'
-import { PANEL_TITLE } from './Figures'
+import { PANEL_TITLE } from '../ui/Figures'
 import { cn } from '../../lib/cn'
 import { formatCt } from '../../lib/time'
 

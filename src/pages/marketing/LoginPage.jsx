@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowRight, Eye, EyeOff, Lock, Mail, OctagonAlert } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
-import AuthShell from '../../components/marketing/AuthShell'
+import AuthShell from '../../components/marketing/layout/AuthShell'
 import AuthField from '../../components/marketing/AuthField'
 import MarketingButton from '../../components/marketing/MarketingButton'
 

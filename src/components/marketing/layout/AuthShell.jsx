@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import SplitRail from '@taylorurl/split-rail'
-import BrandMark from './BrandMark'
-import Eyebrow from './Eyebrow'
-import Plate from './Plate'
-import FxTicker from './FxTicker'
-import { COMPLIANCE, PRODUCT } from '../../lib/brand'
-import { useTheme } from '../../context/ThemeContext'
+import BrandMark from '../BrandMark'
+import Eyebrow from '../Eyebrow'
+import Plate from '../Plate'
+import FxTicker from '../FxTicker'
+import { COMPLIANCE, PRODUCT } from '../../../lib/copy/brand'
+import { useTheme } from '../../../context/ThemeContext'
 
 /**
  * The sign-in shell. It sits outside the marketing layout, so it carries its

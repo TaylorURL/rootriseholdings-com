@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { CHART_CREDIT } from '../lib/brand'
+import { CHART_CREDIT } from '../lib/copy/brand'
 import {
   ChevronDown,
   ChevronUp,

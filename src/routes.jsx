@@ -1,4 +1,4 @@
-import { lazyRoute } from './lib/lazyRoute.jsx'
+import { lazyRoute } from './lib/routing/lazyRoute.jsx'
 
 /**
  * Every route loads its own code, the brand page included. Keeping the home

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import BrandMark from './BrandMark'
+import BrandMark from '../BrandMark'
 import {
   CHART_CREDIT,
   COMPLIANCE,
@@ -8,9 +8,9 @@ import {
   FOOTER_STATEMENT,
   LEGAL_LINKS,
   PRODUCT,
-} from '../../lib/brand'
-import { ctParts } from '../../lib/time'
-import Reveal from '../motion/Reveal'
+} from '../../../lib/copy/brand'
+import { ctParts } from '../../../lib/time'
+import Reveal from '../../motion/Reveal'
 
 const LINK_CLASS =
   'focus-ring rounded-sm text-[13px] text-text-muted transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text'

@@ -1,11 +1,11 @@
 import { Suspense, forwardRef, lazy, useEffect, useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { Skeleton, SkeletonRegion } from '../ui/Skeleton'
-import { ChunkErrorBoundary, withChunkReload } from '../../lib/lazyRoute.jsx'
+import { ChunkErrorBoundary, withChunkReload } from '../../lib/routing/lazyRoute.jsx'
 import { useInstrumentQuote } from '../../lib/marketData/instrumentQuotes.js'
 import { useArrived } from '../../lib/arrival.js'
 
-const LivePairChart = lazy(withChunkReload(() => import('../ui/LivePairChart')))
+const LivePairChart = lazy(withChunkReload(() => import('./LivePairChart')))
 
 /** How far outside the viewport a slot counts as worth fetching the engine for. */
 const NEAR_VIEWPORT = '200px'

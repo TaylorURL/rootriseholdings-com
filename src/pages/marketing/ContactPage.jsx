@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Section } from '../../components/marketing/Section'
-import PageMasthead from '../../components/marketing/PageMasthead'
+import PageMasthead from '../../components/marketing/layout/PageMasthead'
 import MarketingButton from '../../components/marketing/MarketingButton'
 import AuthField from '../../components/marketing/AuthField'
 import ClosingCta from '../../components/marketing/ClosingCta'
-import { COMPLIANCE } from '../../lib/brand'
+import { COMPLIANCE } from '../../lib/copy/brand'
 import { loadSupabase } from '../../lib/supabase'
 
 const EMPTY = { name: '', email: '', message: '' }

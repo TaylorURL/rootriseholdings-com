@@ -8,7 +8,7 @@ import { Figure, FigureRow, RuleLabel } from '../components/ui/Figures'
 import CandleChart from '../components/charts/CandleChart'
 import ChartInView from '../components/charts/ChartInView'
 import { Skeleton, SkeletonText, SkeletonRegion } from '../components/ui/Skeleton'
-import TradeCallCard from '../components/ui/TradeCallCard'
+import TradeCallCard from '../components/signals/TradeCallCard'
 import {
   INSTRUMENTS,
   INSTRUMENT_CATEGORIES,

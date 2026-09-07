@@ -1,4 +1,4 @@
-import { HomePage, LoginPage, PrivacyPage, TermsPage, ContactPage } from '../routes.jsx'
+import { HomePage, LoginPage, PrivacyPage, TermsPage, ContactPage } from '../../routes.jsx'
 
 /**
  * The route component each written-out document needs in hand before the app
