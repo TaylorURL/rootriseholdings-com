@@ -136,6 +136,37 @@
           window.location.reload()
           return true
         }
+        // A stylesheet is asked for a second time before it is given up on.
+        //
+        // Every document is served with the rules its own first screen needs
+        // already inlined, and the sheet carries everything else: the route the
+        // router draws in place of this one, the panel that opens, the field
+        // that takes focus. So a sheet that never lands costs nothing on the
+        // page that was landed on and everything on the next one - a contact
+        // form drawn as three bare boxes - and it never recovers, because the
+        // link that failed sits at media="print" holding no rules for the life
+        // of the tab.
+        //
+        // The first failure is a request that did not come back and is simply
+        // made again, with a query on it to get past an edge holding the
+        // failure. What fails twice is the file being gone rather than late,
+        // which is what a deploy leaves behind for a page that was already
+        // open, and only the document knows the name that replaced it.
+        var SHEET_ATTEMPTS = 2
+        var sheetTries = 0
+        function recoverStylesheet(href) {
+          if (!href || sheetTries >= SHEET_ATTEMPTS) return reloadOnce()
+          sheetTries += 1
+          var retry = document.createElement('link')
+          retry.rel = 'stylesheet'
+          retry.crossOrigin = 'anonymous'
+          // The href it was built with, so a retry of a retry asks for the
+          // original file rather than stacking another query onto the last one.
+          retry.setAttribute('data-sheet-retry', href)
+          retry.href = href + (href.indexOf('?') === -1 ? '?' : '&') + 'retry=' + sheetTries
+          document.head.appendChild(retry)
+          return true
+        }
         window.addEventListener('vite:preloadError', function (event) {
           event.preventDefault()
           reloadOnce()
@@ -253,6 +284,13 @@
                 var src = event.target.src || event.target.href || ''
                 if (event.target.tagName === 'SCRIPT' && src.indexOf('/assets/') !== -1) {
                   if (reloadOnce()) return
+                }
+                if (event.target.tagName === 'LINK' && event.target.rel === 'stylesheet') {
+                  var built = event.target.getAttribute('data-sheet-retry')
+                  recoverStylesheet(built || event.target.getAttribute('href'))
+                  // The retries are this handler's own work and describe the
+                  // same missing file, so the sheet is reported once.
+                  if (built) return
                 }
                 report(
                   'resource',
