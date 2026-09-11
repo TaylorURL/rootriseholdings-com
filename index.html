@@ -184,6 +184,61 @@
           }
           return true
         }
+        // What the browser hands over when it has decided not to say. A throw
+        // inside a script from another origin that was not fetched in CORS mode
+        // is muted: the message becomes "Script error.", the file is blanked,
+        // the line and column are zeroed and no error object comes with it. So
+        // there is no message to group on, no file to open and no stack to
+        // read - and there never will be, because the muting is the browser's
+        // policy rather than a detail this page dropped.
+        //
+        // Nothing this site serves can arrive that way. The bundle is
+        // same-origin and the build marks it `crossorigin` besides, and the
+        // analytics tracker is written with the attribute against a reply that
+        // sends `Access-Control-Allow-Origin`, so both report what they throw in
+        // full. The page fetches no third script from anywhere. What is left
+        // able to mute is whatever an extension or an in-app browser's host has
+        // injected, which is not this site's code and is not fixable here.
+        //
+        // Filed, it is a ticket with nothing in it: one came off `/app` on
+        // 2026-09-11 from Safari on an iPhone and said "Script error." and not
+        // one thing more, against a page that renders and signs in. Nor does it
+        // ever accumulate into something clearer - every recurrence is the
+        // identical empty message, so it groups with itself forever and reads as
+        // one fault nobody has diagnosed rather than as a class of thing that
+        // cannot be.
+        //
+        // So it is held instead, and told what the page had loaded from
+        // elsewhere without the attribute, which is the most that can honestly
+        // be said about it. A live console still shows that something threw.
+        function muted(event) {
+          return (
+            (!event.message || event.message === 'Script error.') &&
+            !event.filename &&
+            !event.lineno &&
+            !event.error
+          )
+        }
+        // The scripts on the page a mute could have come from: another origin,
+        // and no `crossorigin` on them to unmute it. Naming the hosts is worth
+        // more than naming none, and an empty list is itself the answer - it
+        // means nothing on the page accounts for the throw, so something
+        // injected it and left. On this site that is the expected answer, and a
+        // host appearing in it is the finding: it would mean a tag reached the
+        // page without the attribute.
+        function opaqueHosts() {
+          var hosts = []
+          try {
+            var found = document.getElementsByTagName('script')
+            for (var i = 0; i < found.length; i += 1) {
+              if (!found[i].src || found[i].crossOrigin) continue
+              var host = new URL(found[i].src, location.href).hostname
+              if (host === location.hostname) continue
+              if (hosts.indexOf(host) < 0) hosts.push(host)
+            }
+          } catch (ignored) {}
+          return hosts
+        }
         // A request the page makes writes its own failure to the console when it
         // fails, and a collector that cannot be reached would then be the loudest
         // thing on the page. The same request issued inside a worker writes
@@ -295,6 +350,15 @@
                 report(
                   'resource',
                   'Failed to load ' + event.target.tagName.toLowerCase() + ': ' + src
+                )
+              } else if (muted(event)) {
+                var hosts = opaqueHosts()
+                hold(
+                  'opaque',
+                  'A script from another origin threw and the browser withheld it. ' +
+                    (hosts.length
+                      ? 'Cross-origin scripts on the page carrying no CORS: ' + hosts.join(', ')
+                      : 'No script on the page accounts for it.')
                 )
               } else {
                 var msg = (event.error && event.error.message) || event.message || ''
