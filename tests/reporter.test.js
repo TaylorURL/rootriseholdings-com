@@ -88,6 +88,15 @@ function collector(scriptTags) {
     throws(event) {
       for (const handler of listeners.error || []) handler({ preventDefault() {}, ...event })
     },
+    /**
+     * The same question on the other handler. A rejection is where an
+     * extension's own messaging failure lands, and it is the path that has no
+     * filename and often no stack, so it has to be driven separately.
+     */
+    rejects(reason) {
+      for (const handler of listeners.unhandledrejection || [])
+        handler({ preventDefault() {}, reason })
+    },
     held() {
       return sandbox.window.__reporter.replay()
     },
@@ -158,6 +167,61 @@ test('a tag reaching the page without the attribute is named', () => {
     /rootriseholdings\.com|supabase\.co/,
     'a script the page fetched in CORS mode was named as a suspect in a throw it cannot have muted'
   )
+})
+
+test('a rejection naming an extension API is held rather than filed', () => {
+  const injected = collector(PAGE_SCRIPTS)
+  // Exactly as Safari on iOS hands it over: the extension's own words, and no
+  // stack behind them for the scheme test to read.
+  injected.rejects({ message: 'Invalid call to runtime.sendMessage(). Tab not found.' })
+  assert.equal(
+    injected.posted.length,
+    0,
+    'a failure inside an extension’s messaging call was filed as this site’s fault, so the queue is carrying a ticket about software the site does not ship and cannot change'
+  )
+  assert.equal(
+    injected.held().filter((entry) => entry.kind === 'rejection').length,
+    1,
+    'an extension’s rejection was dropped rather than held, so a live console can no longer see that anything rejected at all'
+  )
+})
+
+test('the other messages only an extension can raise are held too', () => {
+  for (const message of [
+    'Could not establish connection. Receiving end does not exist.',
+    'Extension context invalidated.',
+    'The message port closed before a response was received.',
+    'Error in event handler: tabs.connect is not a function',
+  ]) {
+    const injected = collector(PAGE_SCRIPTS)
+    injected.rejects({ message })
+    assert.equal(
+      injected.posted.length,
+      0,
+      `"${message}" was filed as this site’s fault, and nothing on a page can raise it`
+    )
+  }
+})
+
+test('the site’s own rejections are still filed', () => {
+  for (const reason of [
+    {
+      message: 'Failed to fetch',
+      stack: 'at https://www.rootriseholdings.com/assets/i-abcd.js:1:1',
+    },
+    { message: 'e.session is undefined' },
+    // Near the rule without being it: the site's own code sending a message
+    // through a channel of its own would read like this, and it is the site's.
+    { message: 'channel.sendMessage is not a function' },
+  ]) {
+    const real = collector(PAGE_SCRIPTS)
+    real.rejects(reason)
+    assert.equal(
+      real.posted.length,
+      1,
+      `"${reason.message}" was not filed, so the extension rule has widened onto the site’s own failures and the reporter has gone quiet on them`
+    )
+  }
 })
 
 test('an error naming its own file is still filed', () => {
