@@ -184,6 +184,33 @@
           }
           return true
         }
+        // The other half of that rule, for the throws that arrive with no stack
+        // to read. `extensionOnly` decides by where the frames point, and a
+        // rejection raised inside an extension's own messaging call often
+        // carries no frames at all - Safari on iOS hands one over with an empty
+        // stack, so the scheme test sees nothing and the error is filed as this
+        // site's. One came off the home page on 2026-09-15 saying "Invalid call
+        // to runtime.sendMessage(). Tab not found." against a page that renders
+        // and answers, and it arrived with no stack and nothing else in it.
+        //
+        // What is left to read is the message, and these messages name an API
+        // that exists only in an extension. `runtime.sendMessage`, `tabs.connect`
+        // and the ports behind them are reachable from a content script and from
+        // nowhere on a page; this site calls none of them, ships no dependency
+        // that does, and could not reach one if it tried. So a message naming
+        // one describes the visitor's browser rather than the site, exactly as a
+        // stack of `extension://` frames does, and it is held for the same
+        // reason: there is no fault here to fix, and no ticket it could file
+        // that would ever say more than the extension's own words.
+        //
+        // The list is spelled out rather than matched loosely, because this is
+        // the reporter choosing what never reaches the collector and a rule that
+        // widened would take real faults with it silently.
+        var EXTENSION_API =
+          /\b(?:chrome|browser|runtime|tabs|extension)\.(?:sendMessage|connect|onMessage|onConnect)\b|\bExtension context invalidated\b|\bReceiving end does not exist\b|\bThe message port closed before a response was received\b/
+        function extensionApi(message) {
+          return EXTENSION_API.test(String(message == null ? '' : message))
+        }
         // What the browser hands over when it has decided not to say. A throw
         // inside a script from another origin that was not fetched in CORS mode
         // is muted: the message becomes "Script error.", the file is blanked,
@@ -293,7 +320,7 @@
         function report(kind, message, stack) {
           hold(kind, message, stack)
           if (sent >= 10) return // a page stuck in an error loop stops at ten
-          if (extensionOnly(stack)) return
+          if (extensionOnly(stack) || extensionApi(message)) return
           sent += 1
           try {
             send(
