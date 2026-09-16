@@ -108,7 +108,9 @@ The published signal record lives in Postgres. `public.signals` is written by th
 
 The contact form is the only thing a reader's own browser writes to Postgres. `public.contact_messages` takes an insert from an anonymous reader and nothing else: row-level security carries an insert-only policy, and select, update, delete and truncate are revoked outright from `anon` and `authenticated`, so the publishable key in the browser bundle can add a message and never read one back. The table, its policy and its grants are in `supabase/migrations/`.
 
-Journal data (trades, settings, prop firms, day plans) persists as one versioned record in browser `localStorage` via `src/lib/journal/store.js`. That record lives in one browser and nowhere else, so the Account page can write it out as a file and read one back, confirmed before it replaces anything. What `src/lib/signals/store.js` still keeps there is the reader's alert preference and nothing else — that is about this device, where the record was not. Both take the store as a parameter rather than reaching for `localStorage` themselves, which is how the tests run them against a plain object and what any other `getItem`/`setItem` backend would slot into.
+Journal data (trades, settings, prop firms, day plans) is one versioned record, held on the account and cached in the browser. `public.journals` carries a row per account — the whole document as jsonb — with every row-level security policy scoped to the caller's own id and `updated_at` stamped by a trigger rather than supplied by the client, so a browser with a wrong clock cannot make a stale copy look current. The grants are stated from zero here too: nothing for `anon`, select, insert and update for `authenticated`, and no delete, because an account going away takes its row with it through the cascade.
+
+`src/lib/journal/store.js` keeps the browser copy in `localStorage`, which is what an offline desk reads, and `src/lib/journal/remote.js` moves the record between the two without ever throwing — a journal the network cannot reach is one the reader goes on using locally, and the Account page says which it is looking at. Where both sides hold something, which is the first sign-in after a browser-only journal, `src/lib/journal/merge.js` reconciles them instead of overwriting either: trades, prop firms and day plans are unioned by their own identity, the copy carrying more of the story wins, and the plain scalars take the account's side. The Account page still writes the record out as a file and reads one back, confirmed before it replaces anything. What `src/lib/signals/store.js` keeps in `localStorage` is the reader's alert preference and nothing else — that is about this device rather than about the record. Both take the store as a parameter rather than reaching for `localStorage` themselves, which is how the tests run them against a plain object and what any other `getItem`/`setItem` backend would slot into.
 
 ## Getting started
 
@@ -126,14 +128,14 @@ The sweep needs three more, set in the hosting environment and never in the bund
 
 ## Routes
 
-| Group      | Paths                                                                                                    | Notes                                    |
-| :--------- | :------------------------------------------------------------------------------------------------------- | :--------------------------------------- |
-| Brand page | `/`                                                                                                      | Public one-pager (`MarketingLayout`)     |
-| Legal      | `/privacy`, `/terms`                                                                                     | Inside `MarketingLayout`                 |
-| Contact    | `/contact`                                                                                               | Inside `MarketingLayout`                 |
-| Auth       | `/login`                                                                                                 | Standalone; sign in or create an account |
-| Terminal   | `/app`, `/app/briefing`, `/app/journal`, `/app/markets`, `/app/signals`, `/app/insights`, `/app/account` | Behind `RequireAuth` + `AppShell`        |
-| Redirects  | `/app/positions`, `/app/history` → `/app/journal`                                                        | Former split pages                       |
+| Group      | Paths                                                                                                                 | Notes                                    |
+| :--------- | :-------------------------------------------------------------------------------------------------------------------- | :--------------------------------------- |
+| Brand page | `/`                                                                                                                   | Public one-pager (`MarketingLayout`)     |
+| Legal      | `/privacy`, `/terms`                                                                                                  | Inside `MarketingLayout`                 |
+| Contact    | `/contact`                                                                                                            | Inside `MarketingLayout`                 |
+| Auth       | `/login`                                                                                                              | Standalone; sign in or create an account |
+| Terminal   | `/app`, `/app/briefing`, `/app/journal`, `/app/markets`, `/app/signals`, `/app/demo`, `/app/insights`, `/app/account` | Behind `RequireAuth` + `AppShell`        |
+| Redirects  | `/app/positions`, `/app/history` → `/app/journal`                                                                     | Former split pages                       |
 
 `vercel.json` names each of these in production — the public routes to their own prerendered document, `/app` and everything under it to the terminal shell — so an unknown path gets a real 404 from `public/404.html`; the dev server still redirects unknown paths to `/`.
 
@@ -156,19 +158,19 @@ rootriseholdings-com/
 ├── vercel.json                SPA rewrites + the calendar and market paths
 ├── scripts/prerender.js       Writes a real document for each public route after the SSR build
 ├── scripts/routeDocuments.js  Names the chunks the home document preloads, and makes preview resolve paths as the host does
-├── supabase/migrations/       The contact, signals and sweep-run tables, the stamp saying a call was told to somebody, their row-level security, and their grants
-├── tests/                     node:test suites (journal, smc, signals, signalRecord, sweep, feed, announce, instruments, spotMetal, quoteFallback, seriesFallback, marketData, briefing)
+├── supabase/migrations/       The contact, signals, sweep-run and journal tables, the stamp saying a call was told to somebody, their row-level security, and their grants
+├── tests/                     node:test suites (journal, journal-merge, smc, signals, signalRecord, sweep, feed, announce, instruments, spotMetal, quoteFallback, seriesFallback, marketData, briefing, demoBook, reporter)
 └── src/
     ├── App.jsx                Route groups — brand page, login, gated /app
     ├── routes.jsx             The route components, split so the build and the browser share one list
     ├── entry-server.jsx       SSR entry the prerender build renders through
     ├── components/            journal, layout, charts, ui, motion, marketing, auth, briefing, signals
     ├── context/               JournalContext, SignalsContext, AuthContext, ThemeContext
-    ├── data/                  Instrument registry, risk rules, sessions
-    ├── pages/                 Dashboard, Briefing, Journal, Markets, Signals, Insights, Account + marketing/
+    ├── data/                  Instrument registry and the rule book
+    ├── pages/                 Dashboard, Briefing, Journal, Markets, Signals, Demo Account, Insights, Account + marketing/
     ├── styles/                tokens.css (design system) + index.css
     └── lib/
-        ├── journal/           Trade model, rule gate, stats, prop-firm math, store
+        ├── journal/           Trade model, rule gate, stats, prop-firm math, the browser store, the account copy and the merge between them
         ├── smc/               Structure engine, narration, trade-call derivation
         ├── signals/           Signal record, outcome scoring, persistence, the sweep
         ├── alerts/            Browser notification delivery
@@ -187,7 +189,7 @@ rootriseholdings-com/
 
 ## Testing
 
-`npm test` runs `node --test` over the pure library layer: trade math on both sides, the rule gate (what blocks, what is a departure, that an acknowledgement never unlocks a blocking rule, and that the mark lands on the saved trade), stats and equity-curve bucketing by CT day, trailing versus static prop-firm drawdown, a firm's start date and daily loss limit, the backup file round trip, the feed parser against a response carrying a bar that never printed, hourly bars folding into four-hour ones, the OANDA translation (ticker map, query sizing, and a candle response folding into the chart shape), the gold basis (that it anchors the last close to spot, shifts every price equally so the session change is unchanged, leaves the structure read identical, and declines to shift without an honest anchor), trade-call derivation on both sides including the shorts-only constraint, signal scoring through fill, target, stop, the both-sides bar and expiry, the fallback venue (grouped prices, a row with no price, a missing extreme, one request for the whole desk, and that its payload prices a quote without passing as a series), the fallback venue's candles (New York stamps read on either side of a clock change, a holed bar dropped, folding to a bucket the clock prints, one bar refused as a series, a refusing venue, and the folded payload read back through the feed parser), calendar normalization, session windows, and the structure engine against synthetic uptrends, downtrends, and flat tape. CI runs the same suite before every merge.
+`npm test` runs `node --test` over the pure library layer: trade math on both sides, the rule gate (what blocks, what is a departure, that an acknowledgement never unlocks a blocking rule, and that the mark lands on the saved trade), stats and equity-curve bucketing by CT day, trailing versus static prop-firm drawdown, a firm's start date and daily loss limit, the backup file round trip, the merge that reconciles a browser journal with the account's copy, the feed parser against a response carrying a bar that never printed, hourly bars folding into four-hour ones, the OANDA translation (ticker map, query sizing, and a candle response folding into the chart shape), the gold basis (that it anchors the last close to spot, shifts every price equally so the session change is unchanged, leaves the structure read identical, and declines to shift without an honest anchor), trade-call derivation on both sides including the shorts-only constraint, signal scoring through fill, target, stop, the both-sides bar and expiry, the fallback venue (grouped prices, a row with no price, a missing extreme, one request for the whole desk, and that its payload prices a quote without passing as a series), the fallback venue's candles (New York stamps read on either side of a clock change, a holed bar dropped, folding to a bucket the clock prints, one bar refused as a series, a refusing venue, and the folded payload read back through the feed parser), calendar normalization, session windows, the structure engine against synthetic uptrends, downtrends, and flat tape, and the page's own error reporter, which is asked both that it files a real fault and that it still holds the cross-origin throw the browser refused to describe. CI runs the same suite before every merge.
 
 ## License
 

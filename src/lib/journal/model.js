@@ -11,7 +11,7 @@ import { sessionForMoment } from '../time.js'
  */
 export const TRADE_GRADES = ['A+', 'A', 'B']
 
-export const TRADE_STATUS = { open: 'open', closed: 'closed' }
+const TRADE_STATUS = { open: 'open', closed: 'closed' }
 
 let idCounter = 0
 

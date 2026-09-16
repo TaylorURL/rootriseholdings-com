@@ -25,7 +25,7 @@
  * stay on the public feed. Every other pair follows the six-letter convention
  * below rather than an entry here.
  */
-export const OANDA_INSTRUMENTS = {
+const OANDA_INSTRUMENTS = {
   'GC=F': 'XAU_USD',
   'SI=F': 'XAG_USD',
   'CL=F': 'WTICO_USD',

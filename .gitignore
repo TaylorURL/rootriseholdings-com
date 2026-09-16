@@ -43,14 +43,10 @@ id_rsa
 id_ed25519
 
 # Vercel CLI link state (project/org ids) is per-machine.
-.vercel/*
-# The project link is the repository saying where it deploys, and it carries
-# no credential: project and team id only.
-!.vercel/project.json
+.vercel/
 
 # Windows folder metadata
 desktop.ini
-.vercel
 
 # Supabase CLI scratch
 supabase/.temp/
