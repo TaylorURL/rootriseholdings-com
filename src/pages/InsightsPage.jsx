@@ -26,12 +26,22 @@ import {
   OctagonAlert,
 } from 'lucide-react'
 import ChartInView from '../components/charts/ChartInView'
-import { AXIS_TICK, GRID_STROKE } from '../components/charts/chartTheme'
+import {
+  AXIS_TICK,
+  GAIN,
+  GRID_DASH,
+  GRID_STROKE,
+  LOSS,
+  ZERO_STROKE,
+  formatDayTick,
+  formatUsdTick,
+  niceTicks,
+} from '../components/charts/chartTheme'
 import PageHeader from '../components/ui/PageHeader'
 import Card from '../components/ui/Card'
 import { Figure, FigureRow, RuleLabel, RULE_LABEL } from '../components/ui/Figures'
 import Badge from '../components/ui/Badge'
-import { ChartTooltipShell } from '../components/charts/ChartTooltip'
+import { ChartTooltipShell, TooltipRow } from '../components/charts/ChartTooltip'
 import { useJournal } from '../context/JournalContext'
 import { SETUP_TYPES, SESSIONS } from '../data/riskRules'
 import { INSTRUMENT_META, INSTRUMENTS } from '../data/instruments'
@@ -43,64 +53,117 @@ import { formatCurrency, formatR, signedColor, NO_VALUE } from '../lib/format'
 
 function DailyTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
-  const { date, pnl, r } = payload[0].payload
+  const { date, pnl, r, trades } = payload[0].payload
   return (
     <ChartTooltipShell>
-      <p className="tabular-nums text-text-faint">{date}</p>
-      <p className={cn('font-semibold tabular-nums', signedColor(pnl))}>
-        {formatCurrency(pnl, { signed: true })} · {formatR(r)}
-      </p>
+      <p className="font-medium tabular-nums text-text-faint">{formatDayTick(date)}</p>
+      <TooltipRow
+        label="Net P&L"
+        value={formatCurrency(pnl, { signed: true })}
+        tone={signedColor(pnl)}
+      />
+      <TooltipRow label="Result" value={formatR(r)} tone={signedColor(r)} />
+      <TooltipRow label="Trades" value={trades} />
     </ChartTooltipShell>
   )
 }
 
-function BreakdownCard({ title, rows, hint }) {
+/**
+ * Expectancy as a bar either side of zero.
+ *
+ * A column of signed numbers has to be read one row at a time; a bar that runs
+ * right for a paying cut and left for a losing one is read down the column in
+ * a glance, and the figure at its tip keeps the exact value. Every bar in a
+ * card shares one scale, so their lengths compare.
+ */
+function ExpectancyBar({ value, scale }) {
+  const share = scale > 0 ? Math.min(1, Math.abs(value) / scale) : 0
+  const up = value >= 0
   return (
-    <section className="bg-surface p-5">
-      <header className="mb-4 flex items-center gap-3">
-        <RuleLabel as="h2">{title}</RuleLabel>
-        <div className="min-w-2 flex-1" />
-        {hint ? <span className="text-xs text-text-faint">{hint}</span> : null}
-      </header>
+    <div className="relative h-5 w-full" aria-hidden="true">
+      <span className="absolute inset-y-0 left-1/2 w-px bg-border-strong" />
+      <span
+        className={cn(
+          'absolute top-1/2 h-2 -translate-y-1/2 rounded-sm',
+          up ? 'left-1/2 bg-positive' : 'right-1/2 bg-danger'
+        )}
+        style={{ width: `${Math.max(share * 50, 0.75)}%` }}
+      />
+    </div>
+  )
+}
+
+function BreakdownCard({ title, subtitle, rows }) {
+  const scale = rows.reduce((max, row) => Math.max(max, Math.abs(row.expectancyR)), 0)
+  return (
+    <Card title={title} subtitle={subtitle} padded={false}>
       {rows.length === 0 ? (
-        <p className="py-8 text-center text-sm text-text-faint">
+        <p className="px-5 py-10 text-center text-[13px] text-text-faint">
           No closed trades in this cut yet.
         </p>
       ) : (
-        <ul className="space-y-2">
-          {rows.map((row) => (
-            <li
-              key={row.key}
-              className="bg-surface-2/40 flex items-center justify-between gap-3 rounded-control border border-border px-3 py-2.5"
-            >
-              {/* The count is pinned to its own width so everything after it
-                  starts in the same place, which is what lets a column of win
-                  rates be read down rather than one row at a time. */}
-              <div className="min-w-0 leading-tight">
-                <p className="truncate text-sm font-medium text-text">{row.label}</p>
-                <p className="text-xs text-text-faint">
-                  <span className="inline-block w-[3ch] text-right tabular-nums">{row.trades}</span>{' '}
-                  trades · win rate{' '}
-                  <span className="inline-block w-[4ch] text-right tabular-nums">
+        <div className="overflow-x-auto px-5 pb-3 pt-3">
+          <table className="w-full min-w-[26rem] text-[13px]">
+            <thead>
+              <tr className={cn('whitespace-nowrap text-left', RULE_LABEL)}>
+                <th scope="col" className="pb-2 pr-3 font-normal">
+                  Name
+                </th>
+                <th scope="col" className="w-[38%] pb-2 text-center font-normal">
+                  Expectancy (R)
+                </th>
+                <th scope="col" className="pb-2 pl-3 text-right font-normal">
+                  Trades
+                </th>
+                <th scope="col" className="pb-2 pl-3 text-right font-normal">
+                  Win Rate
+                </th>
+                <th scope="col" className="pb-2 pl-3 text-right font-normal">
+                  P&L
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.key} className="border-t border-border">
+                  <th scope="row" className="py-2.5 pr-3 text-left font-medium text-text">
+                    {row.label}
+                  </th>
+                  <td className="py-2.5">
+                    <div className="flex items-center gap-2">
+                      <ExpectancyBar value={row.expectancyR} scale={scale} />
+                      <span
+                        className={cn(
+                          'w-12 shrink-0 text-right text-xs font-semibold tabular-nums',
+                          signedColor(row.expectancyR)
+                        )}
+                      >
+                        {row.expectancyR >= 0 ? '+' : ''}
+                        {row.expectancyR.toFixed(2)}R
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-2.5 pl-3 text-right tabular-nums text-text-muted">
+                    {row.trades}
+                  </td>
+                  <td className="py-2.5 pl-3 text-right tabular-nums text-text-muted">
                     {Math.round(row.winRate * 100)}%
-                  </span>
-                </p>
-              </div>
-              <div className="text-right">
-                <p
-                  className={cn('text-sm font-semibold tabular-nums', signedColor(row.expectancyR))}
-                >
-                  {row.expectancyR.toFixed(2)}R
-                </p>
-                <p className={cn('text-xs tabular-nums', signedColor(row.totalPnl))}>
-                  {formatCurrency(row.totalPnl, { signed: true })}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  </td>
+                  <td
+                    className={cn(
+                      'py-2.5 pl-3 text-right font-medium tabular-nums',
+                      signedColor(row.totalPnl)
+                    )}
+                  >
+                    {formatCurrency(row.totalPnl, { signed: true })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </section>
+    </Card>
   )
 }
 
@@ -108,7 +171,11 @@ function ProgressTile({ label, icon: Icon, current, target, formatter, intent = 
   const pct = target > 0 ? Math.max(0, Math.min(100, (current / target) * 100)) : 0
   const formatValue = formatter ?? ((value) => formatCurrency(Math.abs(value)))
   const barClass =
-    intent === 'danger' ? 'bg-danger' : intent === 'warning' ? 'bg-warning' : 'accent-face'
+    intent === 'danger'
+      ? 'bg-danger'
+      : intent === 'warning'
+        ? 'bg-warning'
+        : 'bg-[var(--ds-accent-fill)]'
   // Gaps live on the stack rather than on each child, so the optional caption
   // does not leave its margin behind when a firm omits it.
   return (
@@ -125,7 +192,7 @@ function ProgressTile({ label, icon: Icon, current, target, formatter, intent = 
         <span className="ml-1.5 text-sm font-medium text-text-faint">/ {formatValue(target)}</span>
       </p>
       <div
-        className="h-2 overflow-hidden rounded-full bg-surface-2"
+        className="h-1.5 overflow-hidden rounded-full bg-surface-3"
         role="meter"
         aria-valuenow={pct}
         aria-valuemin={0}
@@ -265,6 +332,14 @@ export default function InsightsPage() {
   const stats = useMemo(() => summarize(closed), [closed])
   const byDay = useMemo(() => dailyPnl(trades), [trades])
   const streak = useMemo(() => streaks(closed), [closed])
+  const dailyAxis = useMemo(
+    () =>
+      niceTicks(
+        Math.min(0, ...byDay.map((day) => day.pnl)),
+        Math.max(0, ...byDay.map((day) => day.pnl))
+      ),
+    [byDay]
+  )
 
   const setupRows = useMemo(
     () =>
@@ -306,7 +381,7 @@ export default function InsightsPage() {
   const activeFirm = settings.firms.find((firm) => firm.id === settings.activeFirmId) ?? null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title="Insights"
         subtitle="Performance by instrument, setup, session, and grade. All of it realized."
@@ -314,19 +389,22 @@ export default function InsightsPage() {
 
       {/* One strip of figures rather than six tiles: they are one reading of
           the same record, and six borders between them says otherwise. */}
-      <FigureRow min="10rem">
-        <Figure label="Closed Trades" value={stats.trades} note={`${stats.wins} won`} />
+      <FigureRow min="11rem">
+        <Figure size="lg" label="Closed Trades" value={stats.trades} note={`${stats.wins} won`} />
         <Figure
+          size="lg"
           label="Win Rate"
           value={stats.trades > 0 ? `${Math.round(stats.winRate * 100)}%` : NO_VALUE}
         />
         <Figure
+          size="lg"
           label="Expectancy"
           value={stats.trades > 0 ? `${stats.expectancyR.toFixed(2)}R` : NO_VALUE}
           note="Average R per trade"
           tone={stats.expectancyR >= 0 ? 'text-positive' : 'text-danger'}
         />
         <Figure
+          size="lg"
           label="Avg Win / Loss"
           value={
             stats.trades > 0
@@ -335,6 +413,7 @@ export default function InsightsPage() {
           }
         />
         <Figure
+          size="lg"
           label="Total P&L"
           value={formatCurrency(stats.totalPnl, { signed: true })}
           note={`${formatR(stats.totalR)}, best streak ${streak.bestWin}W`}
@@ -344,65 +423,71 @@ export default function InsightsPage() {
 
       <Card
         title="Daily P&L"
-        action={<span className="text-xs text-text-faint">Realized · CT days</span>}
+        subtitle="Net realized result per CT day, in USD"
+        action={
+          byDay.length > 0 ? (
+            <span className="flex items-center gap-3 text-[11px] font-medium text-text-muted">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-[2px] bg-positive" aria-hidden="true" />
+                Gain Day
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-[2px] bg-danger" aria-hidden="true" />
+                Loss Day
+              </span>
+            </span>
+          ) : null
+        }
       >
         {byDay.length === 0 ? (
           <p className="py-12 text-center text-sm text-text-faint">
             Charts draw as closed trades accumulate.
           </p>
         ) : (
-          <ChartInView height={240}>
+          <ChartInView height={260}>
             {() => (
-              <ResponsiveContainer width="100%" height={240}>
+              <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={byDay} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-                  <CartesianGrid stroke={GRID_STROKE} strokeDasharray="3 3" vertical={false} />
-                  <defs>
-                    <linearGradient id="dayUp" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--ds-accent-bright)" stopOpacity={1} />
-                      <stop offset="100%" stopColor="var(--ds-accent)" stopOpacity={0.55} />
-                    </linearGradient>
-                    <linearGradient id="dayDown" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--ds-danger)" stopOpacity={0.95} />
-                      <stop offset="100%" stopColor="var(--ds-danger)" stopOpacity={0.45} />
-                    </linearGradient>
-                  </defs>
+                  <CartesianGrid
+                    stroke={GRID_STROKE}
+                    strokeDasharray={GRID_DASH}
+                    vertical={false}
+                  />
                   <XAxis
                     dataKey="date"
                     tick={AXIS_TICK}
                     tickLine={false}
                     axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={formatDayTick}
                     minTickGap={40}
                   />
                   <YAxis
+                    orientation="right"
+                    domain={dailyAxis.domain}
+                    ticks={dailyAxis.ticks}
                     tick={AXIS_TICK}
                     tickLine={false}
                     axisLine={false}
                     width={56}
-                    tickFormatter={(value) =>
-                      Math.abs(value) >= 1000 ? `$${(value / 1000).toFixed(1)}k` : `$${value}`
-                    }
+                    tickMargin={6}
+                    tickFormatter={(value) => formatUsdTick(value, { signed: true })}
                   />
                   {/* Break-even. Without it a column of losses reads as a column
                       of bars and the sign has to be taken off the axis. */}
-                  <ReferenceLine y={0} stroke="var(--ds-border-strong)" strokeWidth={1} />
-                  <Tooltip
-                    content={<DailyTooltip />}
-                    cursor={{ fill: 'var(--ds-accent-softer)' }}
-                  />
+                  <ReferenceLine y={0} stroke={ZERO_STROKE} strokeWidth={1} />
+                  <Tooltip content={<DailyTooltip />} cursor={{ fill: 'var(--ds-neutral-soft)' }} />
                   {/* Capped so a first day of trading reads as one bar rather than a full-width slab. */}
                   <Bar
                     dataKey="pnl"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={72}
+                    radius={2}
+                    maxBarSize={40}
                     isAnimationActive
                     animationDuration={700}
                     animationEasing="ease-out"
                   >
                     {byDay.map((entry) => (
-                      <Cell
-                        key={entry.date}
-                        fill={entry.pnl >= 0 ? 'url(#dayUp)' : 'url(#dayDown)'}
-                      />
+                      <Cell key={entry.date} fill={entry.pnl >= 0 ? GAIN : LOSS} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -429,11 +514,27 @@ export default function InsightsPage() {
         </Card>
       )}
 
-      <div className="grid gap-px overflow-hidden rounded-card bg-border lg:grid-cols-2">
-        <BreakdownCard title="By Instrument" rows={instrumentRows} hint="Expectancy in R" />
-        <BreakdownCard title="By Setup" rows={setupRows} hint="Expectancy in R" />
-        <BreakdownCard title="By Session" rows={sessionRows} hint="Best and worst windows" />
-        <BreakdownCard title="By Grade" rows={gradeRows} hint="A+ discipline check" />
+      <div className="grid gap-5 xl:grid-cols-2">
+        <BreakdownCard
+          title="By Instrument"
+          subtitle="Average R per trade, and total P&L"
+          rows={instrumentRows}
+        />
+        <BreakdownCard
+          title="By Setup"
+          subtitle="Average R per trade, and total P&L"
+          rows={setupRows}
+        />
+        <BreakdownCard
+          title="By Session"
+          subtitle="Average result per trade, by trading window"
+          rows={sessionRows}
+        />
+        <BreakdownCard
+          title="By Grade"
+          subtitle="Average result per trade, by setup grade"
+          rows={gradeRows}
+        />
       </div>
     </div>
   )

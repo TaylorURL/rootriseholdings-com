@@ -5,7 +5,6 @@ const SIZES = {
   sm: { box: 'h-7 w-7 rounded-sm', word: 'text-[14px]' },
   md: { box: 'h-8 w-8 rounded-control', word: 'text-[15px]' },
   lg: { box: 'h-10 w-10 rounded-control', word: 'text-[17px]' },
-  xl: { box: 'h-10 w-10 rounded-tile', word: 'text-[26px] leading-8' },
 }
 
 /**
@@ -53,7 +52,9 @@ export default function BrandMark({ size = 'md', showWordmark = true, className 
         <Glyph />
       </span>
       {showWordmark ? (
-        <span className={cn('font-bold tracking-tight text-text', step.word)}>{PRODUCT.name}</span>
+        <span className={cn('font-semibold tracking-tight text-text', step.word)}>
+          {PRODUCT.name}
+        </span>
       ) : null}
     </span>
   )

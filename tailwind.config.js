@@ -33,11 +33,10 @@ export default {
         'danger-soft': 'var(--ds-danger-soft)',
         rule: 'var(--ds-rule)',
         inset: 'var(--ds-inset)',
-        mint: 'var(--ds-mint)',
+        violet: 'var(--ds-violet)',
         blue: 'var(--ds-blue)',
-        orange: 'var(--ds-orange)',
-        yellow: 'var(--ds-yellow)',
-        purple: 'var(--ds-purple)',
+        teal: 'var(--ds-teal)',
+        amber: 'var(--ds-amber)',
         'on-ink': 'var(--ds-on-ink)',
       },
       borderRadius: {
@@ -67,9 +66,9 @@ export default {
          normal spacing, so the steps are shallow. Nothing tracks wider than
          normal except the uppercase micro-labels, which take the `label` step. */
       letterSpacing: {
-        tightest: '-0.03em',
-        tighter: '-0.02em',
-        tight: '-0.01em',
+        tightest: '-0.04em',
+        tighter: '-0.028em',
+        tight: '-0.016em',
         label: '0.18em',
       },
       maxWidth: {

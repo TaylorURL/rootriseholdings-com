@@ -59,7 +59,7 @@ export default function DayStateBanner() {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-card bg-surface px-5 py-3 shadow-[var(--ds-raise)]">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-card bg-surface px-4 py-2.5 shadow-[var(--ds-raise)]">
       <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-text">
         <ShieldCheck className="h-4 w-4 text-positive" aria-hidden="true" />
         Desk open

@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.38.2-8b5cf6?style=for-the-badge" alt="Version 2026.38.2" />
+  <img src="https://img.shields.io/badge/version-2026.38.3-8b5cf6?style=for-the-badge" alt="Version 2026.38.3" />
   <a href="https://www.rootriseholdings.com"><img src="https://img.shields.io/badge/Live-Vercel-8b5cf6?style=for-the-badge&logo=vercel&logoColor=white" alt="Live site" /></a>
   <img src="https://img.shields.io/badge/React-18-8b5cf6?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
   <img src="https://img.shields.io/badge/Vite-6-7c3aed?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 6" />
@@ -144,7 +144,7 @@ The sweep needs three more, set in the hosting environment and never in the bund
 ```
 rootriseholdings-com/
 ├── public/                    favicon + touch icon, OG card, robots.txt, sitemap.xml, llms.txt, web manifest, 404 page, self-hosted fonts, the brand page's drawn plates under art/
-├── docs/logo.svg              README mark — mint R, transparent
+├── docs/logo.svg              README mark — violet R, transparent
 ├── api/market.js              Function serving quotes and candles — OANDA when keyed, Yahoo otherwise
 ├── api/lib/spotMetal.js       Spot prints, and the basis that puts the COMEX series onto them
 ├── api/lib/quoteFallback.js   A second keyless venue, for the price when the chart feed refuses

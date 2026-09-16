@@ -86,10 +86,9 @@
 }
 
 :root {
-  /* SF Pro is the face the dashboard kit is drawn in. Apple licenses it for its
-     own platforms only, so it is reached through the system rather than
-     shipped: a Mac or an iPhone renders it, and everything else falls to Geist,
-     which is served from this origin and sets to the same proportions. */
+  /* The system face first, reached rather than shipped: a Mac or an iPhone
+     renders SF Pro, and everything else falls to Geist, which is served from
+     this origin and sets to the same proportions. */
   --ds-font-sans:
     -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Geist', 'Geist Fallback',
     system-ui, sans-serif;
@@ -98,14 +97,15 @@
 
   /* The radius steps. A control is tighter than the panel it sits in and a
      panel is tighter than the frame around it, so nesting reads as depth
-     rather than as unrelated curves: 8 for a control, 12 for an icon tile, 16
-     for a panel and a rail row, 24 for the rail itself. */
-  --ds-radius-xs: 4px;
-  --ds-radius-sm: 6px;
-  --ds-radius-md: 8px;
-  --ds-radius-lg: 12px;
-  --ds-radius-xl: 16px;
-  --ds-radius-2xl: 24px;
+     rather than as unrelated curves: 6 for a control, 8 for a tile, 10 for a
+     panel, 14 for a feature. Anything softer and a trading screen reads as a
+     toy. */
+  --ds-radius-xs: 3px;
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-radius-lg: 8px;
+  --ds-radius-xl: 10px;
+  --ds-radius-2xl: 14px;
   --ds-radius-full: 9999px;
   /* The same steps under the names the components reach for. */
   --ds-r-tiny: var(--ds-radius-sm);
@@ -141,12 +141,12 @@
   /* Measures. Anything that offsets against the bar - a sticky element below
      it, scroll-padding for an anchor jump, the hero's top inset - reads these
      rather than repeating the number. */
-  --ds-header-height: 76px;
+  --ds-header-height: 56px;
   --ds-rail-height: 28px;
   --ds-nav-height: 64px;
   --ds-chrome-height: calc(var(--ds-nav-height) + var(--ds-rail-height));
-  --ds-control-height: 44px;
-  --ds-field-height: 44px;
+  --ds-control-height: 40px;
+  --ds-field-height: 40px;
 
   /* Column widths: the page rail, the measure a paragraph is set to, the
      narrower one a legal page runs at, and the wider rail the terminal's
@@ -172,24 +172,21 @@
   --ds-z-skip: 100;
 
   /* The four data inks, fixed across every setting because a series keeps its
-     colour when the page changes tone. Mint is the accent; the other three
-     tell series and icon tiles apart. */
-  --ds-mint: #33cccc;
-  --ds-blue: #446ff2;
-  --ds-orange: #f27649;
-  --ds-yellow: #f4b207;
-  --ds-purple: #8c73ff;
-  --ds-green: #61cd82;
-  --ds-on-ink: #191a21;
-  --ds-on-blue: #ffffff;
+     colour when the page changes tone. Violet is the accent; the other three
+     tell series apart. Gain and loss are never drawn in these - they take the
+     status pair, so green always means up and red always means down. */
+  --ds-violet: #6252f5;
+  --ds-blue: #3b82f6;
+  --ds-teal: #14b8a6;
+  --ds-amber: #f59e0b;
+  --ds-on-ink: #ffffff;
 
-  /* Accent glow scale. Three steps, in the order a surface climbs off the page:
-     a point of light on a live indicator, then two lift heights for the mark
-     and for the primary button under a pointer. */
-  --ds-glow-dot: 0 0 8px var(--ds-accent-glow);
-  --ds-glow-lift-sm: 0 4px 20px -6px var(--ds-accent-glow);
-  --ds-glow-lift: 0 8px 30px -8px var(--ds-accent-glow);
-  --ds-glow-lift-strong: 0 12px 44px -8px var(--ds-glow-strong);
+  /* Accent glow scale. Kept faint: a professional surface is lifted by tone
+     and a hairline, and light is reserved for the one live indicator. */
+  --ds-glow-dot: 0 0 6px var(--ds-accent-glow);
+  --ds-glow-lift-sm: 0 2px 10px -4px var(--ds-accent-glow);
+  --ds-glow-lift: 0 4px 16px -6px var(--ds-accent-glow);
+  --ds-glow-lift-strong: 0 6px 22px -6px var(--ds-glow-strong);
 }
 
 /* The three page settings. Each declares the full role set, because a partial
@@ -197,234 +194,223 @@
    that is how a light page ends up carrying one dark border. */
 
 [data-theme='dark'] {
-  /* Charcoal, in two steps: the page, and the panels set on it. A tile inside a
-     panel drops back to the page tone, which is how the kit nests a figure
-     inside a card without drawing a line round it. */
-  --ds-bg: #191a21;
-  --ds-bg-elevated: #2a2b30;
-  --ds-surface: #2a2b30;
-  --ds-surface-2: #33343a;
-  --ds-surface-3: #3d3e45;
-  --ds-inset: #191a21;
-  --ds-border: rgba(255, 255, 255, 0.1);
-  --ds-border-strong: rgba(255, 255, 255, 0.2);
-  --ds-border-input: rgba(255, 255, 255, 0.2);
-  --ds-border-hover: rgba(255, 255, 255, 0.32);
-  --ds-text: #ffffff;
-  --ds-text-muted: rgba(255, 255, 255, 0.8);
+  /* Graphite in four steps: the page, the chrome around it, and the panels set
+     on it. Every step is a few points lighter than the one below, so depth reads
+     from tone before any line is drawn. */
+  --ds-bg: #0e0f13;
+  --ds-bg-elevated: #121318;
+  --ds-surface: #16171d;
+  --ds-surface-2: #1d1e25;
+  --ds-surface-3: #26272f;
+  --ds-inset: #121318;
+  --ds-border: rgba(255, 255, 255, 0.08);
+  --ds-border-strong: rgba(255, 255, 255, 0.14);
+  --ds-border-input: rgba(255, 255, 255, 0.14);
+  --ds-border-hover: rgba(255, 255, 255, 0.24);
+  --ds-text: #ededf0;
+  --ds-text-muted: #a8a9b3;
   /* Faint is the quietest text that still has to be read: captions, timestamps,
      column labels. Set from the contrast it clears on surface-3, the deepest
      ground it lands on, rather than on the page. */
-  --ds-text-faint: rgba(255, 255, 255, 0.66);
-  /* Ghost carries no meaning - the wall of type in the footer, a watermark
-     behind a figure. Never a string that has to be read. */
-  --ds-text-ghost: rgba(255, 255, 255, 0.14);
+  --ds-text-faint: #8f909b;
+  /* Ghost carries no meaning - a watermark behind a figure. Never a string that
+     has to be read. */
+  --ds-text-ghost: rgba(255, 255, 255, 0.1);
 
-  --ds-accent: #33cccc;
-  --ds-accent-bright: #5cd9d9;
-  --ds-accent-glow: rgba(51, 204, 204, 0.36);
-  --ds-accent-soft: rgba(51, 204, 204, 0.14);
-  --ds-accent-softer: rgba(51, 204, 204, 0.07);
-  --ds-accent-fill: #33cccc;
-  --ds-accent-fill-hover: #2bb8b8;
-  /* Charcoal on mint rather than white: white on this mint is under 2:1, and a
-     label nobody can read is not a label. */
-  --ds-on-accent: #191a21;
+  --ds-accent: #a499ff;
+  --ds-accent-bright: #bdb5ff;
+  --ds-accent-glow: rgba(98, 82, 245, 0.36);
+  --ds-accent-soft: rgba(98, 82, 245, 0.16);
+  --ds-accent-softer: rgba(98, 82, 245, 0.09);
+  --ds-accent-fill: #6252f5;
+  --ds-accent-fill-hover: #5446e6;
+  --ds-on-accent: #ffffff;
 
-  --ds-positive: #61cd82;
-  --ds-positive-soft: rgba(97, 205, 130, 0.16);
-  --ds-warning: #f4b207;
-  --ds-warning-soft: rgba(244, 178, 7, 0.16);
-  --ds-danger: #f7956f;
-  --ds-danger-soft: rgba(242, 118, 73, 0.18);
-  --ds-neutral: rgba(255, 255, 255, 0.66);
-  --ds-neutral-soft: rgba(255, 255, 255, 0.07);
+  --ds-positive: #2ebd85;
+  --ds-positive-soft: rgba(46, 189, 133, 0.14);
+  --ds-warning: #f0b90b;
+  --ds-warning-soft: rgba(240, 185, 11, 0.14);
+  --ds-danger: #ff5b6e;
+  --ds-danger-soft: rgba(255, 91, 110, 0.14);
+  --ds-neutral: #8f909b;
+  --ds-neutral-soft: rgba(255, 255, 255, 0.06);
 
-  --ds-overlay: rgba(10, 10, 14, 0.7);
-  --ds-backdrop: rgba(25, 26, 33, 0.8);
-  --ds-nav-surface: rgba(25, 26, 33, 0.84);
-  --ds-sheen: rgba(255, 255, 255, 0.06);
-  --ds-sheen-strong: rgba(255, 255, 255, 0.12);
-  --ds-field-bg: transparent;
+  --ds-overlay: rgba(6, 6, 9, 0.72);
+  --ds-backdrop: rgba(14, 15, 19, 0.82);
+  --ds-nav-surface: rgba(14, 15, 19, 0.86);
+  --ds-sheen: rgba(255, 255, 255, 0.05);
+  --ds-sheen-strong: rgba(255, 255, 255, 0.1);
+  --ds-field-bg: #121318;
   --ds-field-inset: 0 0 #0000;
 
-  /* The blueprint rule, at two weights: the coarse grid carries a section and
-     the fine one carries a panel, and one alpha cannot do both. */
-  --ds-rule: rgba(255, 255, 255, 0.05);
-  --ds-rule-fine: rgba(255, 255, 255, 0.03);
+  --ds-rule: rgba(255, 255, 255, 0.04);
+  --ds-rule-fine: rgba(255, 255, 255, 0.025);
 
-  /* Panels sit flat on the page, lifted by tone and one soft shadow rather than
-     by an outline. The ring that remains is barely there, and exists so two
-     panels side by side still part where their tones meet. */
+  /* A panel is a hairline and a shadow too soft to notice until it is gone. */
   --ds-edge: 0 0 0 1px var(--ds-border);
-  --ds-raise: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 2px 20px 4px rgba(0, 0, 0, 0.14);
-  --ds-raise-hi: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 6px 28px 4px rgba(0, 0, 0, 0.24);
-  --ds-lift: 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+  --ds-raise: 0 0 0 1px var(--ds-border), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --ds-raise-hi: 0 0 0 1px var(--ds-border-strong), 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+  --ds-lift: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
   --ds-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --ds-shadow-md: 0 2px 20px 4px rgba(0, 0, 0, 0.14);
-  --ds-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.3), 0 24px 48px -16px rgba(0, 0, 0, 0.55);
+  --ds-shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+  --ds-shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.3), 0 20px 44px -16px rgba(0, 0, 0, 0.6);
   --ds-shadow-card: var(--ds-raise);
   --ds-shadow-card-hover: var(--ds-raise-hi);
 
-  --ds-glow-strong: rgba(51, 204, 204, 0.5);
+  --ds-glow-strong: rgba(98, 82, 245, 0.45);
   --ds-mesh:
-    radial-gradient(38% 52% at 18% 12%, rgba(51, 204, 204, 0.16) 0%, transparent 62%),
-    radial-gradient(42% 46% at 84% 24%, rgba(68, 111, 242, 0.14) 0%, transparent 64%),
-    radial-gradient(52% 58% at 50% 100%, rgba(51, 204, 204, 0.1) 0%, transparent 66%);
+    radial-gradient(40% 50% at 20% 0%, rgba(98, 82, 245, 0.14) 0%, transparent 64%),
+    radial-gradient(40% 44% at 86% 18%, rgba(59, 130, 246, 0.08) 0%, transparent 64%);
   --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
-  --ds-accent-face: #33cccc;
-  --ds-accent-face-hover: #2bb8b8;
+  --ds-accent-face: #6252f5;
+  --ds-accent-face-hover: #5446e6;
   /* The plates carry one fixed ink set, so the face under them is fixed too
      and travels with the image rather than with the band it lands on. */
-  --ds-plate-face: #191a21;
+  --ds-plate-face: #0e0f13;
   --ds-mark-invert: 1;
   color-scheme: dark;
 }
 
 [data-theme='light'] {
-  /* The kit's light neutrals: a blue-grey page, white panels, ink text. The
-     page sits a shade cooler than the panels set into it, which is what lets a
-     white surface read as raised before a shadow has done any work. */
-  --ds-bg: #f3f6ff;
+  /* A cool off-white page with white panels and near-black ink. The page sits a
+     shade below the panels, which is what lets a white surface read as raised
+     before a shadow has done any work. */
+  --ds-bg: #f6f7f9;
   --ds-bg-elevated: #ffffff;
   --ds-surface: #ffffff;
-  --ds-surface-2: #edf1fa;
-  --ds-surface-3: #e2e9fc;
-  --ds-inset: #f3f6ff;
-  --ds-border: rgba(20, 33, 61, 0.1);
-  --ds-border-strong: rgba(20, 33, 61, 0.18);
-  --ds-border-input: rgba(20, 33, 61, 0.22);
-  --ds-border-hover: rgba(20, 33, 61, 0.3);
-  --ds-text: #14213d;
-  --ds-text-muted: rgba(20, 33, 61, 0.76);
-  --ds-text-faint: #5b6178;
-  --ds-text-ghost: rgba(20, 33, 61, 0.1);
+  --ds-surface-2: #f1f2f5;
+  --ds-surface-3: #e8e9ee;
+  --ds-inset: #f6f7f9;
+  --ds-border: rgba(15, 17, 23, 0.09);
+  --ds-border-strong: rgba(15, 17, 23, 0.16);
+  --ds-border-input: rgba(15, 17, 23, 0.18);
+  --ds-border-hover: rgba(15, 17, 23, 0.28);
+  --ds-text: #0f1117;
+  --ds-text-muted: #4b4f5c;
+  --ds-text-faint: #5d6170;
+  --ds-text-ghost: rgba(15, 17, 23, 0.08);
 
-  /* On a light ground the legible accent is a deeper mint. This token is what
-     text, icons and focus rings take, so it is set from the contrast it has to
-     clear rather than from the fill's own hue. The fill keeps the kit's mint. */
-  --ds-accent: #0b7575;
-  --ds-accent-bright: #085e5e;
-  --ds-accent-glow: rgba(51, 204, 204, 0.3);
-  --ds-accent-soft: rgba(51, 204, 204, 0.16);
-  --ds-accent-softer: rgba(51, 204, 204, 0.07);
-  --ds-accent-fill: #33cccc;
-  --ds-accent-fill-hover: #2bb8b8;
-  --ds-on-accent: #191a21;
+  /* The legible violet on white. Text, icons and focus rings take this; the
+     fill keeps the brighter violet with white on it. */
+  --ds-accent: #5a4bdc;
+  --ds-accent-bright: #4638c4;
+  --ds-accent-glow: rgba(98, 82, 245, 0.24);
+  --ds-accent-soft: rgba(98, 82, 245, 0.1);
+  --ds-accent-softer: rgba(98, 82, 245, 0.06);
+  --ds-accent-fill: #6252f5;
+  --ds-accent-fill-hover: #5446e6;
+  --ds-on-accent: #ffffff;
 
   /* Each status colour is dark enough to read as text on its own soft fill,
      which is where it is most often used: a badge, a pill, an inline figure. */
-  --ds-positive: #16703a;
-  --ds-positive-soft: rgba(97, 205, 130, 0.18);
-  --ds-warning: #7a5a00;
-  --ds-warning-soft: rgba(244, 178, 7, 0.16);
-  --ds-danger: #b23d12;
-  --ds-danger-soft: rgba(242, 118, 73, 0.14);
-  --ds-neutral: #5b6178;
-  --ds-neutral-soft: rgba(20, 33, 61, 0.05);
+  --ds-positive: #0c7049;
+  --ds-positive-soft: rgba(12, 112, 73, 0.1);
+  --ds-warning: #8a5a00;
+  --ds-warning-soft: rgba(240, 185, 11, 0.16);
+  --ds-danger: #c62a3f;
+  --ds-danger-soft: rgba(198, 42, 63, 0.09);
+  --ds-neutral: #5d6170;
+  --ds-neutral-soft: rgba(15, 17, 23, 0.05);
 
-  --ds-overlay: rgba(20, 33, 61, 0.4);
-  --ds-backdrop: rgba(243, 246, 255, 0.82);
-  --ds-nav-surface: rgba(243, 246, 255, 0.86);
+  --ds-overlay: rgba(15, 17, 23, 0.4);
+  --ds-backdrop: rgba(246, 247, 249, 0.84);
+  --ds-nav-surface: rgba(255, 255, 255, 0.88);
   --ds-sheen: rgba(255, 255, 255, 0.9);
   --ds-sheen-strong: rgba(255, 255, 255, 1);
   --ds-field-bg: #ffffff;
   --ds-field-inset: 0 0 #0000;
 
-  --ds-rule: rgba(20, 33, 61, 0.05);
-  --ds-rule-fine: rgba(20, 33, 61, 0.03);
+  --ds-rule: rgba(15, 17, 23, 0.05);
+  --ds-rule-fine: rgba(15, 17, 23, 0.03);
 
   --ds-edge: 0 0 0 1px var(--ds-border);
-  --ds-raise: 0 0 0 1px rgba(20, 33, 61, 0.05), 0 2px 20px 4px rgba(30, 20, 106, 0.05);
-  --ds-raise-hi: 0 0 0 1px rgba(20, 33, 61, 0.09), 0 6px 28px 4px rgba(30, 20, 106, 0.09);
-  --ds-lift: 0 30px 70px -30px rgba(20, 33, 61, 0.22);
-  --ds-shadow-sm: 0 1px 2px rgba(20, 33, 61, 0.06);
-  --ds-shadow-md: 0 2px 20px 4px rgba(30, 20, 106, 0.05);
-  --ds-shadow-lg: 0 4px 8px rgba(20, 33, 61, 0.06), 0 24px 48px -16px rgba(20, 33, 61, 0.16);
+  --ds-raise: 0 0 0 1px var(--ds-border), 0 1px 2px rgba(15, 17, 23, 0.04);
+  --ds-raise-hi: 0 0 0 1px var(--ds-border-strong), 0 4px 16px -4px rgba(15, 17, 23, 0.1);
+  --ds-lift: 0 24px 60px -24px rgba(15, 17, 23, 0.2);
+  --ds-shadow-sm: 0 1px 2px rgba(15, 17, 23, 0.06);
+  --ds-shadow-md: 0 4px 16px -4px rgba(15, 17, 23, 0.1);
+  --ds-shadow-lg: 0 2px 6px rgba(15, 17, 23, 0.05), 0 20px 44px -16px rgba(15, 17, 23, 0.16);
   --ds-shadow-card: var(--ds-raise);
   --ds-shadow-card-hover: var(--ds-raise-hi);
 
-  --ds-glow-strong: rgba(51, 204, 204, 0.4);
+  --ds-glow-strong: rgba(98, 82, 245, 0.3);
   --ds-mesh:
-    radial-gradient(38% 52% at 18% 12%, rgba(51, 204, 204, 0.16) 0%, transparent 62%),
-    radial-gradient(42% 46% at 84% 24%, rgba(68, 111, 242, 0.1) 0%, transparent 64%),
-    radial-gradient(52% 58% at 50% 100%, rgba(51, 204, 204, 0.1) 0%, transparent 66%);
+    radial-gradient(40% 50% at 20% 0%, rgba(98, 82, 245, 0.08) 0%, transparent 64%),
+    radial-gradient(40% 44% at 86% 18%, rgba(59, 130, 246, 0.05) 0%, transparent 64%);
   --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
-  --ds-accent-face: #33cccc;
-  --ds-accent-face-hover: #2bb8b8;
-  --ds-plate-face: #191a21;
+  --ds-accent-face: #6252f5;
+  --ds-accent-face-hover: #5446e6;
+  --ds-plate-face: #0e0f13;
   --ds-mark-invert: 0;
   color-scheme: light;
 }
 
-/* Gray sits between the other two: the kit's ink-tinted greys pulled down to a
-   slate sheet, with light's ink and accent set carried over. The quiet inks are
-   darker than light's because they still have to clear 4.5:1 on surface-3, a
-   deeper ground here than in light. */
+/* Gray sits between the other two: a slate sheet with light's ink carried
+   over. The quiet inks are darker than light's because they still have to
+   clear 4.5:1 on surface-3, a deeper ground here than in light. */
 [data-theme='gray'] {
-  --ds-bg: #d7dbe7;
-  --ds-bg-elevated: #e6e9f1;
-  --ds-surface: #eceff6;
-  --ds-surface-2: #dde1eb;
-  --ds-surface-3: #cfd4e1;
-  --ds-inset: #dde1eb;
-  --ds-border: rgba(20, 33, 61, 0.13);
-  --ds-border-strong: rgba(20, 33, 61, 0.22);
-  --ds-border-input: rgba(20, 33, 61, 0.28);
-  --ds-border-hover: rgba(20, 33, 61, 0.34);
-  --ds-text: #14213d;
-  --ds-text-muted: rgba(20, 33, 61, 0.8);
-  --ds-text-faint: #4c5268;
-  --ds-text-ghost: rgba(20, 33, 61, 0.12);
+  --ds-bg: #e9eaee;
+  --ds-bg-elevated: #f4f5f7;
+  --ds-surface: #f4f5f7;
+  --ds-surface-2: #e4e6ea;
+  --ds-surface-3: #d8dbe1;
+  --ds-inset: #e9eaee;
+  --ds-border: rgba(15, 17, 23, 0.11);
+  --ds-border-strong: rgba(15, 17, 23, 0.19);
+  --ds-border-input: rgba(15, 17, 23, 0.22);
+  --ds-border-hover: rgba(15, 17, 23, 0.32);
+  --ds-text: #0f1117;
+  --ds-text-muted: #3f4350;
+  --ds-text-faint: #4d515e;
+  --ds-text-ghost: rgba(15, 17, 23, 0.1);
 
-  --ds-accent: #086666;
-  --ds-accent-bright: #065252;
-  --ds-accent-glow: rgba(51, 204, 204, 0.26);
-  --ds-accent-soft: rgba(51, 204, 204, 0.2);
-  --ds-accent-softer: rgba(51, 204, 204, 0.08);
-  --ds-accent-fill: #33cccc;
-  --ds-accent-fill-hover: #2bb8b8;
-  --ds-on-accent: #191a21;
+  --ds-accent: #4d3fcf;
+  --ds-accent-bright: #3f32b5;
+  --ds-accent-glow: rgba(98, 82, 245, 0.22);
+  --ds-accent-soft: rgba(98, 82, 245, 0.13);
+  --ds-accent-softer: rgba(98, 82, 245, 0.07);
+  --ds-accent-fill: #6252f5;
+  --ds-accent-fill-hover: #5446e6;
+  --ds-on-accent: #ffffff;
 
-  --ds-positive: #135f31;
-  --ds-positive-soft: rgba(97, 205, 130, 0.22);
-  --ds-warning: #684d00;
-  --ds-warning-soft: rgba(244, 178, 7, 0.2);
-  --ds-danger: #9c3510;
-  --ds-danger-soft: rgba(242, 118, 73, 0.18);
-  --ds-neutral: #4c5268;
-  --ds-neutral-soft: rgba(20, 33, 61, 0.06);
+  --ds-positive: #0b6b47;
+  --ds-positive-soft: rgba(11, 107, 71, 0.12);
+  --ds-warning: #744b00;
+  --ds-warning-soft: rgba(240, 185, 11, 0.2);
+  --ds-danger: #ad2235;
+  --ds-danger-soft: rgba(173, 34, 53, 0.1);
+  --ds-neutral: #4d515e;
+  --ds-neutral-soft: rgba(15, 17, 23, 0.06);
 
-  --ds-overlay: rgba(20, 33, 61, 0.42);
-  --ds-backdrop: rgba(215, 219, 231, 0.82);
-  --ds-nav-surface: rgba(215, 219, 231, 0.86);
-  --ds-sheen: rgba(255, 255, 255, 0.72);
-  --ds-sheen-strong: rgba(255, 255, 255, 0.92);
-  --ds-field-bg: #f4f6fa;
+  --ds-overlay: rgba(15, 17, 23, 0.42);
+  --ds-backdrop: rgba(233, 234, 238, 0.84);
+  --ds-nav-surface: rgba(244, 245, 247, 0.88);
+  --ds-sheen: rgba(255, 255, 255, 0.7);
+  --ds-sheen-strong: rgba(255, 255, 255, 0.9);
+  --ds-field-bg: #f9fafb;
   --ds-field-inset: 0 0 #0000;
 
-  --ds-rule: rgba(20, 33, 61, 0.06);
-  --ds-rule-fine: rgba(20, 33, 61, 0.035);
+  --ds-rule: rgba(15, 17, 23, 0.06);
+  --ds-rule-fine: rgba(15, 17, 23, 0.035);
 
   --ds-edge: 0 0 0 1px var(--ds-border);
-  --ds-raise: 0 0 0 1px rgba(20, 33, 61, 0.07), 0 2px 20px 4px rgba(30, 20, 106, 0.06);
-  --ds-raise-hi: 0 0 0 1px rgba(20, 33, 61, 0.12), 0 6px 28px 4px rgba(30, 20, 106, 0.1);
-  --ds-lift: 0 30px 70px -30px rgba(20, 33, 61, 0.26);
-  --ds-shadow-sm: 0 1px 2px rgba(20, 33, 61, 0.07);
-  --ds-shadow-md: 0 2px 20px 4px rgba(30, 20, 106, 0.06);
-  --ds-shadow-lg: 0 4px 8px rgba(20, 33, 61, 0.08), 0 24px 48px -16px rgba(20, 33, 61, 0.18);
+  --ds-raise: 0 0 0 1px var(--ds-border), 0 1px 2px rgba(15, 17, 23, 0.05);
+  --ds-raise-hi: 0 0 0 1px var(--ds-border-strong), 0 4px 16px -4px rgba(15, 17, 23, 0.12);
+  --ds-lift: 0 24px 60px -24px rgba(15, 17, 23, 0.24);
+  --ds-shadow-sm: 0 1px 2px rgba(15, 17, 23, 0.07);
+  --ds-shadow-md: 0 4px 16px -4px rgba(15, 17, 23, 0.12);
+  --ds-shadow-lg: 0 2px 6px rgba(15, 17, 23, 0.06), 0 20px 44px -16px rgba(15, 17, 23, 0.18);
   --ds-shadow-card: var(--ds-raise);
   --ds-shadow-card-hover: var(--ds-raise-hi);
 
-  --ds-glow-strong: rgba(51, 204, 204, 0.36);
+  --ds-glow-strong: rgba(98, 82, 245, 0.28);
   --ds-mesh:
-    radial-gradient(38% 52% at 18% 12%, rgba(51, 204, 204, 0.14) 0%, transparent 62%),
-    radial-gradient(42% 46% at 84% 24%, rgba(68, 111, 242, 0.09) 0%, transparent 64%),
-    radial-gradient(52% 58% at 50% 100%, rgba(51, 204, 204, 0.1) 0%, transparent 66%);
+    radial-gradient(40% 50% at 20% 0%, rgba(98, 82, 245, 0.08) 0%, transparent 64%),
+    radial-gradient(40% 44% at 86% 18%, rgba(59, 130, 246, 0.05) 0%, transparent 64%);
   --ds-seam: linear-gradient(90deg, transparent 0%, var(--ds-accent-soft) 50%, transparent 100%);
-  --ds-accent-face: #33cccc;
-  --ds-accent-face-hover: #2bb8b8;
-  --ds-plate-face: #191a21;
+  --ds-accent-face: #6252f5;
+  --ds-accent-face-hover: #5446e6;
+  --ds-plate-face: #0e0f13;
   --ds-mark-invert: 0;
   color-scheme: light;
 }
@@ -432,78 +418,75 @@
 /* The grounds.
 
    A page is a stack of full-bleed slabs, and a slab declares what it is rather
-   than inheriting it. `dark` is the charcoal slab whatever the page setting;
+   than inheriting it. `dark` is the graphite slab whatever the page setting;
    `paper` is the light sheet on the same terms. `band` is the one that reads
-   the page: on a light page it is the contrasting charcoal slab that gives the
+   the page: on a light page it is the contrasting graphite slab that gives the
    rhythm its stripe, and on a dark page it stands down, because a band holding
    its contrast every second section against an already-dark ground reads as
-   banding rather than as structure. What is left under the dark setting are the
-   slabs carrying the page rather than its rhythm - the masthead, the closing
-   call, the footer - which ask for `dark` outright.
+   banding rather than as structure.
 
    :not([data-theme='dark']) rather than [data-theme='light'], so a band is a
    slab in the moment before the resolver has stamped a setting as well. */
 [data-ground='dark'],
 :root:not([data-theme='dark']) [data-ground='band'] {
-  --ds-bg: #191a21;
-  --ds-bg-elevated: #2a2b30;
-  --ds-surface: #2a2b30;
-  --ds-surface-2: #33343a;
-  --ds-surface-3: #3d3e45;
-  --ds-inset: #191a21;
-  --ds-border: rgba(255, 255, 255, 0.1);
-  --ds-border-strong: rgba(255, 255, 255, 0.2);
-  --ds-border-input: rgba(255, 255, 255, 0.2);
-  --ds-border-hover: rgba(255, 255, 255, 0.32);
-  --ds-text: #ffffff;
-  --ds-text-muted: rgba(255, 255, 255, 0.8);
-  --ds-text-faint: rgba(255, 255, 255, 0.66);
-  --ds-text-ghost: rgba(255, 255, 255, 0.14);
+  --ds-bg: #0e0f13;
+  --ds-bg-elevated: #121318;
+  --ds-surface: #16171d;
+  --ds-surface-2: #1d1e25;
+  --ds-surface-3: #26272f;
+  --ds-inset: #121318;
+  --ds-border: rgba(255, 255, 255, 0.08);
+  --ds-border-strong: rgba(255, 255, 255, 0.14);
+  --ds-border-input: rgba(255, 255, 255, 0.14);
+  --ds-border-hover: rgba(255, 255, 255, 0.24);
+  --ds-text: #ededf0;
+  --ds-text-muted: #a8a9b3;
+  --ds-text-faint: #8f909b;
+  --ds-text-ghost: rgba(255, 255, 255, 0.1);
 
-  --ds-accent: #33cccc;
-  --ds-accent-bright: #5cd9d9;
-  --ds-accent-glow: rgba(51, 204, 204, 0.38);
-  --ds-accent-soft: rgba(51, 204, 204, 0.16);
-  --ds-accent-softer: rgba(51, 204, 204, 0.08);
-  --ds-accent-fill: #33cccc;
-  --ds-accent-fill-hover: #2bb8b8;
-  --ds-on-accent: #191a21;
+  --ds-accent: #a499ff;
+  --ds-accent-bright: #bdb5ff;
+  --ds-accent-glow: rgba(98, 82, 245, 0.36);
+  --ds-accent-soft: rgba(98, 82, 245, 0.16);
+  --ds-accent-softer: rgba(98, 82, 245, 0.09);
+  --ds-accent-fill: #6252f5;
+  --ds-accent-fill-hover: #5446e6;
+  --ds-on-accent: #ffffff;
 
-  --ds-positive: #61cd82;
-  --ds-positive-soft: rgba(97, 205, 130, 0.18);
-  --ds-warning: #f4b207;
-  --ds-warning-soft: rgba(244, 178, 7, 0.18);
-  --ds-danger: #f7956f;
-  --ds-danger-soft: rgba(242, 118, 73, 0.2);
-  --ds-neutral: rgba(255, 255, 255, 0.66);
-  --ds-neutral-soft: rgba(255, 255, 255, 0.08);
+  --ds-positive: #2ebd85;
+  --ds-positive-soft: rgba(46, 189, 133, 0.14);
+  --ds-warning: #f0b90b;
+  --ds-warning-soft: rgba(240, 185, 11, 0.14);
+  --ds-danger: #ff5b6e;
+  --ds-danger-soft: rgba(255, 91, 110, 0.14);
+  --ds-neutral: #8f909b;
+  --ds-neutral-soft: rgba(255, 255, 255, 0.06);
 
-  --ds-overlay: rgba(10, 10, 14, 0.7);
-  --ds-backdrop: rgba(25, 26, 33, 0.8);
-  --ds-nav-surface: rgba(25, 26, 33, 0.85);
-  --ds-sheen: rgba(255, 255, 255, 0.07);
-  --ds-sheen-strong: rgba(255, 255, 255, 0.14);
-  --ds-field-bg: transparent;
+  --ds-overlay: rgba(6, 6, 9, 0.72);
+  --ds-backdrop: rgba(14, 15, 19, 0.82);
+  --ds-nav-surface: rgba(14, 15, 19, 0.86);
+  --ds-sheen: rgba(255, 255, 255, 0.05);
+  --ds-sheen-strong: rgba(255, 255, 255, 0.1);
+  --ds-field-bg: #121318;
   --ds-field-inset: 0 0 #0000;
 
-  --ds-rule: rgba(255, 255, 255, 0.05);
-  --ds-rule-fine: rgba(255, 255, 255, 0.03);
+  --ds-rule: rgba(255, 255, 255, 0.04);
+  --ds-rule-fine: rgba(255, 255, 255, 0.025);
 
   --ds-edge: 0 0 0 1px var(--ds-border);
-  --ds-raise: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 2px 20px 4px rgba(0, 0, 0, 0.14);
-  --ds-raise-hi: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 6px 28px 4px rgba(0, 0, 0, 0.24);
-  --ds-lift: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  --ds-raise: 0 0 0 1px var(--ds-border), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --ds-raise-hi: 0 0 0 1px var(--ds-border-strong), 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+  --ds-lift: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
   --ds-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --ds-shadow-md: 0 2px 20px 4px rgba(0, 0, 0, 0.14);
-  --ds-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.3), 0 24px 48px -16px rgba(0, 0, 0, 0.55);
+  --ds-shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+  --ds-shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.3), 0 20px 44px -16px rgba(0, 0, 0, 0.6);
   --ds-shadow-card: var(--ds-raise);
   --ds-shadow-card-hover: var(--ds-raise-hi);
 
-  --ds-glow-strong: rgba(51, 204, 204, 0.5);
+  --ds-glow-strong: rgba(98, 82, 245, 0.45);
   --ds-mesh:
-    radial-gradient(38% 52% at 18% 12%, rgba(51, 204, 204, 0.18) 0%, transparent 62%),
-    radial-gradient(42% 46% at 84% 24%, rgba(68, 111, 242, 0.16) 0%, transparent 64%),
-    radial-gradient(52% 58% at 50% 100%, rgba(51, 204, 204, 0.12) 0%, transparent 66%);
+    radial-gradient(40% 50% at 20% 0%, rgba(98, 82, 245, 0.16) 0%, transparent 64%),
+    radial-gradient(40% 44% at 86% 18%, rgba(59, 130, 246, 0.08) 0%, transparent 64%);
   --ds-mark-invert: 1;
   color-scheme: dark;
 }
@@ -513,26 +496,26 @@
 [data-ground='paper'] {
   --ds-bg: #ffffff;
   --ds-bg-elevated: #ffffff;
-  --ds-surface: #f3f6ff;
-  --ds-surface-2: #edf1fa;
-  --ds-surface-3: #e2e9fc;
-  --ds-inset: #f3f6ff;
-  --ds-border: rgba(20, 33, 61, 0.1);
-  --ds-border-strong: rgba(20, 33, 61, 0.18);
-  --ds-border-input: rgba(20, 33, 61, 0.22);
-  --ds-border-hover: rgba(20, 33, 61, 0.3);
-  --ds-text: #14213d;
-  --ds-text-muted: rgba(20, 33, 61, 0.76);
-  --ds-text-faint: #5b6178;
-  --ds-text-ghost: rgba(20, 33, 61, 0.1);
-  --ds-accent: #0b7575;
-  --ds-accent-bright: #085e5e;
-  --ds-accent-soft: rgba(51, 204, 204, 0.16);
-  --ds-accent-softer: rgba(51, 204, 204, 0.07);
-  --ds-neutral: #5b6178;
-  --ds-neutral-soft: rgba(20, 33, 61, 0.05);
-  --ds-rule: rgba(20, 33, 61, 0.05);
-  --ds-rule-fine: rgba(20, 33, 61, 0.03);
+  --ds-surface: #f6f7f9;
+  --ds-surface-2: #f1f2f5;
+  --ds-surface-3: #e8e9ee;
+  --ds-inset: #f6f7f9;
+  --ds-border: rgba(15, 17, 23, 0.09);
+  --ds-border-strong: rgba(15, 17, 23, 0.16);
+  --ds-border-input: rgba(15, 17, 23, 0.18);
+  --ds-border-hover: rgba(15, 17, 23, 0.28);
+  --ds-text: #0f1117;
+  --ds-text-muted: #4b4f5c;
+  --ds-text-faint: #5d6170;
+  --ds-text-ghost: rgba(15, 17, 23, 0.08);
+  --ds-accent: #5a4bdc;
+  --ds-accent-bright: #4638c4;
+  --ds-accent-soft: rgba(98, 82, 245, 0.1);
+  --ds-accent-softer: rgba(98, 82, 245, 0.06);
+  --ds-neutral: #5d6170;
+  --ds-neutral-soft: rgba(15, 17, 23, 0.05);
+  --ds-rule: rgba(15, 17, 23, 0.05);
+  --ds-rule-fine: rgba(15, 17, 23, 0.03);
   --ds-field-bg: #ffffff;
   --ds-field-inset: 0 0 #0000;
   --ds-mark-invert: 0;
