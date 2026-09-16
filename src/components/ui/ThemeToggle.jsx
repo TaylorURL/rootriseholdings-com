@@ -30,11 +30,11 @@ export default function ThemeToggle({ className }) {
       onClick={toggleTheme}
       aria-label={next.label}
       className={cn(
-        'press focus-ring flex h-11 w-11 items-center justify-center rounded-control text-text shadow-[inset_0_0_0_1px_var(--ds-border-strong)] transition-colors duration-200 ease-out [@media(hover:hover)]:hover:bg-[var(--ds-neutral-soft)]',
+        'press focus-ring flex h-8 w-8 items-center justify-center rounded-control border border-border text-text-muted transition-colors duration-200 ease-out [@media(hover:hover)]:hover:bg-[var(--ds-neutral-soft)] [@media(hover:hover)]:hover:text-text',
         className
       )}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className="h-4 w-4" />
     </button>
   )
 }

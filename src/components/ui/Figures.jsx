@@ -4,9 +4,9 @@ import { cn } from '../../lib/cn'
  * The treatment every label in the terminal takes.
  *
  * A label is the word that says what a number is, so it is the last thing on a
- * trading screen that should be hard to read. It is set the way the dashboard
- * kit sets one: the body face at twelve pixels, in the quieter ink, in the
- * Title Case the copy is already written in. One constant keeps a dozen files
+ * trading screen that should be hard to read. It is set in the body face at
+ * twelve pixels, in the quieter ink, in the Title Case the copy is already
+ * written in. One constant keeps a dozen files
  * from drifting apart.
  *
  * Both forms are exported. The class is for the places that already own their
@@ -18,10 +18,11 @@ export const RULE_LABEL = 'text-xs leading-4 text-text-muted'
  * What a panel calls itself, which is not what a figure calls itself.
  *
  * A heading that reads quieter than the numbers underneath it is the opposite
- * of legible, so a panel is named at the kit's title step - twenty pixels,
- * medium weight, full-strength ink - and a figure's label stays at twelve.
+ * of legible, so a panel is named a step above its figures - fifteen pixels,
+ * semibold, full-strength ink - and a figure's label stays at twelve. Larger
+ * than that and a screen of panels reads as a row of posters.
  */
-export const PANEL_TITLE = 'text-lg font-medium leading-7 text-text sm:text-xl'
+export const PANEL_TITLE = 'text-sm font-semibold leading-5 text-text'
 
 /**
  * @param {object} props
@@ -61,7 +62,7 @@ export function RuleLabel({ children, title, as: Tag = 'p', className }) {
 export function FigureRow({ children, min = '6.5rem', className }) {
   return (
     <dl
-      className={cn('grid overflow-hidden rounded-card', className)}
+      className={cn('grid overflow-hidden rounded-card shadow-[var(--ds-edge)]', className)}
       style={{ gridTemplateColumns: `repeat(auto-fit, minmax(${min}, 1fr))` }}
     >
       {children}
@@ -79,20 +80,34 @@ export function FigureRow({ children, min = '6.5rem', className }) {
  * @param {string} [props.tone] - a text colour class for the value
  * @param {React.ReactNode} [props.note] - what the value is measured against
  * @param {string} [props.title] - what an abbreviated label stands for, on hover
+ * @param {'md'|'lg'} [props.size='md'] - lg is the headline strip a page opens on
  * @param {string} [props.className]
  */
-export function Figure({ label, value, tone, note, title, className }) {
+export function Figure({ label, value, tone, note, title, size = 'md', className }) {
+  const large = size === 'lg'
   return (
-    <div className={cn('bg-surface px-4 py-3 shadow-[0_0_0_1px_var(--ds-border)]', className)}>
+    <div
+      className={cn(
+        'bg-surface shadow-[0_0_0_1px_var(--ds-border)]',
+        large ? 'px-5 py-3.5' : 'px-4 py-2.5',
+        className
+      )}
+    >
       <dt className={cn(RULE_LABEL, 'truncate')} title={title}>
         {label}
       </dt>
       <dd
-        className={cn('mt-1 truncate text-base font-medium tabular-nums leading-6 text-text', tone)}
+        className={cn(
+          'truncate font-semibold tabular-nums text-text',
+          large ? 'mt-1.5 text-[22px] leading-7 tracking-tight' : 'mt-0.5 text-[15px] leading-6',
+          tone
+        )}
       >
         {value}
       </dd>
-      {note ? <dd className="truncate text-xs text-text-faint">{note}</dd> : null}
+      {note ? (
+        <dd className={cn('truncate text-xs text-text-faint', large && 'mt-1')}>{note}</dd>
+      ) : null}
     </div>
   )
 }

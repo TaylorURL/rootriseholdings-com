@@ -4,7 +4,7 @@
  * Every colour on this site is a CSS custom property, which is what lets one
  * token change repaint three themes at once. The chart engine draws to a canvas
  * and takes concrete colours, so it cannot read a variable - it has to be told
- * `#61cd82`, not `var(--ds-positive)`. Resolving them here keeps that
+ * `#2ebd85`, not `var(--ds-positive)`. Resolving them here keeps that
  * translation in one place rather than hard-coding a palette next to the chart
  * and letting it drift away from the rest of the page the first time a token
  * moves.
@@ -17,15 +17,15 @@
 
 /** Tokens a chart needs, and what to fall back to when one cannot be read. */
 const FALLBACKS = {
-  '--ds-positive': '#61cd82',
-  '--ds-danger': '#f7956f',
-  '--ds-accent-bright': '#5cd9d9',
-  '--ds-border': '#3a3b40',
-  '--ds-border-strong': '#505157',
-  '--ds-text-faint': '#a7a8ab',
-  '--ds-text-muted': '#d4d5d6',
-  '--ds-surface': '#2a2b30',
-  '--ds-bg': '#191a21',
+  '--ds-positive': '#2ebd85',
+  '--ds-danger': '#ff5b6e',
+  '--ds-accent-bright': '#bdb5ff',
+  '--ds-border': '#26272d',
+  '--ds-border-strong': '#35363d',
+  '--ds-text-faint': '#8f909b',
+  '--ds-text-muted': '#a8a9b3',
+  '--ds-surface': '#16171d',
+  '--ds-bg': '#0e0f13',
 }
 
 /**
