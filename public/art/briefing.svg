@@ -3,48 +3,48 @@
     <path d="M0 56h400M0 112h400M0 168h400M0 224h400"/>
     <path d="M80 0v280M160 0v280M240 0v280M320 0v280"/>
   </g>
-  <text x="24" y="36" font-family="ui-monospace, monospace" font-size="10" font-weight="600" fill="#5cd9d9" letter-spacing="1.4">MORNING OPEN EDITION</text>
+  <text x="24" y="36" font-family="ui-monospace, monospace" font-size="10" font-weight="600" fill="#a499ff" letter-spacing="1.4">MORNING OPEN EDITION</text>
   <path d="M24 46h352" stroke="#ffffff" stroke-opacity="0.18"/>
   <g>
-    <rect x="24" y="60" width="352" height="34" rx="6" fill="#2a2b30"/>
-    <rect x="24" y="60" width="3" height="34" rx="1.5" fill="#33cccc"/>
+    <rect x="24" y="60" width="352" height="34" rx="6" fill="#16171d"/>
+    <rect x="24" y="60" width="3" height="34" rx="1.5" fill="#6252f5"/>
     <text x="40" y="74" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">01 CALENDAR</text>
-    <text x="40" y="88" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#f3f6ff">CPI 08:30 CT</text>
-    <rect x="300" y="68" width="60" height="18" rx="4" fill="#f27649" fill-opacity="0.18"/>
-    <text x="312" y="81" font-family="ui-monospace, monospace" font-size="9" font-weight="700" fill="#f27649" letter-spacing="0.7">HIGH</text>
+    <text x="40" y="88" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#f6f7f9">CPI 08:30 CT</text>
+    <rect x="300" y="68" width="60" height="18" rx="4" fill="#ff5b6e" fill-opacity="0.18"/>
+    <text x="312" y="81" font-family="ui-monospace, monospace" font-size="9" font-weight="700" fill="#ff5b6e" letter-spacing="0.7">HIGH</text>
   </g>
   <g>
-    <rect x="24" y="102" width="172" height="34" rx="6" fill="#2a2b30"/>
-    <rect x="24" y="102" width="3" height="34" rx="1.5" fill="#61cd82"/>
+    <rect x="24" y="102" width="172" height="34" rx="6" fill="#16171d"/>
+    <rect x="24" y="102" width="3" height="34" rx="1.5" fill="#2ebd85"/>
     <text x="40" y="116" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">02 DXY</text>
-    <text x="40" y="130" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#61cd82">104.22 -0.31%</text>
+    <text x="40" y="130" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#2ebd85">104.22 -0.31%</text>
   </g>
   <g>
-    <rect x="204" y="102" width="172" height="34" rx="6" fill="#2a2b30"/>
-    <rect x="204" y="102" width="3" height="34" rx="1.5" fill="#f4b207"/>
+    <rect x="204" y="102" width="172" height="34" rx="6" fill="#16171d"/>
+    <rect x="204" y="102" width="3" height="34" rx="1.5" fill="#f0b90b"/>
     <text x="220" y="116" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">03 BIAS</text>
-    <text x="220" y="130" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#f3f6ff">LONG ONLY</text>
+    <text x="220" y="130" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#f6f7f9">LONG ONLY</text>
   </g>
   <g>
-    <rect x="24" y="144" width="352" height="60" rx="6" fill="#2a2b30"/>
-    <rect x="24" y="144" width="3" height="60" rx="1.5" fill="#33cccc"/>
+    <rect x="24" y="144" width="352" height="60" rx="6" fill="#16171d"/>
+    <rect x="24" y="144" width="3" height="60" rx="1.5" fill="#6252f5"/>
     <text x="40" y="160" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">04 STRUCTURE</text>
-    <path d="M40 190l28-16 22 10 26-24 24 14 30-28 32 18 36-30" fill="none" stroke="#5cd9d9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-    <circle cx="278" cy="176" r="3.5" fill="#33cccc"/>
-    <text x="292" y="180" font-family="ui-monospace, monospace" font-size="9" font-weight="600" fill="#5cd9d9" letter-spacing="0.8">BOS 1H</text>
+    <path d="M40 190l28-16 22 10 26-24 24 14 30-28 32 18 36-30" fill="none" stroke="#a499ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="278" cy="176" r="3.5" fill="#6252f5"/>
+    <text x="292" y="180" font-family="ui-monospace, monospace" font-size="9" font-weight="600" fill="#a499ff" letter-spacing="0.8">BOS 1H</text>
   </g>
   <g font-family="ui-monospace, monospace" font-size="9" letter-spacing="0.9">
-    <rect x="24" y="214" width="82" height="26" rx="6" fill="#2a2b30"/>
+    <rect x="24" y="214" width="82" height="26" rx="6" fill="#16171d"/>
     <text x="36" y="231" fill="#ffffff" fill-opacity="0.72">05 FX WATCH</text>
-    <rect x="114" y="214" width="82" height="26" rx="6" fill="#2a2b30"/>
+    <rect x="114" y="214" width="82" height="26" rx="6" fill="#16171d"/>
     <text x="126" y="231" fill="#ffffff" fill-opacity="0.72">06 SENTIMENT</text>
-    <rect x="204" y="214" width="82" height="26" rx="6" fill="#2a2b30"/>
+    <rect x="204" y="214" width="82" height="26" rx="6" fill="#16171d"/>
     <text x="216" y="231" fill="#ffffff" fill-opacity="0.72">07 DAY PLAN</text>
-    <rect x="294" y="214" width="82" height="26" rx="6" fill="#33cccc" fill-opacity="0.2"/>
-    <text x="306" y="231" fill="#5cd9d9">08 RULES</text>
+    <rect x="294" y="214" width="82" height="26" rx="6" fill="#6252f5" fill-opacity="0.2"/>
+    <text x="306" y="231" fill="#a499ff">08 RULES</text>
   </g>
   <path d="M24 252h352" stroke="#ffffff" stroke-opacity="0.12"/>
   <text x="24" y="270" font-family="ui-monospace, monospace" font-size="9" fill="#ffffff" fill-opacity="0.56" letter-spacing="0.9">09 THIRTY-SECOND TAKE</text>
-  <circle cx="368" cy="266" r="4" fill="#61cd82"/>
+  <circle cx="368" cy="266" r="4" fill="#2ebd85"/>
 <rect x="0.5" y="0.5" width="399" height="279" rx="11.5" fill="none" stroke="#ffffff" stroke-opacity="0.16"/>
 </svg>

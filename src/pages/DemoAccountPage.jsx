@@ -213,7 +213,9 @@ export default function DemoAccountPage() {
         {traded ? (
           <div className="p-4">
             <ChartInView height={300} label="Equity curve">
-              {() => <EquityCurveChart data={book.curve} height={300} showYAxis />}
+              {() => (
+                <EquityCurveChart data={book.curve} start={book.startingEquity} height={300} />
+              )}
             </ChartInView>
           </div>
         ) : (

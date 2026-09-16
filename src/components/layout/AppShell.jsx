@@ -66,35 +66,36 @@ export default function AppShell() {
         )}
       </AnimatePresence>
 
-      {/* The kit's frame: the bar is a panel of its own, set into the page with
-          the same gutter that separates every panel below it. */}
+      {/* The bar runs flush across the top of the work area and the page
+          scrolls under it, so the chrome reads as one frame around the panels
+          rather than as another panel among them. */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <div className="shrink-0 px-4 pt-4 sm:px-6 sm:pt-6">
-          <Header onOpenDrawer={() => setDrawerOpen(true)} />
-        </div>
+        <Header onOpenDrawer={() => setDrawerOpen(true)} />
         <main
           id="main-content"
           ref={mainRef}
           tabIndex={-1}
-          className="ds-scroll flex-1 overflow-y-auto overscroll-contain bg-bg px-4 py-4 outline-none sm:px-6 sm:py-6"
+          className="ds-scroll flex-1 overflow-y-auto overscroll-contain bg-bg outline-none"
         >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, transform: `translateY(${reduceMotion ? 0 : 10}px)` }}
-              animate={{ opacity: 1, transform: 'translateY(0px)' }}
-              exit={{
-                opacity: 0,
-                transform: `translateY(${reduceMotion ? 0 : -6}px)`,
-                transition: { duration: 0.17, ease: EASE_OUT },
-              }}
-              transition={{ duration: 0.26, ease: EASE_OUT }}
-            >
-              <Suspense fallback={<RoutePending />}>
-                <Outlet />
-              </Suspense>
-            </motion.div>
-          </AnimatePresence>
+          <div className="mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-6 sm:py-6">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={pathname}
+                initial={{ opacity: 0, transform: `translateY(${reduceMotion ? 0 : 10}px)` }}
+                animate={{ opacity: 1, transform: 'translateY(0px)' }}
+                exit={{
+                  opacity: 0,
+                  transform: `translateY(${reduceMotion ? 0 : -6}px)`,
+                  transition: { duration: 0.17, ease: EASE_OUT },
+                }}
+                transition={{ duration: 0.26, ease: EASE_OUT }}
+              >
+                <Suspense fallback={<RoutePending />}>
+                  <Outlet />
+                </Suspense>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </main>
         <SplitRail />
       </div>

@@ -8,10 +8,10 @@
     <title>Page Not Found · Root &amp; Rise</title>
     <style>
       :root {
-        --accent-face: #33cccc;
-        --on-accent: #191a21;
+        --accent-face: #6252f5;
+        --on-accent: #ffffff;
         --radius: 8px;
-        --radius-control: 8px;
+        --radius-control: 6px;
         --pad: 24px;
         --pad-y: 20px;
         --gap: 12px;
@@ -19,45 +19,45 @@
       }
       :root,
       :root[data-theme='dark'] {
-        --bg: #191a21;
-        --surface: #2a2b30;
-        --border: rgba(255, 255, 255, 0.1);
-        --text: #ffffff;
-        --muted: rgba(255, 255, 255, 0.8);
-        --faint: rgba(255, 255, 255, 0.66);
-        --accent: #33cccc;
+        --bg: #0e0f13;
+        --surface: #16171d;
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #ededf0;
+        --muted: #a8a9b3;
+        --faint: #8f909b;
+        --accent: #a499ff;
         color-scheme: dark;
       }
       @media (prefers-color-scheme: light) {
         :root:not([data-theme='dark']):not([data-theme='gray']) {
-          --bg: #f3f6ff;
+          --bg: #f6f7f9;
           --surface: #ffffff;
-          --border: rgba(20, 33, 61, 0.1);
-          --text: #14213d;
-          --muted: rgba(20, 33, 61, 0.76);
-          --faint: #5b6178;
-          --accent: #0b7575;
+          --border: rgba(15, 17, 23, 0.09);
+          --text: #0f1117;
+          --muted: #4b4f5c;
+          --faint: #5d6170;
+          --accent: #5a4bdc;
           color-scheme: light;
         }
       }
       :root[data-theme='light'] {
-        --bg: #f3f6ff;
+        --bg: #f6f7f9;
         --surface: #ffffff;
-        --border: rgba(20, 33, 61, 0.1);
-        --text: #14213d;
-        --muted: rgba(20, 33, 61, 0.76);
-        --faint: #5b6178;
-        --accent: #0b7575;
+        --border: rgba(15, 17, 23, 0.09);
+        --text: #0f1117;
+        --muted: #4b4f5c;
+        --faint: #5d6170;
+        --accent: #5a4bdc;
         color-scheme: light;
       }
       :root[data-theme='gray'] {
-        --bg: #d7dbe7;
-        --surface: #eceff6;
-        --border: rgba(20, 33, 61, 0.13);
-        --text: #14213d;
-        --muted: rgba(20, 33, 61, 0.8);
-        --faint: #4c5268;
-        --accent: #086666;
+        --bg: #e9eaee;
+        --surface: #f4f5f7;
+        --border: rgba(15, 17, 23, 0.11);
+        --text: #0f1117;
+        --muted: #3f4350;
+        --faint: #4d515e;
+        --accent: #4d3fcf;
         color-scheme: light;
       }
       * {
@@ -120,8 +120,8 @@
       }
       h1 {
         font-size: 2rem;
-        font-weight: 700;
-        letter-spacing: -0.01em;
+        font-weight: 600;
+        letter-spacing: -0.02em;
         text-wrap: balance;
         overflow-wrap: anywhere;
         min-width: 0;
@@ -134,13 +134,13 @@
       }
       .home {
         display: inline-block;
-        padding: 12px var(--pad);
-        border-radius: var(--radius);
+        padding: 10px 18px;
+        border-radius: var(--radius-control);
         background: var(--accent-face);
         color: var(--on-accent);
         text-decoration: none;
-        font-size: 1rem;
-        font-weight: 700;
+        font-size: 0.875rem;
+        font-weight: 600;
         transition:
           transform 200ms var(--ease-out),
           filter 200ms var(--ease-out);
