@@ -14,7 +14,7 @@
  */
 
 /** Where the tab is when a notification is worth sending at all. */
-export function canNotify() {
+function canNotify() {
   return typeof window !== 'undefined' && 'Notification' in window
 }
 

@@ -21,7 +21,7 @@
  */
 
 /** Where the browser reaches the proxied chart endpoint. */
-export const MARKET_PATH = '/data/market'
+const MARKET_PATH = '/data/market'
 
 /**
  * What the feed path is resolved against.

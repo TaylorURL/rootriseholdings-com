@@ -58,7 +58,7 @@ export const OTE_ZONE = { from: 0.62, to: 0.79 }
 export const RANGE_BARS = 20
 
 /** Bars a fresh break is watched over before it can still be called failed. */
-export const FAILED_LOOKBACK = 3
+const FAILED_LOOKBACK = 3
 
 /**
  * How decisively a level was broken.

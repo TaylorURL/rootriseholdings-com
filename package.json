@@ -1,5 +1,5 @@
 {
-  "name": "riseandroot-com",
+  "name": "rootriseholdings-com",
   "private": true,
   "license": "UNLICENSED",
   "version": "2026.38.0",
@@ -8,11 +8,11 @@
     "dev": "vite",
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.js",
     "preview": "vite preview",
-    "test": "node --test \"tests/*.test.js\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "node --test \"tests/*.test.js\""
   },
   "overrides": {
     "react-is": "^18.3.1"

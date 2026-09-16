@@ -40,7 +40,7 @@ function whenIdle(run) {
  * @param {() => void} start
  * @returns {() => void} cancels whichever wait is still outstanding
  */
-export function afterArrival(start) {
+function afterArrival(start) {
   let cancelIdle = null
   let cancelled = false
   const queue = () => {
