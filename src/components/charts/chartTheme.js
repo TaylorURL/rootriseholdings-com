@@ -4,7 +4,7 @@
  */
 
 const AXIS_COLOR = 'var(--ds-text-faint)'
-export const AXIS_TICK = { fill: AXIS_COLOR, fontSize: 11, fontFamily: 'var(--ds-font-mono)' }
+export const AXIS_TICK = { fill: AXIS_COLOR, fontSize: 11, fontFamily: 'var(--ds-font-sans)' }
 export const GRID_STROKE = 'var(--ds-border)'
 export const CURSOR_STROKE = 'var(--ds-border-strong)'
 

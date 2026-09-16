@@ -65,7 +65,7 @@ const EVENT_PROSE = {
  * rather than a table underneath. It is measured off the viewport less the
  * chrome above it and the page's own padding.
  */
-const PANE = 'lg:h-[calc(100dvh-var(--ds-header-height)-var(--ds-rail-height)-7.5rem)]'
+const PANE = 'lg:h-[calc(100dvh-var(--ds-header-height)-9.5rem)]'
 
 /** One row of the book. Dense, single line, and the whole row is the target. */
 function BookRow({ entry, selected, onSelect }) {
@@ -83,7 +83,7 @@ function BookRow({ entry, selected, onSelect }) {
       <span className="flex min-w-0 items-center gap-1.5">
         <span
           className={cn(
-            'truncate font-mono text-[13px] font-medium',
+            'truncate text-[13px] font-medium tabular-nums',
             selected ? 'text-accent' : 'text-text'
           )}
         >
@@ -93,13 +93,11 @@ function BookRow({ entry, selected, onSelect }) {
           <Eye className="h-3 w-3 shrink-0 text-text-faint" aria-label="Watch only" />
         ) : null}
       </span>
-      <span className="text-right font-mono text-[13px] tabular-nums text-text">
+      <span className="text-right text-[13px] tabular-nums text-text">
         {formatInstrumentPrice(entry.price, entry.symbol)}
       </span>
-      <span className="truncate text-[11px] text-text-faint">{entry.name}</span>
-      <span
-        className={cn('text-right font-mono text-[11px] tabular-nums', signedColor(entry.change))}
-      >
+      <span className="truncate text-xs text-text-faint">{entry.name}</span>
+      <span className={cn('text-right text-xs tabular-nums', signedColor(entry.change))}>
         {entry.changePct > 0 ? '+' : ''}
         {entry.changePct.toFixed(2)}%
       </span>
@@ -173,7 +171,7 @@ function StructureRead({ symbol, read, loading }) {
                 {EVENT_PROSE[analysis.lastEvent.type] ?? analysis.lastEvent.type}
               </span>
               <Badge variant="neutral">{analysis.lastEvent.type}</Badge>
-              <span className="font-mono tabular-nums text-text">
+              <span className="tabular-nums text-text">
                 {formatInstrumentPrice(analysis.lastEvent.level, symbol, decimals)}
               </span>
             </dd>
@@ -184,13 +182,13 @@ function StructureRead({ symbol, read, loading }) {
             <dt className="text-text-faint" title="Optimal trade entry">
               OTE Zone ({analysis.trend === 'up' ? 'Long' : 'Short'})
             </dt>
-            <dd className="font-mono tabular-nums text-text">{zone}</dd>
+            <dd className="tabular-nums text-text">{zone}</dd>
           </div>
         ) : null}
         {analysis.dealingRange ? (
           <div className="flex items-center justify-between gap-4 border-b border-border py-2.5">
             <dt className="text-text-faint">Dealing Range</dt>
-            <dd className="font-mono tabular-nums text-text">
+            <dd className="tabular-nums text-text">
               {formatInstrumentPrice(analysis.dealingRange.low, symbol, decimals)} to{' '}
               {formatInstrumentPrice(analysis.dealingRange.high, symbol, decimals)}
             </dd>
@@ -199,7 +197,7 @@ function StructureRead({ symbol, read, loading }) {
       </dl>
 
       <p className="text-[13px] leading-relaxed text-text-muted">{narration.body}</p>
-      <p className="text-[11px] leading-relaxed text-text-faint">{meta.note}</p>
+      <p className="text-xs leading-relaxed text-text-faint">{meta.note}</p>
     </div>
   )
 }
@@ -245,14 +243,14 @@ export default function MarketsPage() {
   const loading = sweeping && !read
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
         title="Markets"
         subtitle={`${INSTRUMENTS.length} instruments priced from the broker book. Four carry the calls.`}
         action={<span className="chip-static">Decision support, no execution</span>}
       />
 
-      <div className={cn('grid gap-5 lg:grid-cols-[19rem_minmax(0,1fr)]', PANE)}>
+      <div className={cn('grid gap-6 lg:grid-cols-[19rem_minmax(0,1fr)]', PANE)}>
         {/* The book. Filters ride on the rail rather than above the page,
             because they narrow this list and nothing else on the screen. */}
         <section
@@ -306,7 +304,7 @@ export default function MarketsPage() {
           <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-border p-5">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-mono text-lg font-semibold tracking-tight text-text">
+                <h2 className="text-lg font-semibold tabular-nums tracking-tight text-text">
                   {meta?.displaySymbol ?? symbol}
                 </h2>
                 <Badge variant="neutral">{meta?.primaryTimeframe}</Badge>
@@ -320,15 +318,10 @@ export default function MarketsPage() {
               <p className="mt-1 text-[13px] text-text-muted">{meta?.name}</p>
             </div>
             <div className="text-right">
-              <p className="font-mono text-2xl font-semibold tabular-nums leading-none tracking-tighter text-text">
+              <p className="text-2xl font-semibold tabular-nums leading-none tracking-tighter text-text">
                 {quote ? formatInstrumentPrice(quote.price, symbol) : NO_VALUE}
               </p>
-              <p
-                className={cn(
-                  'mt-1.5 font-mono text-[13px] tabular-nums',
-                  signedColor(quote?.change ?? 0)
-                )}
-              >
+              <p className={cn('mt-1.5 text-[13px] tabular-nums', signedColor(quote?.change ?? 0))}>
                 {quote ? (
                   <>
                     {quote.change > 0 ? '+' : ''}

@@ -7,7 +7,7 @@ const VARIANT_CLASSES = {
   positive: 'bg-[var(--ds-positive-soft)] text-positive',
   danger: 'bg-[var(--ds-danger-soft)] text-danger',
   warning: 'bg-[var(--ds-warning-soft)] text-warning',
-  neutral: 'bg-surface-2 text-text-muted',
+  neutral: 'bg-[var(--ds-neutral-soft)] text-text-muted',
   accent: 'bg-[var(--ds-accent-soft)] text-accent',
 }
 
@@ -36,7 +36,7 @@ export default function Badge({ children, variant, dot = false, title, className
     <span
       title={title}
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-sm px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.08em]',
+        'inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 text-xs font-bold leading-4',
         VARIANT_CLASSES[resolved],
         className
       )}
@@ -50,7 +50,7 @@ export default function Badge({ children, variant, dot = false, title, className
 /**
  * Which way a trade points.
  *
- * Purple against red is the only thing separating a long from a short wherever
+ * Mint against orange is the only thing separating a long from a short wherever
  * a side is drawn as a bare word, and that pair is the one a red-green
  * deficiency loses first - on a phone, in daylight, which is where this is
  * read. The arrow carries the same fact in shape, so the direction survives

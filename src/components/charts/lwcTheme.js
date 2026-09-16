@@ -4,7 +4,7 @@
  * Every colour on this site is a CSS custom property, which is what lets one
  * token change repaint three themes at once. The chart engine draws to a canvas
  * and takes concrete colours, so it cannot read a variable - it has to be told
- * `#4ade80`, not `var(--ds-positive)`. Resolving them here keeps that
+ * `#61cd82`, not `var(--ds-positive)`. Resolving them here keeps that
  * translation in one place rather than hard-coding a palette next to the chart
  * and letting it drift away from the rest of the page the first time a token
  * moves.
@@ -17,15 +17,15 @@
 
 /** Tokens a chart needs, and what to fall back to when one cannot be read. */
 const FALLBACKS = {
-  '--ds-positive': '#22c55e',
-  '--ds-danger': '#ef4444',
-  '--ds-accent-bright': '#6366f1',
-  '--ds-border': '#1e293b',
-  '--ds-border-strong': '#334155',
-  '--ds-text-faint': '#64748b',
-  '--ds-text-muted': '#94a3b8',
-  '--ds-surface': '#0f172a',
-  '--ds-bg': '#020617',
+  '--ds-positive': '#61cd82',
+  '--ds-danger': '#f7956f',
+  '--ds-accent-bright': '#5cd9d9',
+  '--ds-border': '#3a3b40',
+  '--ds-border-strong': '#505157',
+  '--ds-text-faint': '#a7a8ab',
+  '--ds-text-muted': '#d4d5d6',
+  '--ds-surface': '#2a2b30',
+  '--ds-bg': '#191a21',
 }
 
 /**
@@ -70,9 +70,8 @@ export function chartOptions(
     layout: {
       background: { color: 'transparent' },
       textColor: tokens['--ds-text-faint'],
-      fontFamily:
-        'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
-      fontSize: 11,
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", Geist, system-ui, sans-serif',
+      fontSize: 12,
       // The engine draws a TradingView mark on the pane by default. Its licence
       // asks for the attribution notice and a link to tradingview.com somewhere
       // a reader can reach, and offers the mark as one way of doing that; the

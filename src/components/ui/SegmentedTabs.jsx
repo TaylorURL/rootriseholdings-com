@@ -31,7 +31,7 @@ export default function SegmentedTabs({
       role={choice ? 'radiogroup' : 'tablist'}
       aria-label={ariaLabel}
       className={cn(
-        'inline-flex flex-wrap items-center gap-0.5 rounded-control bg-surface-2 p-0.5 shadow-[var(--ds-edge)]',
+        'inline-flex flex-wrap items-center gap-1 rounded-control p-1 shadow-[inset_0_0_0_1px_var(--ds-border-strong)]',
         className
       )}
     >
@@ -46,9 +46,9 @@ export default function SegmentedTabs({
             aria-selected={choice ? undefined : selected}
             onClick={() => onChange(option)}
             className={cn(
-              'press focus-ring rounded-sm px-3 py-1.5 text-xs font-medium transition-colors duration-200 ease-out',
+              'press focus-ring rounded-sm px-3 py-1.5 text-[13px] font-medium transition-colors duration-200 ease-out',
               selected
-                ? 'bg-[var(--ds-accent-fill)] text-on-accent shadow-sm'
+                ? 'bg-[var(--ds-accent-fill)] font-bold text-on-accent'
                 : 'text-text-muted hover:text-text'
             )}
           >

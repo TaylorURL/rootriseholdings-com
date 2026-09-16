@@ -32,8 +32,8 @@ export function ChartTooltip({ active, payload, labelKey, valueKey, format }) {
   const point = payload[0].payload
   return (
     <ChartTooltipShell>
-      <p className="font-mono uppercase tracking-[0.12em] text-text-faint">{point[labelKey]}</p>
-      <p className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-text">
+      <p className="tabular-nums text-text-faint">{point[labelKey]}</p>
+      <p className="mt-0.5 text-sm font-semibold tabular-nums text-text">
         {format(point[valueKey])}
       </p>
     </ChartTooltipShell>

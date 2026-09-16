@@ -18,10 +18,8 @@ export default function PageHeader({ title, subtitle, action, className }) {
   return (
     <div className={cn('flex flex-wrap items-end justify-between gap-x-6 gap-y-2', className)}>
       <div className="flex min-w-0 flex-col gap-1">
-        {ownTitle ? (
-          <h2 className="text-lg font-semibold tracking-tighter text-text">{ownTitle}</h2>
-        ) : null}
-        {subtitle ? <p className="text-[13px] text-text-muted">{subtitle}</p> : null}
+        {ownTitle ? <h2 className="text-2xl font-bold leading-8 text-text">{ownTitle}</h2> : null}
+        {subtitle ? <p className="text-sm text-text-muted">{subtitle}</p> : null}
       </div>
       {action}
     </div>

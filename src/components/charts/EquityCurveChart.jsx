@@ -122,19 +122,17 @@ function EquityTooltip({ active, payload, opening }) {
 
   return (
     <ChartTooltipShell>
-      <p className="font-mono uppercase tracking-[0.12em] text-text-faint">{point.date}</p>
-      <p className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-text">
+      <p className="tabular-nums text-text-faint">{point.date}</p>
+      <p className="mt-0.5 text-sm font-semibold tabular-nums text-text">
         {formatCurrency(point.equity)}
       </p>
       {change !== 0 ? (
-        <p
-          className={`mt-0.5 font-mono text-[11px] tabular-nums ${up ? 'text-positive' : 'text-danger'}`}
-        >
+        <p className={`mt-0.5 text-xs tabular-nums ${up ? 'text-positive' : 'text-danger'}`}>
           {formatCurrency(change, { signed: true })} · {up ? '+' : ''}
           {pct.toFixed(2)}% from open
         </p>
       ) : (
-        <p className="mt-0.5 font-mono text-[11px] text-text-faint">Opening balance</p>
+        <p className="mt-0.5 text-xs tabular-nums text-text-faint">Opening balance</p>
       )}
     </ChartTooltipShell>
   )

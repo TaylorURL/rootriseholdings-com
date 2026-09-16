@@ -96,7 +96,7 @@ function focusFirstInvalid(form) {
   })
 }
 
-const INPUT_CLASS = 'field font-mono'
+const INPUT_CLASS = 'field tabular-nums'
 
 /**
  * A number is typed into a text field. A number field answers the scroll
@@ -180,13 +180,11 @@ function EquityCard() {
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="bg-surface-2/40 rounded-control border border-border px-3 py-2">
             <p className="text-xs text-text-faint">Realized P&L</p>
-            <p className="font-mono tabular-nums text-text">
-              {formatCurrency(realized, { signed: true })}
-            </p>
+            <p className="tabular-nums text-text">{formatCurrency(realized, { signed: true })}</p>
           </div>
           <div className="bg-surface-2/40 rounded-control border border-border px-3 py-2">
             <p className="text-xs text-text-faint">Current Equity</p>
-            <p className="font-mono tabular-nums text-text">
+            <p className="tabular-nums text-text">
               {equity != null ? formatCurrency(equity) : 'Not set'}
             </p>
           </div>
@@ -809,7 +807,7 @@ function DataCard() {
               <li key={meta.symbol} className="flex items-center justify-between gap-3">
                 <span className="text-text-muted">
                   {meta.displaySymbol}
-                  <span className="ml-2 font-mono text-xs text-text-faint">
+                  <span className="ml-2 text-xs tabular-nums text-text-faint">
                     {meta.providerSymbol}
                   </span>
                 </span>
@@ -1015,10 +1013,10 @@ export default function AccountPage() {
         </section>
 
         <section id="rules" className="panel-static scroll-mt-6 overflow-hidden">
-          <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-5 py-3">
+          <header className="flex items-center gap-3 px-5 pb-2 pt-5">
             <RuleLabel as="h2">Risk Rules</RuleLabel>
             <div className="min-w-2 flex-1" />
-            <span className="text-[11px] text-text-faint">Non-negotiable</span>
+            <span className="text-xs text-text-faint">Non-negotiable</span>
           </header>
           <ul>
             {RISK_RULES_DESCRIPTIONS.map((rule) => (
@@ -1036,13 +1034,13 @@ export default function AccountPage() {
               </li>
             ))}
           </ul>
-          <p className="border-t border-border px-5 py-3 text-[11px] text-text-faint">
+          <p className="border-t border-border px-5 py-3 text-xs text-text-faint">
             Enforced at trade entry: the journal refuses tickets that break them.
           </p>
         </section>
 
         <section id="session" className="panel-static scroll-mt-6 overflow-hidden">
-          <header className="border-b border-border bg-surface-2 px-5 py-3">
+          <header className="px-5 pb-2 pt-5">
             <RuleLabel as="h2">Session</RuleLabel>
           </header>
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">

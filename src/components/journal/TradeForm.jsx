@@ -73,7 +73,7 @@ function DerivedStat({ label, value, tone }) {
   return (
     <div className="bg-surface-2/40 rounded-control border border-border px-3 py-2">
       <p className="text-xs text-text-faint">{label}</p>
-      <p className={cn('font-mono text-sm font-semibold tabular-nums text-text', tone)}>{value}</p>
+      <p className={cn('text-sm font-semibold tabular-nums text-text', tone)}>{value}</p>
     </div>
   )
 }

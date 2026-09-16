@@ -22,7 +22,7 @@ export default function MethodSection({ ground = 'page' }) {
             <StaggerItem key={step.id}>
               <div className="grid gap-6 border-b border-border py-10 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-10">
                 <div className="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-5">
-                  <span className="font-mono text-4xl font-semibold tabular-nums leading-none tracking-tighter text-text-ghost">
+                  <span className="text-4xl font-semibold tabular-nums leading-none tracking-tighter text-text-ghost">
                     {step.id}
                   </span>
                   <span className="flex h-9 w-9 items-center justify-center rounded-control bg-accent-soft text-accent">

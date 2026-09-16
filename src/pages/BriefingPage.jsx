@@ -91,7 +91,7 @@ export default function BriefingPage() {
   const [editingPlan, setEditingPlan] = useState(false)
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
         title="Briefing"
         subtitle="Nine sections, composed from live feeds at the morning and New York afternoon opens."
@@ -119,13 +119,13 @@ export default function BriefingPage() {
           <DayStateBanner />
 
           <section className="panel-static overflow-hidden">
-            <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+            <header className="flex items-center gap-3 px-5 pb-2 pt-5">
               <RuleLabel as="h2">Day Plan</RuleLabel>
               <div className="min-w-2 flex-1" />
               <button
                 type="button"
                 onClick={() => setEditingPlan(true)}
-                className="press focus-ring inline-flex items-center gap-1.5 rounded-control bg-surface-2 px-2.5 py-1.5 text-[11px] font-medium text-text-muted shadow-[var(--ds-edge)] transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text"
+                className="press focus-ring inline-flex items-center gap-1.5 rounded-control bg-surface-2 px-2.5 py-1.5 text-xs font-medium text-text-muted shadow-[var(--ds-edge)] transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text"
               >
                 <PencilLine className="h-3.5 w-3.5" aria-hidden="true" />
                 Edit

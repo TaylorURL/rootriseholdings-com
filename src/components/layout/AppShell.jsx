@@ -4,7 +4,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Sidebar from './Sidebar'
 import SplitRail from '@taylorurl/split-rail'
 import Header from './Header'
-import DeskRail from './DeskRail'
 import SkipLink from './SkipLink'
 import RoutePending from './RoutePending'
 import { useTheme } from '../../context/ThemeContext'
@@ -67,14 +66,17 @@ export default function AppShell() {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <DeskRail />
-        <Header onOpenDrawer={() => setDrawerOpen(true)} />
+      {/* The kit's frame: the bar is a panel of its own, set into the page with
+          the same gutter that separates every panel below it. */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="shrink-0 px-4 pt-4 sm:px-6 sm:pt-6">
+          <Header onOpenDrawer={() => setDrawerOpen(true)} />
+        </div>
         <main
           id="main-content"
           ref={mainRef}
           tabIndex={-1}
-          className="ds-scroll flex-1 overflow-y-auto overscroll-contain bg-bg px-4 py-6 outline-none sm:px-6"
+          className="ds-scroll flex-1 overflow-y-auto overscroll-contain bg-bg px-4 py-4 outline-none sm:px-6 sm:py-6"
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
