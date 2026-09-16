@@ -161,17 +161,17 @@ export default function JournalPage() {
       headerClassName: 'sticky left-0 z-sticky',
       render: (row) => (
         <span className="flex items-center gap-2">
-          <span className="font-mono font-medium text-text">
+          <span className="font-medium tabular-nums text-text">
             {INSTRUMENT_META[row.symbol]?.displaySymbol ?? row.symbol}
           </span>
           {row.grade === 'A+' && (
-            <span className="rounded-control bg-[var(--ds-accent-soft)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent-bright">
+            <span className="rounded-control bg-[var(--ds-accent-soft)] px-1.5 py-0.5 text-xs font-bold text-accent-bright">
               A+
             </span>
           )}
           {row.departures?.length > 0 && (
             <span
-              className="rounded-control bg-[var(--ds-warning-soft)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-warning"
+              className="rounded-control bg-[var(--ds-warning-soft)] px-1.5 py-0.5 text-xs font-bold text-warning"
               title="Logged outside the rule book"
             >
               Off-Book
@@ -189,10 +189,10 @@ export default function JournalPage() {
       key: 'setup',
       header: 'Setup',
       render: (row) => (
-        <span className="font-mono text-text">
+        <span className="tabular-nums text-text">
           {row.setup}
           {SETUP_NAMES[row.setup] ? (
-            <span className="ml-1.5 font-sans text-[11px] text-text-muted">
+            <span className="ml-1.5 font-sans text-xs text-text-muted">
               {SETUP_NAMES[row.setup]}
             </span>
           ) : null}
@@ -209,9 +209,7 @@ export default function JournalPage() {
       header: 'Closed',
       numeric: true,
       render: (row) => (
-        <span className="font-mono text-xs tabular-nums text-text-muted">
-          {formatCt(row.closedAt)}
-        </span>
+        <span className="text-xs tabular-nums text-text-muted">{formatCt(row.closedAt)}</span>
       ),
     },
     {
@@ -220,7 +218,7 @@ export default function JournalPage() {
       header: 'Entry',
       align: 'right',
       render: (row) => (
-        <span className="font-mono tabular-nums text-text-muted">
+        <span className="tabular-nums text-text-muted">
           {formatInstrumentPrice(row.entry, row.symbol)}
         </span>
       ),
@@ -231,7 +229,7 @@ export default function JournalPage() {
       header: 'Exit',
       align: 'right',
       render: (row) => (
-        <span className="font-mono tabular-nums text-text">
+        <span className="tabular-nums text-text">
           {formatInstrumentPrice(row.exitPrice, row.symbol)}
         </span>
       ),
@@ -242,7 +240,7 @@ export default function JournalPage() {
       header: 'Risk',
       align: 'right',
       render: (row) => (
-        <span className="font-mono tabular-nums text-text-muted">{row.riskPct.toFixed(2)}%</span>
+        <span className="tabular-nums text-text-muted">{row.riskPct.toFixed(2)}%</span>
       ),
     },
     {
@@ -251,7 +249,7 @@ export default function JournalPage() {
       header: 'R Booked',
       align: 'right',
       render: (row) => (
-        <span className={cn('font-mono font-semibold tabular-nums', signedColor(row.realizedR))}>
+        <span className={cn('font-semibold tabular-nums', signedColor(row.realizedR))}>
           {formatR(row.realizedR)}
         </span>
       ),
@@ -262,7 +260,7 @@ export default function JournalPage() {
       header: 'P&L',
       align: 'right',
       render: (row) => (
-        <span className={cn('font-mono font-semibold tabular-nums', signedColor(row.pnl))}>
+        <span className={cn('font-semibold tabular-nums', signedColor(row.pnl))}>
           {formatCurrency(row.pnl, { signed: true })}
         </span>
       ),
@@ -278,15 +276,15 @@ export default function JournalPage() {
 
   const footer = visibleTrades.length > 0 && (
     <>
-      <td colSpan={8} className="px-4 py-3 text-xs uppercase tracking-wide text-text-faint">
+      <td colSpan={8} className="px-4 py-3 text-xs text-text-faint">
         {visibleTrades.length} trades · win rate{' '}
-        <span className="font-mono text-text">{Math.round(filteredStats.winRate * 100)}%</span> ·
+        <span className="tabular-nums text-text">{Math.round(filteredStats.winRate * 100)}%</span> ·
         expectancy{' '}
-        <span className="font-mono text-text">{filteredStats.expectancyR.toFixed(2)}R</span>
+        <span className="tabular-nums text-text">{filteredStats.expectancyR.toFixed(2)}R</span>
       </td>
       <td
         className={cn(
-          'px-4 py-3 text-right font-mono font-semibold tabular-nums',
+          'px-4 py-3 text-right font-semibold tabular-nums',
           signedColor(filteredStats.totalR)
         )}
       >
@@ -294,7 +292,7 @@ export default function JournalPage() {
       </td>
       <td
         className={cn(
-          'px-4 py-3 text-right font-mono font-semibold tabular-nums',
+          'px-4 py-3 text-right font-semibold tabular-nums',
           signedColor(filteredStats.totalPnl)
         )}
       >
@@ -305,7 +303,7 @@ export default function JournalPage() {
   )
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
         title="Journal"
         subtitle={`${openTrades.length} open, ${closed.length} closed. Rules are enforced at entry.`}
@@ -343,17 +341,17 @@ export default function JournalPage() {
         </div>
       )}
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         {equity == null ? <EquitySetupCard /> : <TradeForm />}
 
         <section
           id="on-the-book"
           className="panel-static flex min-h-0 scroll-mt-4 flex-col overflow-hidden"
         >
-          <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+          <header className="flex items-center gap-3 px-5 pb-2 pt-5">
             <h2 className={PANEL_TITLE}>On the Book</h2>
             <div className="min-w-2 flex-1" />
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-text-faint">
+            <span className="inline-flex items-center gap-1.5 text-xs text-text-faint">
               <Layers className="h-3.5 w-3.5" aria-hidden="true" />
               {openTrades.length} open
             </span>
@@ -373,11 +371,11 @@ export default function JournalPage() {
       {/* The ledger. Its filters ride on its own head rather than in a card
           above it, so what they narrow is the thing they sit on. */}
       <section className="panel-static overflow-hidden">
-        <header className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-border bg-surface-2 px-4 py-3">
+        <header className="flex flex-wrap items-center gap-x-4 gap-y-3 px-5 pb-2 pt-5">
           <h2 className={PANEL_TITLE}>Closed Trades</h2>
           <div className="min-w-2 flex-1" />
           {closed.length > 0 ? (
-            <span className="font-mono text-[11px] tabular-nums text-text-faint">
+            <span className="text-xs tabular-nums text-text-faint">
               {filtering
                 ? `${visibleTrades.length} of ${closed.length} shown`
                 : `${Math.round(filteredStats.winRate * 100)}% win rate, ${filteredStats.expectancyR.toFixed(2)}R expectancy`}
@@ -449,13 +447,13 @@ export default function JournalPage() {
 
         {pagedTrades.length < visibleTrades.length ? (
           <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3">
-            <span className="text-[11px] text-text-faint">
+            <span className="text-xs text-text-faint">
               Showing {pagedTrades.length} of {visibleTrades.length}
             </span>
             <button
               type="button"
               onClick={() => setPageSize((size) => size + PAGE_STEP)}
-              className="press focus-ring rounded-control bg-surface-2 px-3 py-1.5 text-[11px] font-medium text-text-muted shadow-[var(--ds-edge)] transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text"
+              className="press focus-ring rounded-control bg-surface-2 px-3 py-1.5 text-xs font-medium text-text-muted shadow-[var(--ds-edge)] transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text"
             >
               Show More
             </button>

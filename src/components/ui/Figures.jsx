@@ -4,30 +4,24 @@ import { cn } from '../../lib/cn'
  * The treatment every label in the terminal takes.
  *
  * A label is the word that says what a number is, so it is the last thing on a
- * trading screen that should be hard to read - and it was the hardest: ten
- * pixels of letter-spaced monospace, retyped in a dozen files, each copy free
- * to drift. One constant fixes the drift, and the treatment itself trades a
- * little of the tracking for legibility while keeping the case, because
- * uppercase is what tells a label apart from prose at a glance.
+ * trading screen that should be hard to read. It is set the way the dashboard
+ * kit sets one: the body face at twelve pixels, in the quieter ink, in the
+ * Title Case the copy is already written in. One constant keeps a dozen files
+ * from drifting apart.
  *
  * Both forms are exported. The class is for the places that already own their
  * element - a table head, a definition term - and the component is for the rest.
  */
-export const RULE_LABEL = 'font-mono text-[11px] uppercase tracking-[0.1em] text-text-muted'
+export const RULE_LABEL = 'text-xs leading-4 text-text-muted'
 
 /**
  * What a panel calls itself, which is not what a figure calls itself.
  *
- * Unifying the hand-typed figure labels raised their contrast and was worth
- * doing; carrying the same treatment up onto the panel headings cost the screen
- * the one level of hierarchy it had, and a heading that reads quieter than the
- * numbers underneath it is the opposite of legible. It stays in the same family
- * - a terminal sets its furniture in mono - and takes back the weight, the
- * size and the full-strength colour that say this names the panel rather than
- * the value beneath it.
+ * A heading that reads quieter than the numbers underneath it is the opposite
+ * of legible, so a panel is named at the kit's title step - twenty pixels,
+ * medium weight, full-strength ink - and a figure's label stays at twelve.
  */
-export const PANEL_TITLE =
-  'font-mono text-[12px] font-semibold uppercase tracking-[0.08em] text-text'
+export const PANEL_TITLE = 'text-lg font-medium leading-7 text-text sm:text-xl'
 
 /**
  * @param {object} props
@@ -76,8 +70,8 @@ export function FigureRow({ children, min = '6.5rem', className }) {
 }
 
 /**
- * One figure. The label is set small and quiet above a mono, tabular value, so
- * a column of them lines up on the decimal and does not jitter as it updates.
+ * One figure. The label is set small and quiet above a tabular value, so a
+ * column of them lines up on the decimal and does not jitter as it updates.
  *
  * @param {object} props
  * @param {React.ReactNode} props.label - in Title Case
@@ -89,19 +83,16 @@ export function FigureRow({ children, min = '6.5rem', className }) {
  */
 export function Figure({ label, value, tone, note, title, className }) {
   return (
-    <div className={cn('bg-surface px-3 py-2.5 shadow-[0_0_0_1px_var(--ds-border)]', className)}>
+    <div className={cn('bg-surface px-4 py-3 shadow-[0_0_0_1px_var(--ds-border)]', className)}>
       <dt className={cn(RULE_LABEL, 'truncate')} title={title}>
         {label}
       </dt>
       <dd
-        className={cn(
-          'mt-1 truncate font-mono text-[15px] font-semibold tabular-nums leading-none text-text',
-          tone
-        )}
+        className={cn('mt-1 truncate text-base font-medium tabular-nums leading-6 text-text', tone)}
       >
         {value}
       </dd>
-      {note ? <dd className="mt-1 truncate text-[11px] text-text-faint">{note}</dd> : null}
+      {note ? <dd className="truncate text-xs text-text-faint">{note}</dd> : null}
     </div>
   )
 }

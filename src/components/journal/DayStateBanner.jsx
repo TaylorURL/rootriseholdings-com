@@ -7,16 +7,14 @@ import { useJournal } from '../../context/JournalContext'
 
 /**
  * One gate, as a label and the figure that decides it. The figure is set in
- * tabular monospace at reading size and the label under the rule treatment, so
+ * tabular figures at reading size and the label under the rule treatment, so
  * the number outweighs the word naming it rather than the other way round.
  */
 function Gate({ label, value, title, tone }) {
   return (
     <span className="inline-flex items-baseline gap-1.5" title={title}>
       <span className={RULE_LABEL}>{label}</span>
-      <span className={cn('font-mono text-sm font-semibold tabular-nums text-text', tone)}>
-        {value}
-      </span>
+      <span className={cn('text-sm font-semibold tabular-nums text-text', tone)}>{value}</span>
     </span>
   )
 }
@@ -61,7 +59,7 @@ export default function DayStateBanner() {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-card border border-border bg-surface px-4 py-2.5 shadow-sm">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-card bg-surface px-5 py-3 shadow-[var(--ds-raise)]">
       <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-text">
         <ShieldCheck className="h-4 w-4 text-positive" aria-hidden="true" />
         Desk open
@@ -99,10 +97,8 @@ export default function DayStateBanner() {
       {equity != null && (
         <span className="ml-auto inline-flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
           <span className={RULE_LABEL}>Equity</span>
-          <span className="font-mono text-sm tabular-nums text-text-muted">
-            {formatCurrency(equity)}
-          </span>
-          <span className="text-[11px] text-text-muted">
+          <span className="text-sm tabular-nums text-text-muted">{formatCurrency(equity)}</span>
+          <span className="text-xs text-text-muted">
             1R at {RISK_RULES.maxRiskPerTradePct}% is{' '}
             {formatCurrency((equity * RISK_RULES.maxRiskPerTradePct) / 100)}
           </span>

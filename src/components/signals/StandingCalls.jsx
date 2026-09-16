@@ -76,10 +76,10 @@ export default function StandingCalls({
 }) {
   return (
     <section className={cn('panel-static overflow-hidden', className)}>
-      <header className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-border bg-surface-2 px-4 py-2.5">
+      <header className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-5 pb-2 pt-5">
         <h2 className={PANEL_TITLE}>Standing Calls</h2>
         <div className="min-w-2 flex-1" />
-        <span className="text-[11px] text-text-faint">
+        <span className="text-xs text-text-faint">
           {signals.length} standing on the record
           {sweep ? ` · ${describeDeskSweep(sweep, now)}` : ''}
         </span>

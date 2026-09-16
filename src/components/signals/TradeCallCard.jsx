@@ -71,7 +71,7 @@ export default function TradeCallCard({
     return (
       <div className="rounded-control border border-dashed border-border px-4 py-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-sm font-semibold text-text">{name}</span>
+          <span className="text-sm font-semibold tabular-nums text-text">{name}</span>
           {timeframe && <Badge variant="neutral">{timeframe}</Badge>}
           <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-text-faint">
             <MinusCircle className="h-3.5 w-3.5" aria-hidden="true" />
@@ -103,7 +103,7 @@ export default function TradeCallCard({
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span
           className={cn(
-            'inline-flex items-center gap-1 font-mono text-base font-semibold',
+            'inline-flex items-center gap-1 text-base font-semibold tabular-nums',
             isBuy ? 'text-accent-bright' : 'text-danger'
           )}
         >
@@ -112,7 +112,7 @@ export default function TradeCallCard({
         </span>
         <span className="inline-flex items-baseline gap-1.5">
           <span className={RULE_LABEL}>Entry</span>
-          <span className="font-mono text-xl font-semibold tabular-nums leading-none text-text">
+          <span className="text-xl font-semibold tabular-nums leading-none text-text">
             {formatInstrumentPrice(call.entry, symbol, decimalsForInstrument(symbol))}
           </span>
         </span>
@@ -150,14 +150,14 @@ export default function TradeCallCard({
       </FigureRow>
 
       {call.continuation != null && (
-        <p className="mt-2 font-mono text-[11px] tabular-nums text-text-faint">
+        <p className="mt-2 text-xs tabular-nums text-text-faint">
           Continuation {Math.round(call.continuation)}, reversal risk{' '}
           {Math.round(call.reversalRisk)}
         </p>
       )}
 
       {call.target2 != null && (
-        <p className="mt-1 font-mono text-[11px] tabular-nums text-text-faint">
+        <p className="mt-1 text-xs tabular-nums text-text-faint">
           Runners {formatInstrumentPrice(call.target2, symbol, decimalsForInstrument(symbol))} and{' '}
           {formatInstrumentPrice(call.target3, symbol, decimalsForInstrument(symbol))}
         </p>

@@ -46,8 +46,8 @@ function DailyTooltip({ active, payload }) {
   const { date, pnl, r } = payload[0].payload
   return (
     <ChartTooltipShell>
-      <p className="font-mono text-text-faint">{date}</p>
-      <p className={cn('font-mono font-semibold tabular-nums', signedColor(pnl))}>
+      <p className="tabular-nums text-text-faint">{date}</p>
+      <p className={cn('font-semibold tabular-nums', signedColor(pnl))}>
         {formatCurrency(pnl, { signed: true })} · {formatR(r)}
       </p>
     </ChartTooltipShell>
@@ -60,7 +60,7 @@ function BreakdownCard({ title, rows, hint }) {
       <header className="mb-4 flex items-center gap-3">
         <RuleLabel as="h2">{title}</RuleLabel>
         <div className="min-w-2 flex-1" />
-        {hint ? <span className="text-[11px] text-text-faint">{hint}</span> : null}
+        {hint ? <span className="text-xs text-text-faint">{hint}</span> : null}
       </header>
       {rows.length === 0 ? (
         <p className="py-8 text-center text-sm text-text-faint">
@@ -79,25 +79,20 @@ function BreakdownCard({ title, rows, hint }) {
               <div className="min-w-0 leading-tight">
                 <p className="truncate text-sm font-medium text-text">{row.label}</p>
                 <p className="text-xs text-text-faint">
-                  <span className="inline-block w-[3ch] text-right font-mono tabular-nums">
-                    {row.trades}
-                  </span>{' '}
+                  <span className="inline-block w-[3ch] text-right tabular-nums">{row.trades}</span>{' '}
                   trades · win rate{' '}
-                  <span className="inline-block w-[4ch] text-right font-mono tabular-nums">
+                  <span className="inline-block w-[4ch] text-right tabular-nums">
                     {Math.round(row.winRate * 100)}%
                   </span>
                 </p>
               </div>
               <div className="text-right">
                 <p
-                  className={cn(
-                    'font-mono text-sm font-semibold tabular-nums',
-                    signedColor(row.expectancyR)
-                  )}
+                  className={cn('text-sm font-semibold tabular-nums', signedColor(row.expectancyR))}
                 >
                   {row.expectancyR.toFixed(2)}R
                 </p>
-                <p className={cn('font-mono text-xs tabular-nums', signedColor(row.totalPnl))}>
+                <p className={cn('text-xs tabular-nums', signedColor(row.totalPnl))}>
                   {formatCurrency(row.totalPnl, { signed: true })}
                 </p>
               </div>
@@ -123,9 +118,9 @@ function ProgressTile({ label, icon: Icon, current, target, formatter, intent = 
           <Icon className="h-3.5 w-3.5" aria-hidden="true" />
           {label}
         </span>
-        <span className="font-mono text-xs tabular-nums text-text-muted">{pct.toFixed(0)}%</span>
+        <span className="text-xs tabular-nums text-text-muted">{pct.toFixed(0)}%</span>
       </div>
-      <p className="font-mono text-xl font-semibold tabular-nums text-text">
+      <p className="text-xl font-semibold tabular-nums text-text">
         {formatValue(current)}
         <span className="ml-1.5 text-sm font-medium text-text-faint">/ {formatValue(target)}</span>
       </p>
@@ -169,7 +164,7 @@ function PropFirmCard({ firm, trades }) {
             <RuleLabel>Balance</RuleLabel>
             <p
               className={cn(
-                'mt-1 font-mono tabular-nums',
+                'mt-1 tabular-nums',
                 snapshot.drawdownBusted ? 'text-danger' : 'text-text'
               )}
             >
@@ -246,7 +241,7 @@ function PropFirmCard({ firm, trades }) {
                 <Award className="h-3.5 w-3.5" aria-hidden="true" />
                 Consistency Rule
               </span>
-              <p className="mt-2 font-mono text-xl font-semibold tabular-nums text-text">
+              <p className="mt-2 text-xl font-semibold tabular-nums text-text">
                 {snapshot.consistencyShare.toFixed(1)}%
                 <span className="ml-1.5 text-sm font-medium text-text-faint">
                   / {firm.consistencyCapPct}% cap
@@ -311,7 +306,7 @@ export default function InsightsPage() {
   const activeFirm = settings.firms.find((firm) => firm.id === settings.activeFirmId) ?? null
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
         title="Insights"
         subtitle="Performance by instrument, setup, session, and grade. All of it realized."

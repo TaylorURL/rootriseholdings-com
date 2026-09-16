@@ -37,7 +37,7 @@ const price = (value, symbol) => formatInstrumentPrice(value, symbol, decimalsFo
 function Ledger({ title, action, empty, children }) {
   return (
     <section className="panel-static flex min-h-0 flex-col overflow-hidden">
-      <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+      <header className="flex items-center gap-3 px-5 pb-2 pt-5">
         <h2 className={PANEL_TITLE}>{title}</h2>
         <div className="min-w-2 flex-1" />
         {action}
@@ -68,12 +68,12 @@ function NoTradesYet({ sweep }) {
         there is nothing to price.
       </p>
       {sweep ? (
-        <p className="font-mono text-[11px] text-text-faint">
+        <p className="text-xs tabular-nums text-text-faint">
           Last sweep {swept} · read {sweep.read} of {sweep.instruments} instruments · published{' '}
           {sweep.published}
         </p>
       ) : (
-        <p className="font-mono text-[11px] text-danger">
+        <p className="text-xs tabular-nums text-danger">
           The desk has not reported a sweep. Nothing is reading the market.
         </p>
       )}
@@ -89,12 +89,12 @@ function TradeRow({ trade }) {
     <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 border-b border-border px-4 py-3 last:border-b-0 sm:grid-cols-[9rem_1fr_auto_auto]">
       <div className="flex items-center gap-2">
         <SideBadge side={trade.side} />
-        <span className="font-mono text-[13px] font-medium text-text">
+        <span className="text-[13px] font-medium tabular-nums text-text">
           {meta?.displaySymbol ?? trade.symbol}
         </span>
       </div>
 
-      <p className="order-last col-span-2 font-mono text-[11px] text-text-faint sm:order-none sm:col-span-1">
+      <p className="order-last col-span-2 text-xs tabular-nums text-text-faint sm:order-none sm:col-span-1">
         <span title={SETUP_NAMES[trade.setup] ?? trade.setup}>{trade.setup}</span>
         {' · '}
         {price(trade.entry, trade.symbol)} → {price(trade.target, trade.symbol)}
@@ -107,17 +107,12 @@ function TradeRow({ trade }) {
         })}
       </p>
 
-      <span
-        className={cn(
-          'text-right font-mono text-[13px] tabular-nums',
-          signedColor(trade.realisedR)
-        )}
-      >
+      <span className={cn('text-right text-[13px] tabular-nums', signedColor(trade.realisedR))}>
         {formatR(trade.realisedR)}
       </span>
       <span
         className={cn(
-          'text-right font-mono text-[13px] font-semibold tabular-nums',
+          'text-right text-[13px] font-semibold tabular-nums',
           won ? 'text-positive' : 'text-danger'
         )}
       >
@@ -132,15 +127,15 @@ function OpenRow({ trade }) {
   return (
     <div className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0">
       <SideBadge side={trade.side} />
-      <span className="font-mono text-[13px] font-medium text-text">
+      <span className="text-[13px] font-medium tabular-nums text-text">
         {meta?.displaySymbol ?? trade.symbol}
       </span>
-      <span className="truncate font-mono text-[11px] text-text-faint">
+      <span className="truncate text-xs tabular-nums text-text-faint">
         filled {price(trade.entry, trade.symbol)} · stop {price(trade.stop, trade.symbol)} · target{' '}
         {price(trade.target, trade.symbol)}
       </span>
       <div className="min-w-2 flex-1" />
-      <span className="shrink-0 text-right font-mono text-[12px] tabular-nums text-text-muted">
+      <span className="shrink-0 text-right text-[12px] tabular-nums text-text-muted">
         {formatCurrency(trade.risk, { decimals: 0 })} at risk
       </span>
     </div>
@@ -154,16 +149,16 @@ export default function DemoAccountPage() {
   const traded = stats.trades > 0
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
         title="Demo Account"
         subtitle={`Every published call, sized at ${(DEMO_BOOK.riskPerTrade * 100).toFixed(0)}% risk against a ${formatCurrency(DEMO_BOOK.startingEquity, { decimals: 0 })} book.`}
         action={
           <Link
             to="/app/signals"
-            className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-label text-text-muted transition-colors hover:text-text"
+            className="flex items-center gap-1 text-xs tabular-nums text-text-muted transition-colors hover:text-text"
           >
-            The record <ArrowRight className="h-3 w-3" aria-hidden="true" />
+            The Record <ArrowRight className="h-3 w-3" aria-hidden="true" />
           </Link>
         }
       />
@@ -208,7 +203,7 @@ export default function DemoAccountPage() {
       </FigureRow>
 
       <section className="panel-static overflow-hidden">
-        <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+        <header className="flex items-center gap-3 px-5 pb-2 pt-5">
           <h2 className={PANEL_TITLE}>Equity Curve</h2>
           <div className="min-w-2 flex-1" />
           <RuleLabel>

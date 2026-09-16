@@ -15,7 +15,7 @@ const TONE_TO_VARIANT = {
 const EDITION_ICON = { morning: Sunrise, pm: Sunset }
 
 const CONTROL =
-  'press focus-ring inline-flex items-center gap-1.5 rounded-control bg-surface-2 px-2.5 py-1.5 text-[11px] font-medium text-text-muted shadow-[var(--ds-edge)] transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text disabled:opacity-60'
+  'press focus-ring inline-flex items-center gap-1.5 rounded-control bg-surface-2 px-2.5 py-1.5 text-xs font-medium text-text-muted shadow-[var(--ds-edge)] transition-colors duration-200 ease-out [@media(hover:hover)]:hover:text-text disabled:opacity-60'
 
 function ToneBadge({ tone }) {
   const variant = TONE_TO_VARIANT[tone] ?? 'neutral'
@@ -44,12 +44,12 @@ function BriefingSection({ section, expanded, onToggle, onEditPlan }) {
           expanded ? 'bg-surface-2' : '[@media(hover:hover)]:hover:bg-surface-2'
         )}
       >
-        <span className="w-6 shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+        <span className="w-6 shrink-0 text-xs tabular-nums text-text-faint">
           {String(section.number).padStart(2, '0')}
         </span>
         <span className="min-w-0 flex-1 leading-tight lg:w-[13rem] lg:flex-none">
           <span className="block truncate text-[13px] font-medium text-text">{section.title}</span>
-          <span className="block truncate text-[11px] text-text-faint">{section.subtitle}</span>
+          <span className="block truncate text-xs text-text-faint">{section.subtitle}</span>
           {/* Under the three-column width the reading has nowhere to sit beside
               the title, and nine rows of headings with the words hidden is a
               list nobody can scan. It moves under the title instead. */}
@@ -61,7 +61,7 @@ function BriefingSection({ section, expanded, onToggle, onEditPlan }) {
               and removing it would let the title column widen underneath. */}
           <span
             className={cn(
-              'mt-0.5 block truncate text-[11px] text-text-muted lg:hidden',
+              'mt-0.5 block truncate text-xs text-text-muted lg:hidden',
               expanded && 'hidden'
             )}
           >
@@ -97,7 +97,7 @@ function BriefingSection({ section, expanded, onToggle, onEditPlan }) {
               {section.bullets.map((bullet) => (
                 <li
                   key={bullet}
-                  className="flex items-start gap-2 rounded-sm bg-surface-2 px-2.5 py-1.5 font-mono text-[11px] leading-relaxed text-text"
+                  className="flex items-start gap-2 rounded-sm bg-surface-2 px-2.5 py-1.5 text-xs tabular-nums leading-relaxed text-text"
                 >
                   <span
                     className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[var(--ds-accent-fill)]"
@@ -178,7 +178,7 @@ export default function DailyBriefing({
   if (loading || !briefing) {
     return (
       <section className="panel-static overflow-hidden">
-        <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+        <header className="flex items-center gap-3 px-5 pb-2 pt-5">
           <Sunrise className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           <h2 className={PANEL_TITLE}>Daily Briefing</h2>
           <Skeleton className="h-[18px] w-20 rounded-sm" />
@@ -219,12 +219,12 @@ export default function DailyBriefing({
 
   return (
     <section className="panel-static overflow-hidden">
-      <header className="content-enter flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-surface-2 px-4 py-2.5">
+      <header className="content-enter flex flex-wrap items-center gap-x-3 gap-y-2 px-5 pb-2 pt-5">
         <EditionIcon className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
         <h2 className={PANEL_TITLE}>Daily Briefing</h2>
         <span className="chip-static">{briefing.editionLabel}</span>
         <div className="min-w-2 flex-1" />
-        <span className="hidden items-center gap-1.5 text-[11px] text-text-faint sm:inline-flex">
+        <span className="hidden items-center gap-1.5 text-xs text-text-faint sm:inline-flex">
           <Clock className="h-3 w-3" aria-hidden="true" />
           Next: {briefing.nextEditionLabel}
         </span>
@@ -271,7 +271,7 @@ export default function DailyBriefing({
             supplementary and drops out where there is no room for it. */}
         <div className="flex h-4 items-center justify-between gap-3">
           <RuleLabel>30-Second Take</RuleLabel>
-          <span className="hidden whitespace-nowrap font-mono text-[11px] text-text-faint sm:inline">
+          <span className="hidden whitespace-nowrap text-xs tabular-nums text-text-faint sm:inline">
             Generated {briefing.generatedAtLabel}
           </span>
         </div>
@@ -295,7 +295,7 @@ export default function DailyBriefing({
       </ul>
 
       {variant === 'compact' ? (
-        <p className="border-t border-border px-4 py-2.5 text-[11px] text-text-faint">
+        <p className="border-t border-border px-4 py-2.5 text-xs text-text-faint">
           Showing 4 of 9 sections. The Briefing tab carries the full read.
         </p>
       ) : null}
