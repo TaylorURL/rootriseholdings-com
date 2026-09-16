@@ -90,7 +90,7 @@ function BookRow({ entry, selected, onSelect }) {
           {entry.displaySymbol}
         </span>
         {meta?.isWatchOnly ? (
-          <Eye className="h-3 w-3 shrink-0 text-text-faint" aria-label="Watch only" />
+          <Eye className="h-3 w-3 shrink-0 text-text-faint" aria-label="Watch Only" />
         ) : null}
       </span>
       <span className="text-right text-[13px] tabular-nums text-text">
@@ -308,7 +308,7 @@ export default function MarketsPage() {
                   {meta?.displaySymbol ?? symbol}
                 </h2>
                 <Badge variant="neutral">{meta?.primaryTimeframe}</Badge>
-                {meta?.isWatchOnly ? <Badge variant="neutral">Watch only</Badge> : null}
+                {meta?.isWatchOnly ? <Badge variant="neutral">Watch Only</Badge> : null}
                 {meta?.sideConstraint ? (
                   <Badge variant={meta.sideConstraint === 'SHORT' ? 'sell' : 'buy'}>
                     {describeSideConstraint(meta.sideConstraint)}
