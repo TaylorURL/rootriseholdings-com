@@ -32,6 +32,13 @@ export default {
         danger: 'var(--ds-danger)',
         'danger-soft': 'var(--ds-danger-soft)',
         rule: 'var(--ds-rule)',
+        inset: 'var(--ds-inset)',
+        mint: 'var(--ds-mint)',
+        blue: 'var(--ds-blue)',
+        orange: 'var(--ds-orange)',
+        yellow: 'var(--ds-yellow)',
+        purple: 'var(--ds-purple)',
+        'on-ink': 'var(--ds-on-ink)',
       },
       borderRadius: {
         xs: 'var(--ds-radius-xs)',
@@ -42,6 +49,7 @@ export default {
         '2xl': 'var(--ds-radius-2xl)',
         full: 'var(--ds-radius-full)',
         control: 'var(--ds-r-control)',
+        tile: 'var(--ds-r-tile)',
         card: 'var(--ds-r-card)',
         feature: 'var(--ds-r-feature)',
       },
@@ -54,13 +62,14 @@ export default {
         'raise-hi': 'var(--ds-raise-hi)',
         lift: 'var(--ds-lift)',
       },
-      /* Display type tightens as it grows, so the tracking scale runs negative
-         and the largest step is the tightest. Nothing tracks wider than normal
-         except the uppercase micro-labels, which take the `label` step. */
+      /* Display type tightens a little as it grows, so the tracking scale runs
+         negative and the largest step is the tightest. The kit sets its type at
+         normal spacing, so the steps are shallow. Nothing tracks wider than
+         normal except the uppercase micro-labels, which take the `label` step. */
       letterSpacing: {
-        tightest: '-0.045em',
-        tighter: '-0.032em',
-        tight: '-0.022em',
+        tightest: '-0.03em',
+        tighter: '-0.02em',
+        tight: '-0.01em',
         label: '0.18em',
       },
       maxWidth: {

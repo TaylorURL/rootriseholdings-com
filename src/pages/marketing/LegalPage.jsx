@@ -77,7 +77,7 @@ const PAGES = {
 function Breadcrumb({ trail }) {
   return (
     <nav aria-label="Breadcrumb" className="mb-8">
-      <ol className="flex flex-wrap items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-label text-text-faint">
+      <ol className="flex flex-wrap items-center gap-2 text-xs font-medium tabular-nums text-text-faint">
         {trail.map((crumb, index) => {
           const last = index === trail.length - 1
           return (
@@ -130,7 +130,7 @@ function LegalPage({ kind }) {
                 key={section.heading}
                 className="grid gap-3 border-b border-border py-8 lg:grid-cols-[3rem_minmax(0,1fr)] lg:gap-8"
               >
-                <span className="font-mono text-sm font-semibold tabular-nums text-text-ghost">
+                <span className="text-sm font-semibold tabular-nums text-text-ghost">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <div>

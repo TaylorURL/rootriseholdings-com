@@ -192,7 +192,7 @@ export default function MarketingNav() {
             the destinations. */}
         <div className="border-b border-[color:var(--ds-border)] bg-[color:var(--ds-bg-elevated)] text-text-faint">
           <div className="nav-pad flex h-[var(--ds-rail-height)] items-center justify-center">
-            <p className="truncate font-mono text-[11px] tracking-wide">{COMPLIANCE.short}</p>
+            <p className="truncate text-xs tabular-nums">{COMPLIANCE.short}</p>
           </div>
         </div>
 

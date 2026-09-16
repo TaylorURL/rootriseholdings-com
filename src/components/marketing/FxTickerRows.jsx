@@ -8,13 +8,13 @@ function TickerItem({ quote }) {
   const Arrow = positive ? ArrowUpRight : ArrowDownRight
   return (
     <span className="flex shrink-0 items-center gap-3 px-6 py-3">
-      <span className="font-mono text-sm font-medium text-text">{quote.displaySymbol}</span>
-      <span className="font-mono text-sm tabular-nums text-text-muted">
+      <span className="text-sm font-medium tabular-nums text-text">{quote.displaySymbol}</span>
+      <span className="text-sm tabular-nums text-text-muted">
         {formatInstrumentPrice(quote.price, quote.symbol)}
       </span>
       <span
         className={cn(
-          'flex items-center gap-0.5 font-mono text-xs tabular-nums',
+          'flex items-center gap-0.5 text-xs tabular-nums',
           positive ? 'text-positive' : 'text-danger'
         )}
       >

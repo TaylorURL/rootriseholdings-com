@@ -105,7 +105,7 @@ export default function SignalsPage() {
     align,
     numeric: true,
     render: (row) => (
-      <span className="font-mono tabular-nums text-text-muted">
+      <span className="tabular-nums text-text-muted">
         {formatInstrumentPrice(row[key], row.symbol, decimalsForInstrument(row.symbol))}
       </span>
     ),
@@ -117,7 +117,7 @@ export default function SignalsPage() {
       header: 'Published',
       numeric: true,
       render: (row) => (
-        <span className="whitespace-nowrap font-mono text-xs text-text-muted">
+        <span className="whitespace-nowrap text-xs tabular-nums text-text-muted">
           {formatCt(row.emittedAt)}
         </span>
       ),
@@ -126,7 +126,7 @@ export default function SignalsPage() {
       key: 'symbol',
       header: 'Instrument',
       render: (row) => (
-        <span className="font-mono font-medium text-text">
+        <span className="font-medium tabular-nums text-text">
           {INSTRUMENT_META[row.symbol]?.displaySymbol ?? row.symbol}
         </span>
       ),
@@ -160,7 +160,7 @@ export default function SignalsPage() {
       render: (row) => (
         <span
           className={cn(
-            'font-mono tabular-nums',
+            'tabular-nums',
             row.realisedR == null
               ? 'text-text-faint'
               : row.realisedR > 0
@@ -175,7 +175,7 @@ export default function SignalsPage() {
   ]
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
         title="Signals"
         subtitle="Every call the desk publishes, scored against the tape that followed it."
@@ -238,7 +238,7 @@ export default function SignalsPage() {
           the order the questions are asked - what is standing, whether it can
           reach me, what the desk is looking at - while two columns keep the
           switch in the rail beside the calls it acts on. */}
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
         {/* What the record says is open: the calls a reader could be in, or
             could still take. These are the host's, published and scored on its
             clock, and the same on every device. */}
@@ -250,7 +250,7 @@ export default function SignalsPage() {
         />
 
         <section className="panel-static h-fit overflow-hidden xl:col-start-2 xl:row-start-1">
-          <header className="border-b border-border bg-surface-2 px-4 py-2.5">
+          <header className="px-5 pb-2 pt-5">
             <RuleLabel as="h2">Alerts</RuleLabel>
           </header>
           <div className="p-4">
@@ -263,10 +263,10 @@ export default function SignalsPage() {
               a view rather than a claim: the record above is what the desk is
               judged by, and this is what the next sweep will be reading. */}
           <section className="panel-static overflow-hidden">
-            <header className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+            <header className="flex flex-wrap items-center gap-3 px-5 pb-2 pt-5">
               <RuleLabel as="h2">Live Read</RuleLabel>
               <div className="min-w-2 flex-1" />
-              <span className="text-[11px] text-text-faint">
+              <span className="text-xs text-text-faint">
                 {sweeping
                   ? 'Reading structure'
                   : lastSweep
@@ -310,7 +310,7 @@ export default function SignalsPage() {
       {/* The tabs sit on the table they filter rather than floating above the
           page, so what they act on is not a matter of inference. */}
       <section className="panel-static overflow-hidden">
-        <header className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
+        <header className="flex flex-wrap items-center gap-3 px-5 pb-2 pt-5">
           <RuleLabel as="h2">Settled Record</RuleLabel>
           <div className="min-w-2 flex-1" />
           <SegmentedTabs

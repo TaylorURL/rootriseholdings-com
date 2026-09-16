@@ -57,21 +57,15 @@ export default function Hero() {
 
           <div className="card-lift accent-ring relative p-4">
             <div className="mb-3 flex items-center justify-between">
-              <span className="font-mono text-[11px] uppercase tracking-label text-text-faint">
-                Primary Chart
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-label text-text-faint">
-                XAU/USD · 1H
-              </span>
+              <span className="text-xs tabular-nums text-text-faint">Primary Chart</span>
+              <span className="text-xs tabular-nums text-text-faint">XAU/USD · 1H</span>
             </div>
             <LivePairChart symbol="XAUUSD" height={240} />
             <dl className="mt-4 grid grid-cols-4 gap-px overflow-hidden rounded-card bg-border">
               {RULE_CHIPS.map((chip) => (
                 <div key={chip.label} className="bg-surface px-2 py-3 text-center">
-                  <dt className="font-mono text-[10px] uppercase tracking-label text-text-faint">
-                    {chip.label}
-                  </dt>
-                  <dd className="mt-1 font-mono text-base font-semibold tabular-nums text-text">
+                  <dt className="text-xs tabular-nums text-text-faint">{chip.label}</dt>
+                  <dd className="mt-1 text-base font-semibold tabular-nums text-text">
                     {chip.value}
                   </dd>
                 </div>

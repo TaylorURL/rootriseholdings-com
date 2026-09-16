@@ -62,10 +62,10 @@ export default function OpenTradeCard({ trade, onDeleted }) {
     <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-5 shadow-sm transition-colors hover:border-border-hover">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="font-mono text-base font-semibold text-text">{displaySymbol}</span>
+          <span className="text-base font-semibold tabular-nums text-text">{displaySymbol}</span>
           <Badge variant={trade.side === 'BUY' ? 'buy' : 'sell'}>{trade.side}</Badge>
           {trade.grade === 'A+' && (
-            <span className="rounded-control bg-[var(--ds-accent-soft)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent-bright">
+            <span className="rounded-control bg-[var(--ds-accent-soft)] px-1.5 py-0.5 text-xs font-bold text-accent-bright">
               A+
             </span>
           )}
@@ -112,19 +112,19 @@ export default function OpenTradeCard({ trade, onDeleted }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-        <span className="rounded-control bg-surface-2 px-1.5 py-0.5 font-mono uppercase tracking-wide text-text-muted">
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="rounded-control bg-surface-2 px-1.5 py-0.5 tabular-nums text-text-muted">
           {trade.setup}
         </span>
         {trade.timeframe && (
-          <span className="rounded-control bg-surface-2 px-1.5 py-0.5 font-mono uppercase tracking-wide text-text-muted">
+          <span className="rounded-control bg-surface-2 px-1.5 py-0.5 tabular-nums text-text-muted">
             {trade.timeframe}
           </span>
         )}
-        <span className="rounded-control bg-surface-2 px-1.5 py-0.5 uppercase tracking-wide text-text-faint">
+        <span className="rounded-control bg-surface-2 px-1.5 py-0.5 text-text-faint">
           {trade.session}
         </span>
-        <span className="ml-auto font-mono text-text-faint">{formatCt(trade.openedAt)} CT</span>
+        <span className="ml-auto tabular-nums text-text-faint">{formatCt(trade.openedAt)} CT</span>
       </div>
 
       {/* The same five readings the call card draws, in the same words and the
@@ -160,7 +160,7 @@ export default function OpenTradeCard({ trade, onDeleted }) {
                 value={exitPrice}
                 onChange={(event) => setExitPrice(event.target.value.replace(/[,\s]/g, ''))}
                 autoFocus
-                className="field font-mono"
+                className="field tabular-nums"
               />
             </div>
             <div className="flex items-center gap-1.5 pb-0.5">
@@ -185,12 +185,7 @@ export default function OpenTradeCard({ trade, onDeleted }) {
               {previewR != null ? (
                 <>
                   Books{' '}
-                  <span
-                    className={cn(
-                      'font-mono text-sm font-semibold tabular-nums',
-                      signedColor(previewR)
-                    )}
-                  >
+                  <span className={cn('text-sm font-semibold tabular-nums', signedColor(previewR))}>
                     {formatR(previewR)} ·{' '}
                     {formatCurrency(previewR * trade.riskAmount, { signed: true })}
                   </span>

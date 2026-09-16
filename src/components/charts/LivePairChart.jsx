@@ -146,22 +146,22 @@ export default function LivePairChart({ symbol, height = 220, compact = false, c
               className="h-2 w-2 shrink-0 rounded-full bg-accent-bright shadow-[var(--ds-glow-dot)]"
               aria-hidden="true"
             />
-            <span className="truncate font-mono text-sm font-semibold text-text">
+            <span className="truncate text-sm font-semibold tabular-nums text-text">
               {quote.displaySymbol}
             </span>
             {hover ? (
-              <span className="truncate font-mono text-[11px] text-text-faint">
+              <span className="truncate text-xs tabular-nums text-text-faint">
                 {formatCt(hover.time * 1000, { hour: '2-digit', minute: '2-digit' })}
               </span>
             ) : null}
           </div>
           <div className="flex shrink-0 items-baseline gap-2">
-            <span className="font-mono text-lg font-semibold tabular-nums text-text">
+            <span className="text-lg font-semibold tabular-nums text-text">
               {formatInstrumentPrice(shown, symbol)}
             </span>
             <span
               className={cn(
-                'flex items-center gap-0.5 font-mono text-xs tabular-nums',
+                'flex items-center gap-0.5 text-xs tabular-nums',
                 positive ? 'text-positive' : 'text-danger'
               )}
             >

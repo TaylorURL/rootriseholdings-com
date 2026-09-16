@@ -8,11 +8,10 @@ import { cn } from '../../lib/cn'
  * unequal height reads as objects on the page instead of as a broken table, and
  * the edge and the elevation move together.
  *
- * The head is banded rather than hairlined. A panel is barely a step off the
- * page ground in the light theme, so the ring alone leaves a screen of small
- * type on one flat field; a strip of the second surface at the top of each
- * panel is a shape rather than a line, and it is what makes the panel read as
- * an object without drawing a heavy grid over the whole product.
+ * The head is neither banded nor ruled. The panel is already an object - a
+ * tone off the page, sixteen-pixel corners, one soft shadow - so its title is
+ * set at a size that names it and the body follows on the same ground, which
+ * is how the dashboard kit draws every panel it has.
  *
  * @param {object} props
  * @param {React.ReactNode} [props.title] - heading, or a node when a surface needs its own
@@ -26,7 +25,7 @@ export default function Card({ title, action, children, padded = true, className
   return (
     <section className={cn('panel-static overflow-hidden', className)}>
       {(title || action) && (
-        <header className="flex items-center gap-3 border-b border-border bg-surface-2 px-5 py-3">
+        <header className="flex min-h-[4.25rem] items-center gap-3 px-5 pb-1 pt-5">
           {typeof title === 'string' ? (
             <h2 className={cn(PANEL_TITLE, 'shrink-0')}>{title}</h2>
           ) : (

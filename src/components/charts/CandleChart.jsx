@@ -222,7 +222,7 @@ export default function CandleChart({
     <div className={cn('relative w-full', className)}>
       <div ref={holder} style={{ height }} className="w-full" />
       {readout ? (
-        <div className="bg-surface/90 pointer-events-none absolute left-2 top-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-sm px-2 py-1 font-mono text-[11px] tabular-nums shadow-[0_0_0_1px_var(--ds-border)] backdrop-blur-sm">
+        <div className="bg-surface/90 pointer-events-none absolute left-2 top-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-sm px-2 py-1 text-xs tabular-nums shadow-[0_0_0_1px_var(--ds-border)] backdrop-blur-sm">
           <span className="text-text-faint">
             {formatCt(readout.time * 1000, {
               month: 'short',

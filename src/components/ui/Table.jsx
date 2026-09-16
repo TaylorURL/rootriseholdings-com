@@ -106,7 +106,7 @@ export default function Table({ columns, rows, rowKey, footer, empty, animate = 
                   className={cn(
                     'whitespace-nowrap px-4 py-2.5 text-text transition-colors duration-200 ease-out group-hover:bg-surface-2',
                     ALIGN_CLASSES[column.align ?? 'left'],
-                    (column.numeric ?? column.align === 'right') && 'font-mono tabular-nums',
+                    (column.numeric ?? column.align === 'right') && 'tabular-nums',
                     column.className
                   )}
                 >

@@ -28,7 +28,7 @@ export default function LiveMarketSection({ ground = 'page' }) {
         description="XAUUSD on the 1H, NAS100 and SP500 on the 15m, US30 on the 1H, plus an FX watch list read for context and never traded."
         meta={
           priced > 0 ? (
-            <p className="font-mono text-[11px] uppercase tracking-label text-text-faint">
+            <p className="text-xs tabular-nums text-text-faint">
               {`Live · ${priced} ${priced === 1 ? 'instrument' : 'instruments'}`}
             </p>
           ) : null
