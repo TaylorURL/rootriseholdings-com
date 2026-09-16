@@ -146,7 +146,7 @@ function levels(signal) {
  * @param {object} signal
  * @returns {[string, string][]}
  */
-export function ticketFor(signal) {
+function ticketFor(signal) {
   return [
     ['Instrument', displayName(signal)],
     ['Side', signal.side],

@@ -6,7 +6,7 @@ import { ctDateKey, formatCt } from '../time.js'
  * production and the Vite dev server proxies it directly, because the
  * upstream host sends no CORS headers for direct browser use.
  */
-export const CALENDAR_PATH = '/data/calendar'
+const CALENDAR_PATH = '/data/calendar'
 
 /**
  * @param {object[]} rawEvents - upstream rows {title, country, date, impact, forecast, previous}

@@ -11,7 +11,7 @@
 const STORAGE_KEY = 'rr.signals.v1'
 const VERSION = 2
 
-export function defaultPreferences() {
+function defaultPreferences() {
   return { notifications: false }
 }
 

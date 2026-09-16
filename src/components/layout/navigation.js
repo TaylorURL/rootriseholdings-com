@@ -41,7 +41,7 @@ export const NAV_GROUPS = [
 ]
 
 /** The same destinations flat, for anything that resolves a route to a label. */
-export const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items)
+const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items)
 
 export function titleForPath(pathname) {
   const match = NAV_ITEMS.find((item) =>

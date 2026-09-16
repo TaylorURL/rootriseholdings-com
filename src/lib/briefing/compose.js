@@ -14,7 +14,7 @@ import { ctMinutesOfDay, formatCt, sessionForMoment } from '../time.js'
  * the desk's own inputs (day plan, rules) — a section with no real data says
  * so instead of filling the space.
  */
-export const BRIEFING_EDITIONS = [
+const BRIEFING_EDITIONS = [
   { id: 'morning', label: 'Morning Open', timeLabel: '06:00 CT', icon: 'sunrise' },
   { id: 'pm', label: 'NY Afternoon', timeLabel: '15:00 CT', icon: 'sunset' },
 ]

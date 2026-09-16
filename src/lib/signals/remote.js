@@ -17,7 +17,7 @@ import { fromRow } from './row.js'
  * need all of it to draw a scoreboard and a list. This is a page size, not a
  * cap on what is kept: the table keeps everything.
  */
-export const PAGE_SIZE = 500
+const PAGE_SIZE = 500
 
 /**
  * @param {object} [options]
