@@ -65,7 +65,7 @@ export default function DayStatusPanel({ className }) {
   return (
     <Card
       title="Day Status"
-      subtitle="The rule book against today"
+      subtitle="Today's trading against the risk rules"
       className={className}
       action={
         dayState.locked ? (
@@ -111,7 +111,7 @@ export default function DayStatusPanel({ className }) {
         used={dayState.consecutiveLosses}
         limit={RISK_RULES.maxConsecutiveLosses}
         format={count}
-        title={`Consecutive losses, of the ${RISK_RULES.maxConsecutiveLosses} that close the day`}
+        title={`Consecutive losses. ${RISK_RULES.maxConsecutiveLosses} in a row closes the day.`}
       />
 
       <dl className="grid grid-cols-2 gap-3 border-t border-border pt-4">

@@ -517,12 +517,12 @@ export default function InsightsPage() {
       <div className="grid gap-5 xl:grid-cols-2">
         <BreakdownCard
           title="By Instrument"
-          subtitle="Average result per trade, and what it added up to"
+          subtitle="Average R per trade, and total P&L"
           rows={instrumentRows}
         />
         <BreakdownCard
           title="By Setup"
-          subtitle="Average result per trade, and what it added up to"
+          subtitle="Average R per trade, and total P&L"
           rows={setupRows}
         />
         <BreakdownCard
