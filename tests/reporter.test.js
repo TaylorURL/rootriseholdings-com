@@ -242,3 +242,70 @@ test('an error naming its own file is still filed', () => {
     'an uncaught error naming its own file was not filed, so `muted` has widened onto the site’s own faults and the reporter has gone quiet on them'
   )
 })
+
+/**
+ * An `<img>` the browser could not fetch, as the page's own handler receives
+ * one: the element itself, carrying whatever attributes a previous pass left
+ * on it.
+ */
+function image(src) {
+  const attributes = {}
+  return {
+    tagName: 'IMG',
+    src,
+    getAttribute: (name) => (name in attributes ? attributes[name] : null),
+    setAttribute(name, value) {
+      attributes[name] = String(value)
+    },
+  }
+}
+
+test('a picture that failed once is asked for again', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  page.throws({ target: plate })
+  assert.match(
+    plate.src,
+    /\/art\/briefing\.svg\?retry=1$/,
+    'a first-party image that failed was left holding its failed request, so a reader who lost one packet sees a broken frame for the life of the tab and nothing on the page ever asks again'
+  )
+  assert.equal(
+    page.posted.length,
+    1,
+    'the retry swallowed the report, so an asset that is genuinely gone now goes unnoticed'
+  )
+})
+
+test('the retry is not filed a second time', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  page.throws({ target: plate })
+  const asked = plate.src
+  page.throws({ target: plate })
+  assert.equal(
+    page.posted.length,
+    1,
+    'the handler’s own retry was filed as a second fault, so one missing file now opens two tickets'
+  )
+  assert.equal(
+    plate.src,
+    asked,
+    'a retry that failed was retried again, which asks the same edge for the same missing file forever'
+  )
+})
+
+test('an image from another origin is still filed', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const elsewhere = image('https://cdn.example.com/badge.png')
+  page.throws({ target: elsewhere })
+  assert.equal(
+    page.posted.length,
+    1,
+    'an image from another origin was dropped, so the reporter has gone quiet on a request the page makes and can see fail'
+  )
+  assert.equal(
+    elsewhere.src,
+    'https://cdn.example.com/badge.png',
+    'a file another origin serves was re-requested by this page, which is not this page’s to ask for again'
+  )
+})
