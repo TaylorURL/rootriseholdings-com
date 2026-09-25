@@ -159,6 +159,41 @@
           document.head.appendChild(retry)
           return true
         }
+        // An image is asked for a second time before it is given up on.
+        //
+        // A script that never lands reloads the page and a sheet that never
+        // lands is fetched again, so both of them get a second chance at a
+        // request that simply did not come back. An image gets none: nothing
+        // downstream of the browser ever asks for it twice, the element holds
+        // the failed request for the life of the tab, and the reader is left
+        // with a broken frame and the alt text sitting in it where a drawing
+        // should be. One lost packet on the home page's plate is therefore
+        // permanent for that visitor, and it is permanent on a file that is
+        // present, correct and answering for everyone else.
+        //
+        // So the request is made again, once, with a query on it to get past an
+        // edge holding the failure - the same move the sheet makes and for the
+        // same reason. Only a file this site serves is retried; an image from
+        // somewhere else failing is not this page's to ask for again. What
+        // fails twice is the file being gone rather than late, and there is
+        // nothing further to try.
+        //
+        // What none of this changes is what reaches the collector. The first
+        // failure is reported whether the retry saves the picture or not, so
+        // this is a recovery rather than a filter: the notice is the same
+        // notice, and the retry's own failure is left unfiled only because it
+        // describes the file the first report already named.
+        function recoverImage(node, src) {
+          if (!src || node.getAttribute('data-img-retry')) return false
+          try {
+            if (new URL(src, location.href).origin !== location.origin) return false
+          } catch (ignored) {
+            return false
+          }
+          node.setAttribute('data-img-retry', '1')
+          node.src = src + (src.indexOf('?') === -1 ? '?' : '&') + 'retry=1'
+          return true
+        }
         window.addEventListener('vite:preloadError', function (event) {
           event.preventDefault()
           reloadOnce()
@@ -365,6 +400,15 @@
                   // The retries are this handler's own work and describe the
                   // same missing file, so the sheet is reported once.
                   if (built) return
+                }
+                if (event.target.tagName === 'IMG') {
+                  // The retry is this handler's own work and describes the same
+                  // file, so an image is reported once however many times the
+                  // picture is asked for. Everything else about what gets filed
+                  // is unchanged: the first failure is reported whether a retry
+                  // was available for it or not.
+                  if (event.target.getAttribute('data-img-retry')) return
+                  recoverImage(event.target, src)
                 }
                 report(
                   'resource',
