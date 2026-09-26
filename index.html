@@ -128,7 +128,8 @@
           window.location.reload()
           return true
         }
-        // A stylesheet is asked for a second time before it is given up on.
+        // A stylesheet that does not arrive is asked for again before it is
+        // given up on.
         //
         // Every document is served with the rules its own first screen needs
         // already inlined, and the sheet carries everything else: the route the
@@ -139,24 +140,74 @@
         // link that failed sits at media="print" holding no rules for the life
         // of the tab.
         //
-        // The first failure is a request that did not come back and is simply
-        // made again, with a query on it to get past an edge holding the
-        // failure. What fails twice is the file being gone rather than late,
-        // which is what a deploy leaves behind for a page that was already
-        // open, and only the document knows the name that replaced it.
-        var SHEET_ATTEMPTS = 2
+        // A failure is a request that did not come back, and it is simply made
+        // again, with a query on it to get past an edge holding the failure.
+        // What fails every time is the file being gone rather than late, which
+        // is what a deploy leaves behind for a page that was already open, and
+        // only a fresh document knows the name that replaced it.
+        //
+        // The wait between those tries is what decides whether asking again is
+        // worth anything. Issued back to back they all land inside the same
+        // lost moment and all fail for the reason the first one did: measured
+        // against the built site with the sheet refused for three seconds, both
+        // retries and the reload behind them were spent 270ms in, and the page
+        // then sat undressed for the life of the tab with the guard holding
+        // everything further. An outage lasting longer than a third of a second
+        // was indistinguishable from a file that had gone. So the second try
+        // waits, the reload waits longer, and the deadline runs from the first
+        // failure rather than from the last one, because a request that neither
+        // answers nor fails leaves no event to hang the next step on.
+        //
+        // Nothing is reported until the asking is over. A sheet that arrives on
+        // a retry leaves a page that is whole, and a notice filed about it
+        // names a file that is present and correct and a fault no reader met.
+        // What is worth reporting is recovery having failed, and that is still
+        // reported in full, under the words it has always used.
+        var SHEET_WAITS = [0, 1200, 1400]
+        var SHEET_GIVE_UP = 5000
         var sheetTries = 0
+        var sheetHref = ''
+        var sheetSettled = false
+        var sheetDeadline = null
         function recoverStylesheet(href) {
-          if (!href || sheetTries >= SHEET_ATTEMPTS) return reloadOnce()
+          if (!href) return false
+          if (sheetSettled) return true
+          if (!sheetHref) sheetHref = href
+          if (!sheetDeadline) {
+            sheetDeadline = setTimeout(function () {
+              if (sheetSettled) return
+              sheetSettled = true
+              // The whole address, which is the name the browser's own event
+              // carried and the name every earlier report of this file was
+              // filed under. A report that started saying the path alone would
+              // group as a new fault and lose the history behind it.
+              var named = sheetHref
+              try {
+                named = new URL(sheetHref, location.href).href
+              } catch (ignored) {}
+              reportFinal('resource', 'Failed to load link: ' + named)
+              reloadOnce()
+            }, SHEET_GIVE_UP)
+          }
+          if (sheetTries >= SHEET_WAITS.length) return true
+          var wait = SHEET_WAITS[sheetTries]
           sheetTries += 1
-          var retry = document.createElement('link')
-          retry.rel = 'stylesheet'
-          retry.crossOrigin = 'anonymous'
-          // The href it was built with, so a retry of a retry asks for the
-          // original file rather than stacking another query onto the last one.
-          retry.setAttribute('data-sheet-retry', href)
-          retry.href = href + (href.indexOf('?') === -1 ? '?' : '&') + 'retry=' + sheetTries
-          document.head.appendChild(retry)
+          setTimeout(function () {
+            if (sheetSettled) return
+            var retry = document.createElement('link')
+            retry.rel = 'stylesheet'
+            retry.crossOrigin = 'anonymous'
+            // The href it was built with, so a retry of a retry asks for the
+            // original file rather than stacking another query onto the last.
+            retry.setAttribute('data-sheet-retry', sheetHref)
+            retry.onload = function () {
+              sheetSettled = true
+              if (sheetDeadline) clearTimeout(sheetDeadline)
+            }
+            retry.href =
+              sheetHref + (sheetHref.indexOf('?') === -1 ? '?' : '&') + 'retry=' + sheetTries
+            document.head.appendChild(retry)
+          }, wait)
           return true
         }
         // An image is asked for a second time before it is given up on.
@@ -362,6 +413,17 @@
             )
           } catch (ignored) {}
         }
+        // The last thing a document says before it is replaced. The reports
+        // usually travel in a worker so that a collector that cannot be reached
+        // is not the loudest thing on the page, and a worker dies with the
+        // document that made it, so a notice issued on the way into a reload
+        // goes by the beacon that outlives a navigation instead.
+        function reportFinal(kind, message) {
+          var live = unloading
+          unloading = true
+          report(kind, message)
+          unloading = live
+        }
         // Safari writes a stack without the message line, so an Error only
         // names its own failure here if the message is carried in beside it.
         function flatten(args, from) {
@@ -396,10 +458,12 @@
                 }
                 if (event.target.tagName === 'LINK' && event.target.rel === 'stylesheet') {
                   var built = event.target.getAttribute('data-sheet-retry')
-                  recoverStylesheet(built || event.target.getAttribute('href'))
-                  // The retries are this handler's own work and describe the
-                  // same missing file, so the sheet is reported once.
-                  if (built) return
+                  // Every try describes the same file, and whether that file
+                  // ever arrived is not known until the last of them is over,
+                  // so the recovery makes the report when it gives up and this
+                  // handler makes none. A link with no href to ask for again
+                  // has nothing to recover and falls through to be filed here.
+                  if (recoverStylesheet(built || event.target.getAttribute('href'))) return
                 }
                 if (event.target.tagName === 'IMG') {
                   // The retry is this handler's own work and describes the same

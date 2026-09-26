@@ -37,6 +37,13 @@ const reporter = inline.find((source) => source.includes('/report'))
 function collector(scriptTags) {
   const posted = []
   const listeners = {}
+  // The recovery a stylesheet gets is spread over seconds, so the clock is
+  // driven by hand here. Nothing runs until `tick` is asked for it, which is
+  // what lets a test say when the file came back and when it never did.
+  const pending = []
+  const sheets = []
+  const reloads = []
+  const clock = { now: 0 }
   const sandbox = {
     JSON,
     URL,
@@ -63,15 +70,35 @@ function collector(scriptTags) {
     },
     document: {
       addEventListener() {},
-      head: { appendChild() {} },
-      createElement: () => ({ setAttribute() {} }),
+      head: {
+        appendChild(node) {
+          sheets.push(node)
+        },
+      },
+      createElement: (tagName) => {
+        const attributes = {}
+        return {
+          tagName: String(tagName).toUpperCase(),
+          getAttribute: (name) => (name in attributes ? attributes[name] : null),
+          setAttribute(name, value) {
+            attributes[name] = String(value)
+          },
+        }
+      },
       // What the page has fetched from elsewhere, which is what the reporter
       // reads to say where a muted throw could have come from.
       getElementsByTagName: () => scriptTags || [],
     },
     console: { error() {}, warn() {}, trace() {}, assert() {}, log() {} },
-    setTimeout() {},
+    setTimeout(run, after) {
+      pending.push({ run, due: clock.now + (Number(after) || 0) })
+      return pending.length
+    },
+    clearTimeout(handle) {
+      if (pending[handle - 1]) pending[handle - 1].run = null
+    },
   }
+  sandbox.location.reload = () => reloads.push(true)
   sandbox.window = sandbox
   sandbox.self = sandbox
   const context = vm.createContext(sandbox)
@@ -100,6 +127,20 @@ function collector(scriptTags) {
     held() {
       return sandbox.window.__reporter.replay()
     },
+    /** Moves the clock on and runs whatever the page had waiting by then. */
+    tick(ms) {
+      clock.now += Number(ms) || 0
+      for (const task of pending.slice()) {
+        if (task.run && task.due <= clock.now) {
+          const run = task.run
+          task.run = null
+          run()
+        }
+      }
+    },
+    /** Every link the page appended to the head, in the order it asked. */
+    sheets: () => sheets,
+    reloads: () => reloads.length,
   }
 }
 
@@ -308,4 +349,102 @@ test('an image from another origin is still filed', () => {
     'https://cdn.example.com/badge.png',
     'a file another origin serves was re-requested by this page, which is not this page’s to ask for again'
   )
+})
+
+/** A link the page was served with, holding the file it asked for. */
+function sheet(href) {
+  return {
+    tagName: 'LINK',
+    rel: 'stylesheet',
+    getAttribute: (name) => (name === 'href' ? href : null),
+  }
+}
+
+const SHEET = 'https://www.rootriseholdings.com/assets/index-K5IrCnlB.css'
+
+test('a stylesheet that comes back on a retry is not filed', () => {
+  const page = collector(PAGE_SCRIPTS)
+  page.throws({ target: sheet(SHEET) })
+  page.tick(0)
+  const retry = page.sheets()[0]
+  assert.match(
+    retry.href,
+    /index-K5IrCnlB\.css\?retry=1$/,
+    'the sheet that failed was not asked for again, so every route the reader opens after this one is drawn without its rules'
+  )
+  retry.onload()
+  page.tick(10000)
+  assert.equal(
+    page.posted.length,
+    0,
+    'a sheet that arrived on the retry was filed as a fault anyway, so a page the reader saw whole opens a ticket that can never be closed by fixing anything'
+  )
+  assert.equal(
+    page.reloads(),
+    0,
+    'the page reloaded under a reader whose stylesheet had already come back'
+  )
+})
+
+test('the retries are spread out rather than spent in one moment', () => {
+  const page = collector(PAGE_SCRIPTS)
+  page.throws({ target: sheet(SHEET) })
+  page.tick(0)
+  assert.equal(page.sheets().length, 1, 'the first retry was not asked for straight away')
+  page.throws({ target: page.sheets()[0] })
+  page.tick(0)
+  assert.equal(
+    page.sheets().length,
+    1,
+    'the second retry went out in the same moment as the first, so both land inside the same outage and both fail for the reason the first one did'
+  )
+  page.tick(1200)
+  assert.match(
+    page.sheets()[1].href,
+    /index-K5IrCnlB\.css\?retry=2$/,
+    'the sheet was given up on after one retry'
+  )
+  page.throws({ target: page.sheets()[1] })
+  page.tick(1400)
+  assert.match(
+    page.sheets()[2].href,
+    /index-K5IrCnlB\.css\?retry=3$/,
+    'the asking stopped inside the first three seconds, which is shorter than the outages this is for'
+  )
+  page.throws({ target: page.sheets()[2] })
+  page.tick(0)
+  assert.equal(
+    page.reloads(),
+    0,
+    'the page reloaded while the file it wanted might still have been on its way'
+  )
+})
+
+test('a stylesheet that never comes back is filed, once, and the page starts over', () => {
+  const page = collector(PAGE_SCRIPTS)
+  page.throws({ target: sheet(SHEET) })
+  page.tick(0)
+  page.throws({ target: page.sheets()[0] })
+  page.tick(1200)
+  page.throws({ target: page.sheets()[1] })
+  page.tick(1400)
+  page.throws({ target: page.sheets()[2] })
+  page.tick(2400)
+  assert.equal(
+    page.posted.length,
+    1,
+    'a stylesheet that never arrived went unreported, so a site serving every reader a bare page says nothing about it'
+  )
+  assert.equal(
+    page.posted[0].message,
+    'Failed to load link: ' + SHEET,
+    'the report names something other than the file that never arrived'
+  )
+  assert.equal(
+    page.reloads(),
+    1,
+    'the document was left holding a stylesheet that is gone, when only a fresh one knows the name that replaced it'
+  )
+  page.tick(10000)
+  assert.equal(page.posted.length, 1, 'one missing stylesheet filed more than one report')
 })
