@@ -210,39 +210,95 @@
           }, wait)
           return true
         }
-        // An image is asked for a second time before it is given up on.
+        // An image that does not arrive is asked for again, more than once and
+        // spaced out, before it is given up on.
         //
         // A script that never lands reloads the page and a sheet that never
         // lands is fetched again, so both of them get a second chance at a
-        // request that simply did not come back. An image gets none: nothing
-        // downstream of the browser ever asks for it twice, the element holds
-        // the failed request for the life of the tab, and the reader is left
-        // with a broken frame and the alt text sitting in it where a drawing
-        // should be. One lost packet on the home page's plate is therefore
-        // permanent for that visitor, and it is permanent on a file that is
-        // present, correct and answering for everyone else.
+        // request that simply did not come back. An image has none of its own:
+        // nothing downstream of the browser ever asks for it twice, the element
+        // holds the failed request for the life of the tab, and the reader is
+        // left with a broken frame and the alt text sitting in it where a
+        // drawing should be. One lost request on the home page's plate is
+        // therefore permanent for that visitor, and it is permanent on a file
+        // that is present, correct and answering for everyone else.
         //
-        // So the request is made again, once, with a query on it to get past an
-        // edge holding the failure - the same move the sheet makes and for the
-        // same reason. Only a file this site serves is retried; an image from
-        // somewhere else failing is not this page's to ask for again. What
-        // fails twice is the file being gone rather than late, and there is
-        // nothing further to try.
+        // The wait between the tries is what decides whether asking again is
+        // worth anything, and it is the same lesson the sheet above learned the
+        // hard way: issued back to back they land inside the same lost moment
+        // and fail for the reason the first one did. A single try taken the
+        // instant the browser raises the failure covers an outage that has
+        // already ended and nothing else, which is why a plate that is asked
+        // for twice still goes missing. So the second try waits, the third
+        // waits longer, and the deadline runs from the first failure rather
+        // than from the last, because a request that neither answers nor fails
+        // leaves no event to hang the next step on.
         //
-        // What none of this changes is what reaches the collector. The first
-        // failure is reported whether the retry saves the picture or not, so
-        // this is a recovery rather than a filter: the notice is the same
-        // notice, and the retry's own failure is left unfiled only because it
-        // describes the file the first report already named.
+        // The query on each try is what gets the browser past its own record of
+        // the failure; it buys nothing at the edge, which serves this site's
+        // files without reading the query at all. Only a file this site serves
+        // is asked for again - an image from somewhere else is not this page's
+        // to request - and what fails every time is the file being gone rather
+        // than late, which is a fault with nothing further to try.
+        //
+        // Nothing is reported until the asking is over. A picture that arrives
+        // on a retry leaves a page that is whole, and a notice filed about it
+        // names a file that is present and correct and a fault no reader met -
+        // worse, it reads on the queue exactly like the broken frame it is not,
+        // so the two cannot be told apart. What is worth reporting is recovery
+        // having failed, and that is reported in full, under the words and the
+        // whole address every earlier report of this file carried.
+        var IMG_WAITS = [0, 1200, 1400]
+        var IMG_GIVE_UP = 5000
+        var plates = []
+        function plateState(node) {
+          for (var i = 0; i < plates.length; i += 1) if (plates[i].node === node) return plates[i]
+          // A page drawing its own failure over and over is not a page a
+          // recovery can save, and the list is not allowed to grow with it.
+          if (plates.length >= 50) return null
+          var state = { node: node, src: '', tries: 0, settled: false, deadline: null }
+          plates.push(state)
+          return state
+        }
         function recoverImage(node, src) {
-          if (!src || node.getAttribute('data-img-retry')) return false
+          if (!src) return false
           try {
             if (new URL(src, location.href).origin !== location.origin) return false
           } catch (ignored) {
             return false
           }
-          node.setAttribute('data-img-retry', '1')
-          node.src = src + (src.indexOf('?') === -1 ? '?' : '&') + 'retry=1'
+          var state = plateState(node)
+          if (!state) return false
+          if (state.settled) return true
+          // The address the browser's own event carried on the first failure,
+          // so a retry of a retry asks for the original file rather than
+          // stacking another query onto the last, and the report at the end
+          // names what every earlier report of this file was filed under.
+          if (!state.src) state.src = src
+          if (!state.deadline) {
+            node.addEventListener('load', function () {
+              state.settled = true
+              if (state.deadline) clearTimeout(state.deadline)
+            })
+            state.deadline = setTimeout(function () {
+              if (state.settled) return
+              state.settled = true
+              var named = state.src
+              try {
+                named = new URL(state.src, location.href).href
+              } catch (ignored) {}
+              report('resource', 'Failed to load img: ' + named)
+            }, IMG_GIVE_UP)
+          }
+          if (state.tries >= IMG_WAITS.length) return true
+          var wait = IMG_WAITS[state.tries]
+          state.tries += 1
+          setTimeout(function () {
+            if (state.settled) return
+            node.setAttribute('data-img-retry', String(state.tries))
+            node.src =
+              state.src + (state.src.indexOf('?') === -1 ? '?' : '&') + 'retry=' + state.tries
+          }, wait)
           return true
         }
         window.addEventListener('vite:preloadError', function (event) {
@@ -466,13 +522,13 @@
                   if (recoverStylesheet(built || event.target.getAttribute('href'))) return
                 }
                 if (event.target.tagName === 'IMG') {
-                  // The retry is this handler's own work and describes the same
-                  // file, so an image is reported once however many times the
-                  // picture is asked for. Everything else about what gets filed
-                  // is unchanged: the first failure is reported whether a retry
-                  // was available for it or not.
-                  if (event.target.getAttribute('data-img-retry')) return
-                  recoverImage(event.target, src)
+                  // Every try describes the same file, and whether that file
+                  // ever arrived is not known until the last of them is over,
+                  // so the recovery makes the report when it gives up and this
+                  // handler makes none. An image with no src to ask for again,
+                  // or one another origin serves, has nothing to recover and
+                  // falls through to be filed here.
+                  if (recoverImage(event.target, src)) return
                 }
                 report(
                   'resource',
