@@ -291,6 +291,7 @@ test('an error naming its own file is still filed', () => {
  */
 function image(src) {
   const attributes = {}
+  const loaded = []
   return {
     tagName: 'IMG',
     src,
@@ -298,41 +299,105 @@ function image(src) {
     setAttribute(name, value) {
       attributes[name] = String(value)
     },
+    addEventListener(type, handler) {
+      if (type === 'load') loaded.push(handler)
+    },
+    /** The picture arriving, which is the only thing that settles the asking. */
+    arrives() {
+      for (const handler of loaded) handler()
+    },
   }
 }
 
-test('a picture that failed once is asked for again', () => {
+test('a picture that failed is asked for again', () => {
   const page = collector(PAGE_SCRIPTS)
   const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
   page.throws({ target: plate })
+  page.tick(0)
   assert.match(
     plate.src,
     /\/art\/briefing\.svg\?retry=1$/,
-    'a first-party image that failed was left holding its failed request, so a reader who lost one packet sees a broken frame for the life of the tab and nothing on the page ever asks again'
-  )
-  assert.equal(
-    page.posted.length,
-    1,
-    'the retry swallowed the report, so an asset that is genuinely gone now goes unnoticed'
+    'a first-party image that failed was left holding its failed request, so a reader who lost one request sees a broken frame for the life of the tab and nothing on the page ever asks again'
   )
 })
 
-test('the retry is not filed a second time', () => {
+test('the tries are spread out rather than spent at once', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  // Every try fails the way the first did, which is what an outage lasting
+  // longer than the instant the browser raised the first failure in looks like.
+  page.throws({ target: plate })
+  page.tick(0)
+  page.throws({ target: plate })
+  page.tick(0)
+  assert.match(
+    plate.src,
+    /\?retry=1$/,
+    'the second try was spent in the same moment as the first, so every try lands inside the lost moment and an outage lasting longer than no time at all is indistinguishable from a file that has gone'
+  )
+  page.tick(1200)
+  assert.match(plate.src, /\?retry=2$/, 'the second try never came')
+  page.throws({ target: plate })
+  page.tick(1400)
+  assert.match(plate.src, /\?retry=3$/, 'the third try never came')
+})
+
+test('a retry asks for the file rather than for the last retry', () => {
   const page = collector(PAGE_SCRIPTS)
   const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
   page.throws({ target: plate })
-  const asked = plate.src
+  page.tick(0)
+  page.throws({ target: plate })
+  page.tick(1200)
+  assert.equal(
+    plate.src,
+    'https://www.rootriseholdings.com/art/briefing.svg?retry=2',
+    'a query was stacked onto the last try, so every retry asks for a longer address than the file the page wants'
+  )
+})
+
+test('a picture that arrives on a retry is not filed at all', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  page.throws({ target: plate })
+  page.tick(0)
+  plate.arrives()
+  page.tick(10000)
+  assert.equal(
+    page.posted.length,
+    0,
+    'a plate the reader was shown was filed as a fault, so the queue cannot tell a recovered picture from a broken frame and reads every recovery as the recovery having failed'
+  )
+})
+
+test('a picture that never arrives is filed once, under the name it has always had', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  page.throws({ target: plate })
+  page.tick(0)
+  page.throws({ target: plate })
+  page.tick(1200)
+  page.throws({ target: plate })
+  page.tick(1400)
   page.throws({ target: plate })
   assert.equal(
     page.posted.length,
+    0,
+    'the asking was still going on and the failure was filed anyway'
+  )
+  page.tick(5000)
+  assert.equal(
+    page.posted.length,
     1,
-    'the handler’s own retry was filed as a second fault, so one missing file now opens two tickets'
+    'a picture the reader never got went unreported, so a plate that is genuinely gone is now invisible'
   )
   assert.equal(
-    plate.src,
-    asked,
-    'a retry that failed was retried again, which asks the same edge for the same missing file forever'
+    page.posted[0].message,
+    'Failed to load img: https://www.rootriseholdings.com/art/briefing.svg',
+    'the report no longer names the whole address of the file itself, so it groups as a new fault and loses every earlier report of this one'
   )
+  page.tick(5000)
+  assert.equal(page.posted.length, 1, 'one missing picture was filed more than once')
 })
 
 test('an image from another origin is still filed', () => {
