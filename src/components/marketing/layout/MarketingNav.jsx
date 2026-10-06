@@ -206,11 +206,16 @@ export default function MarketingNav() {
               <BrandMark />
             </Link>
 
-            <ul className="hidden flex-1 items-center justify-center gap-1 lg:flex">
+            {/* Each item runs the full height of the bar, so the pointer is
+                still on the trigger it opened until it reaches the panel
+                hanging below, rather than crossing a strip of bar that belongs
+                to neither and closes it. */}
+            <ul className="hidden flex-1 items-stretch justify-center gap-1 self-stretch lg:flex">
               {NAV_GROUPS.map((group, index) =>
                 group.items ? (
                   <li
                     key={group.key}
+                    className="flex items-center"
                     onPointerEnter={() => scheduleOpen(group.key)}
                     onPointerLeave={scheduleClose}
                   >
@@ -237,7 +242,7 @@ export default function MarketingNav() {
                     </button>
                   </li>
                 ) : (
-                  <li key={group.key} onPointerEnter={scheduleClose}>
+                  <li key={group.key} className="flex items-center" onPointerEnter={scheduleClose}>
                     <Link
                       to={group.to}
                       ref={(node) => {
