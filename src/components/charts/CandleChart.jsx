@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createChart } from 'lightweight-charts'
 import { useTheme } from '../../context/ThemeContext'
 import { chartOptions, resolveTokens } from './lwcTheme'
+import { followChartWidth } from './chartWidth'
 import { cn } from '../../lib/cn'
 import { formatCt } from '../../lib/time.js'
 
@@ -111,15 +112,10 @@ export default function CandleChart({
       })
     }
 
-    // The width follows the column rather than the window: a chart in a rail
-    // that collapses at a breakpoint gets no window resize to react to, and
-    // stayed at its old width with the canvas clipped.
-    const observer = new ResizeObserver((entries) => {
-      const width = entries[0]?.contentRect?.width
-      if (width) chart.applyOptions({ width: Math.floor(width) })
-    })
-    observer.observe(element)
-    chart.applyOptions({ width: Math.floor(element.clientWidth) })
+    // The width follows the column the chart sits in, read off the viewport
+    // rather than off the column itself, so resizing the canvases cannot feed
+    // a second size back into the read that caused it.
+    const stopWidth = followChartWidth(element, (width) => chart.applyOptions({ width }))
 
     chart.subscribeCrosshairMove((param) => {
       const bar = param?.seriesData?.get(priceRef.current)
@@ -131,7 +127,7 @@ export default function CandleChart({
     })
 
     return () => {
-      observer.disconnect()
+      stopWidth()
       chart.remove()
       chartRef.current = null
       priceRef.current = null
