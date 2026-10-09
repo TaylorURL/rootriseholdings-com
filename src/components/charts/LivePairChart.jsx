@@ -6,6 +6,7 @@ import { useInstrumentQuote } from '../../lib/marketData/instrumentQuotes.js'
 import { formatInstrumentPrice } from '../../lib/format'
 import { useTheme } from '../../context/ThemeContext'
 import { chartOptions, resolveTokens } from './lwcTheme'
+import { followChartWidth } from './chartWidth'
 import { formatCt } from '../../lib/time.js'
 
 /**
@@ -83,12 +84,10 @@ export default function LivePairChart({ symbol, height = 220, compact = false, c
       crosshairMarkerRadius: 3,
     })
 
-    const observer = new ResizeObserver((entries) => {
-      const width = entries[0]?.contentRect?.width
-      if (width) chart.applyOptions({ width: Math.floor(width) })
-    })
-    observer.observe(element)
-    chart.applyOptions({ width: Math.floor(element.clientWidth) })
+    // Read off the viewport rather than off the holder: writing a width back
+    // into the engine from inside the holder's own size callback is what put
+    // the browser's observation pass into a loop it could not settle.
+    const stopWidth = followChartWidth(element, (width) => chart.applyOptions({ width }))
 
     if (!compact) {
       chart.subscribeCrosshairMove((param) => {
@@ -98,7 +97,7 @@ export default function LivePairChart({ symbol, height = 220, compact = false, c
     }
 
     return () => {
-      observer.disconnect()
+      stopWidth()
       chart.remove()
       chartRef.current = null
       areaRef.current = null
