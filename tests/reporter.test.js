@@ -416,6 +416,106 @@ test('an image from another origin is still filed', () => {
   )
 })
 
+/**
+ * The clock behind the asking, which is the part that decides whether asking
+ * three times is worth anything.
+ *
+ * Spacing the tries out is only half of it. A try that is slow to come back
+ * refused eats the room the next try was supposed to go out in, so a budget
+ * measured from the first failure and never told what is outstanding ends the
+ * asking in the middle of it: the third try is never issued, and the report is
+ * filed about a request that was still in flight. Both of those are below.
+ */
+
+test('a try slow to come back refused still leaves room for the ones behind it', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  // Two seconds to be refused, which is a connection stalling rather than a
+  // file that has gone - and it is the case the spacing exists for.
+  page.throws({ target: plate })
+  page.tick(0)
+  page.tick(2000)
+  page.throws({ target: plate })
+  page.tick(1200)
+  assert.match(plate.src, /\?retry=2$/, 'the second try never came')
+  page.tick(2000)
+  page.throws({ target: plate })
+  page.tick(1400)
+  assert.match(
+    plate.src,
+    /\?retry=3$/,
+    'the third try was never issued, so a connection slow enough to need the spacing is asked twice and the page is back on the shape that was abandoned for being asked once'
+  )
+  assert.equal(page.posted.length, 0, 'a report went out while the asking was still going on')
+})
+
+test('a picture that arrives late is not filed as one that never came', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  page.throws({ target: plate })
+  page.tick(0)
+  page.tick(2000)
+  page.throws({ target: plate })
+  page.tick(3200)
+  plate.arrives()
+  page.tick(10000)
+  assert.equal(
+    page.posted.length,
+    0,
+    'a plate the reader was shown was filed as a fault because a clock ran out while the request that carried it was still in flight, so the queue is told nobody got a picture that arrived'
+  )
+})
+
+test('a try that neither answers nor fails is moved past rather than ending the asking', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  page.throws({ target: plate })
+  page.tick(0)
+  assert.match(plate.src, /\?retry=1$/, 'the first try never came')
+  // Nothing comes back at all - no picture and no refusal. There is no event
+  // to hang the next step on, so the step has to come off a clock of its own.
+  page.tick(2500)
+  page.tick(1200)
+  assert.match(
+    plate.src,
+    /\?retry=2$/,
+    'a try that went silent stopped the asking dead, so a request that hangs is never asked again'
+  )
+  page.tick(2500)
+  page.tick(1400)
+  assert.match(plate.src, /\?retry=3$/, 'the third try never came')
+  page.tick(2500)
+  page.tick(400)
+  assert.equal(page.posted.length, 1, 'a picture the reader never got went unreported')
+  assert.equal(
+    page.posted[0].message,
+    'Failed to load img: https://www.rootriseholdings.com/art/briefing.svg',
+    'the report no longer names the whole address of the file itself'
+  )
+})
+
+test('a plate holding a picture when the asking ends is not filed', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  // The element's own word for a picture it has decoded and is drawing. A
+  // reader looking at the plate has met no fault, whatever the requests did.
+  plate.complete = true
+  plate.naturalWidth = 400
+  page.throws({ target: plate })
+  page.tick(0)
+  page.throws({ target: plate })
+  page.tick(1200)
+  page.throws({ target: plate })
+  page.tick(1400)
+  page.throws({ target: plate })
+  page.tick(5000)
+  assert.equal(
+    page.posted.length,
+    0,
+    'a plate that was on the screen was filed as a picture nobody got, which is a ticket no change to this site can ever close'
+  )
+})
+
 /** A link the page was served with, holding the file it asked for. */
 function sheet(href) {
   return {
