@@ -284,7 +284,15 @@
           // A page drawing its own failure over and over is not a page a
           // recovery can save, and the list is not allowed to grow with it.
           if (plates.length >= 50) return null
-          var state = { node: node, src: '', tries: 0, settled: false, timer: null, watched: false }
+          var state = {
+            node: node,
+            src: '',
+            tries: 0,
+            latest: 0,
+            settled: false,
+            timer: null,
+            watched: false,
+          }
           plates.push(state)
           return state
         }
@@ -341,14 +349,57 @@
           }
           var wait = IMG_WAITS[state.tries]
           state.tries += 1
+          state.latest = state.tries
+          var asking = state.tries
           state.timer = setTimeout(function () {
             state.timer = null
             if (state.settled) return
-            state.node.setAttribute('data-img-retry', String(state.tries))
-            state.node.src =
-              state.src + (state.src.indexOf('?') === -1 ? '?' : '&') + 'retry=' + state.tries
+            plateAsk(state, asking)
             plateWatch(state)
           }, wait)
+        }
+        // One try, made on an image of its own rather than on the element the
+        // reader is looking at.
+        //
+        // Asking on that element abandons whatever it already has in flight.
+        // Writing `src` cancels the request outstanding there and then, and a
+        // response for an address the element no longer points at is thrown
+        // away when it does arrive. So on the connection the spacing exists
+        // for - the only one that ever needs three tries - each try was
+        // destroyed by the try behind it, the picture that was arriving every
+        // time never got to land, and the page then filed a loss it had caused
+        // itself about a file that answered every time it was asked. Driven
+        // against the built site with the plate refused once and then answered
+        // after five seconds, the second try came back cancelled, the first
+        // try's picture arrived into an element that had moved on from its
+        // address, and the report went out naming the plate while the plate was
+        // on the screen at its full width.
+        //
+        // An image of its own cancels nothing. Every try runs to its own end
+        // alongside the others, and the first one to come back hands its
+        // address to the element on the page, which has the file in the
+        // browser's own cache by then and paints it.
+        function plateAsk(state, n) {
+          var url = state.src + (state.src.indexOf('?') === -1 ? '?' : '&') + 'retry=' + n
+          var probe = new Image()
+          probe.onload = function () {
+            if (state.settled) return
+            plateSettle(state)
+            try {
+              state.node.setAttribute('data-img-retry', String(n))
+              state.node.src = url
+            } catch (ignored) {}
+          }
+          // Only the try the asking is on moves it forward. An earlier try
+          // coming back refused after the asking has gone past it says nothing
+          // the asking does not already know, and acting on it would spend
+          // every try that is left at once.
+          probe.onerror = function () {
+            if (state.settled) return
+            if (state.latest !== n) return
+            plateLost(state)
+          }
+          probe.src = url
         }
         function recoverImage(node, src) {
           if (!src) return false
@@ -371,6 +422,11 @@
               plateSettle(state)
             })
           }
+          // The asking has tries and a clock of its own, and it makes them on
+          // images of its own. An error raised on the element after it has
+          // started belongs to the element's own request rather than to a try,
+          // so it is not allowed to move the asking along.
+          if (state.tries > 0) return true
           plateLost(state)
           return true
         }
