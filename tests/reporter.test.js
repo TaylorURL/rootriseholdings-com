@@ -43,6 +43,10 @@ function collector(scriptTags) {
   const pending = []
   const sheets = []
   const reloads = []
+  // Every try the asking makes is an image of its own rather than a write to
+  // the element on the page, so this is where a try is read and where it is
+  // told what came back.
+  const probes = []
   const clock = { now: 0 }
   const sandbox = {
     JSON,
@@ -98,6 +102,11 @@ function collector(scriptTags) {
       if (pending[handle - 1]) pending[handle - 1].run = null
     },
   }
+  sandbox.Image = function Image() {
+    const probe = { src: '', onload: null, onerror: null }
+    probes.push(probe)
+    return probe
+  }
   sandbox.location.reload = () => reloads.push(true)
   sandbox.window = sandbox
   sandbox.self = sandbox
@@ -141,6 +150,22 @@ function collector(scriptTags) {
     /** Every link the page appended to the head, in the order it asked. */
     sheets: () => sheets,
     reloads: () => reloads.length,
+    /** Every try the asking has made, in the order it made them. */
+    asked: () => probes.map((probe) => probe.src),
+    /** What the try numbered `n` was asked for, one-based. */
+    ask: (n) => (probes[n - 1] ? probes[n - 1].src : null),
+    /** That try coming back refused. */
+    refuse(n) {
+      const probe = probes[n - 1]
+      if (!probe) throw new Error(`the asking never made a try numbered ${n}`)
+      if (probe.onerror) probe.onerror()
+    },
+    /** That try coming back with the picture on it. */
+    deliver(n) {
+      const probe = probes[n - 1]
+      if (!probe) throw new Error(`the asking never made a try numbered ${n}`)
+      if (probe.onload) probe.onload()
+    },
   }
 }
 
@@ -309,13 +334,15 @@ function image(src) {
   }
 }
 
+const PLATE = 'https://www.rootriseholdings.com/art/briefing.svg'
+
 test('a picture that failed is asked for again', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
   page.throws({ target: plate })
   page.tick(0)
   assert.match(
-    plate.src,
+    page.ask(1) || '',
     /\/art\/briefing\.svg\?retry=1$/,
     'a first-party image that failed was left holding its failed request, so a reader who lost one request sees a broken frame for the life of the tab and nothing on the page ever asks again'
   )
@@ -323,42 +350,127 @@ test('a picture that failed is asked for again', () => {
 
 test('the tries are spread out rather than spent at once', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
-  // Every try fails the way the first did, which is what an outage lasting
-  // longer than the instant the browser raised the first failure in looks like.
+  const plate = image(PLATE)
+  // Every try comes back refused the way the first did, which is what an
+  // outage lasting longer than the instant the browser raised the first
+  // failure in looks like.
   page.throws({ target: plate })
   page.tick(0)
-  page.throws({ target: plate })
+  page.refuse(1)
   page.tick(0)
-  assert.match(
-    plate.src,
-    /\?retry=1$/,
+  assert.equal(
+    page.asked().length,
+    1,
     'the second try was spent in the same moment as the first, so every try lands inside the lost moment and an outage lasting longer than no time at all is indistinguishable from a file that has gone'
   )
   page.tick(1200)
-  assert.match(plate.src, /\?retry=2$/, 'the second try never came')
-  page.throws({ target: plate })
+  assert.match(page.ask(2) || '', /\?retry=2$/, 'the second try never came')
+  page.refuse(2)
   page.tick(1400)
-  assert.match(plate.src, /\?retry=3$/, 'the third try never came')
+  assert.match(page.ask(3) || '', /\?retry=3$/, 'the third try never came')
 })
 
 test('a retry asks for the file rather than for the last retry', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
   page.throws({ target: plate })
   page.tick(0)
-  page.throws({ target: plate })
+  page.refuse(1)
   page.tick(1200)
   assert.equal(
-    plate.src,
+    page.ask(2),
     'https://www.rootriseholdings.com/art/briefing.svg?retry=2',
     'a query was stacked onto the last try, so every retry asks for a longer address than the file the page wants'
   )
 })
 
+/**
+ * The thing a try must never do, which is destroy the try in front of it.
+ *
+ * Asking on the element the reader is looking at writes its `src`, and that
+ * cancels whatever request is outstanding on it: the browser drops the one in
+ * flight, and a response for an address the element has moved on from is
+ * discarded when it arrives. On the slow connection the spacing exists for
+ * that is every try but the last, so the picture that was arriving each time
+ * never landed and the page filed a loss it had caused itself - against a file
+ * that answered every single time it was asked. The two tests below are that
+ * run, and they are the difference between a try of its own and a write to the
+ * page.
+ */
+
+test('a try does not abandon the try in front of it', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image(PLATE)
+  page.throws({ target: plate })
+  page.tick(0)
+  // Nothing comes back on the first try inside its own window, so the asking
+  // moves on and makes a second one.
+  page.tick(2500)
+  page.tick(1200)
+  assert.match(page.ask(2) || '', /\?retry=2$/, 'the second try never came')
+  // And now the first try comes back with the picture on it. It was still
+  // outstanding, because making the second try is not allowed to have thrown
+  // it away.
+  page.deliver(1)
+  page.tick(10000)
+  assert.equal(
+    page.posted.length,
+    0,
+    'the try the asking moved past was destroyed by the one behind it, so a picture that was on its way never arrived and the page filed a loss of its own making'
+  )
+  assert.equal(
+    plate.src,
+    'https://www.rootriseholdings.com/art/briefing.svg?retry=1',
+    'the try that came back with the picture never put it on the element, so the reader is left looking at a broken frame for a file the browser has in hand'
+  )
+})
+
+test('a picture a moved-past try brings back at the end files nothing', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image(PLATE)
+  // The run this fault filed on: one lost request, and then a connection slow
+  // enough that no try answers inside its own window.
+  page.throws({ target: plate })
+  page.tick(0)
+  page.tick(2500)
+  page.tick(1200)
+  page.tick(2500)
+  page.tick(1400)
+  assert.match(page.ask(3) || '', /\?retry=3$/, 'the third try never came')
+  page.tick(2500)
+  // The first try finally lands, which is what a five-second file on a stalled
+  // connection does.
+  page.deliver(1)
+  page.tick(10000)
+  assert.equal(
+    page.posted.length,
+    0,
+    'a plate the reader was shown was filed as a picture nobody got, so this fault files again on every slow connection and no change to the file can ever close it'
+  )
+})
+
 test('a picture that arrives on a retry is not filed at all', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
+  page.throws({ target: plate })
+  page.tick(0)
+  page.deliver(1)
+  page.tick(10000)
+  assert.equal(
+    page.posted.length,
+    0,
+    'a plate the reader was shown was filed as a fault, so the queue cannot tell a recovered picture from a broken frame and reads every recovery as the recovery having failed'
+  )
+  assert.match(
+    plate.src,
+    /\?retry=1$/,
+    'the try that came back with the picture never put it on the element the reader is looking at'
+  )
+})
+
+test('a picture the element itself gets settles the asking', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image(PLATE)
   page.throws({ target: plate })
   page.tick(0)
   plate.arrives()
@@ -366,20 +478,20 @@ test('a picture that arrives on a retry is not filed at all', () => {
   assert.equal(
     page.posted.length,
     0,
-    'a plate the reader was shown was filed as a fault, so the queue cannot tell a recovered picture from a broken frame and reads every recovery as the recovery having failed'
+    "a plate the element reported loading was filed as a picture nobody got, so the element's own word for what it is drawing counts for nothing"
   )
 })
 
 test('a picture that never arrives is filed once, under the name it has always had', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
   page.throws({ target: plate })
   page.tick(0)
-  page.throws({ target: plate })
+  page.refuse(1)
   page.tick(1200)
-  page.throws({ target: plate })
+  page.refuse(2)
   page.tick(1400)
-  page.throws({ target: plate })
+  page.refuse(3)
   assert.equal(
     page.posted.length,
     0,
@@ -410,9 +522,9 @@ test('an image from another origin is still filed', () => {
     'an image from another origin was dropped, so the reporter has gone quiet on a request the page makes and can see fail'
   )
   assert.equal(
-    elsewhere.src,
-    'https://cdn.example.com/badge.png',
-    'a file another origin serves was re-requested by this page, which is not this page’s to ask for again'
+    page.asked().length,
+    0,
+    'a file another origin serves was re-requested by this page, which is not this page\u2019s to ask for again'
   )
 })
 
@@ -429,20 +541,20 @@ test('an image from another origin is still filed', () => {
 
 test('a try slow to come back refused still leaves room for the ones behind it', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
   // Two seconds to be refused, which is a connection stalling rather than a
   // file that has gone - and it is the case the spacing exists for.
   page.throws({ target: plate })
   page.tick(0)
   page.tick(2000)
-  page.throws({ target: plate })
+  page.refuse(1)
   page.tick(1200)
-  assert.match(plate.src, /\?retry=2$/, 'the second try never came')
+  assert.match(page.ask(2) || '', /\?retry=2$/, 'the second try never came')
   page.tick(2000)
-  page.throws({ target: plate })
+  page.refuse(2)
   page.tick(1400)
   assert.match(
-    plate.src,
+    page.ask(3) || '',
     /\?retry=3$/,
     'the third try was never issued, so a connection slow enough to need the spacing is asked twice and the page is back on the shape that was abandoned for being asked once'
   )
@@ -451,13 +563,13 @@ test('a try slow to come back refused still leaves room for the ones behind it',
 
 test('a picture that arrives late is not filed as one that never came', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
   page.throws({ target: plate })
   page.tick(0)
   page.tick(2000)
-  page.throws({ target: plate })
+  page.refuse(1)
   page.tick(3200)
-  plate.arrives()
+  page.deliver(2)
   page.tick(10000)
   assert.equal(
     page.posted.length,
@@ -468,22 +580,22 @@ test('a picture that arrives late is not filed as one that never came', () => {
 
 test('a try that neither answers nor fails is moved past rather than ending the asking', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
   page.throws({ target: plate })
   page.tick(0)
-  assert.match(plate.src, /\?retry=1$/, 'the first try never came')
+  assert.match(page.ask(1) || '', /\?retry=1$/, 'the first try never came')
   // Nothing comes back at all - no picture and no refusal. There is no event
   // to hang the next step on, so the step has to come off a clock of its own.
   page.tick(2500)
   page.tick(1200)
   assert.match(
-    plate.src,
+    page.ask(2) || '',
     /\?retry=2$/,
     'a try that went silent stopped the asking dead, so a request that hangs is never asked again'
   )
   page.tick(2500)
   page.tick(1400)
-  assert.match(plate.src, /\?retry=3$/, 'the third try never came')
+  assert.match(page.ask(3) || '', /\?retry=3$/, 'the third try never came')
   page.tick(2500)
   page.tick(400)
   assert.equal(page.posted.length, 1, 'a picture the reader never got went unreported')
@@ -496,18 +608,18 @@ test('a try that neither answers nor fails is moved past rather than ending the 
 
 test('a plate holding a picture when the asking ends is not filed', () => {
   const page = collector(PAGE_SCRIPTS)
-  const plate = image('https://www.rootriseholdings.com/art/briefing.svg')
+  const plate = image(PLATE)
   // The element's own word for a picture it has decoded and is drawing. A
   // reader looking at the plate has met no fault, whatever the requests did.
   plate.complete = true
   plate.naturalWidth = 400
   page.throws({ target: plate })
   page.tick(0)
-  page.throws({ target: plate })
+  page.refuse(1)
   page.tick(1200)
-  page.throws({ target: plate })
+  page.refuse(2)
   page.tick(1400)
-  page.throws({ target: plate })
+  page.refuse(3)
   page.tick(5000)
   assert.equal(
     page.posted.length,
