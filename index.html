@@ -229,10 +229,29 @@
         // and fail for the reason the first one did. A single try taken the
         // instant the browser raises the failure covers an outage that has
         // already ended and nothing else, which is why a plate that is asked
-        // for twice still goes missing. So the second try waits, the third
-        // waits longer, and the deadline runs from the first failure rather
-        // than from the last, because a request that neither answers nor fails
-        // leaves no event to hang the next step on.
+        // for twice still goes missing. So the second try waits and the third
+        // waits longer.
+        //
+        // The clock the waits run against is the other half of it, and a flat
+        // budget measured from the first failure is the wrong one. It knows
+        // nothing about what is outstanding, so on the slow connection the
+        // spacing exists for it ends the asking in the middle of the asking:
+        // each try that is slow to come back refused eats the room the next
+        // one was going to go out in, the budget runs out before the third try
+        // is ever issued, and the page is back on the single retry that was
+        // abandoned for being spent too early. Worse, it ends the asking while
+        // a request is still in flight, so the picture lands a moment later,
+        // the reader sees the plate, and a report has already gone out saying
+        // nobody got it. Two visitors cannot be told apart on the queue and
+        // neither of them has a fault this site can fix.
+        //
+        // So the clock belongs to each try rather than to the whole. A try
+        // gets a window of its own; the next step is taken when that try comes
+        // back refused or when its window closes, whichever is first, because
+        // a request that neither answers nor fails leaves no event to hang the
+        // next step on. Every try is therefore always issued, no try is ever
+        // cut off by a budget behind it, and the whole thing is still bounded
+        // by three waits and three windows.
         //
         // The query on each try is what gets the browser past its own record of
         // the failure; it buys nothing at the edge, which serves this site's
@@ -247,18 +266,89 @@
         // worse, it reads on the queue exactly like the broken frame it is not,
         // so the two cannot be told apart. What is worth reporting is recovery
         // having failed, and that is reported in full, under the words and the
-        // whole address every earlier report of this file carried.
+        // whole address every earlier report of this file carried. A plate that
+        // is holding a decoded picture when the asking ends is not one of
+        // those, whatever its requests did on the way there.
         var IMG_WAITS = [0, 1200, 1400]
-        var IMG_GIVE_UP = 5000
+        // What one try is given before it is treated as lost and the next one
+        // is asked for. A request that neither answers nor fails leaves no
+        // event to hang the next step on, and this is what moves past it.
+        var IMG_TRY_WINDOW = 2500
+        // The last word, and it is armed only once the asking is over. A try
+        // the window above gave up on is still in flight, so this is the
+        // chance it has to land before anything is said about it.
+        var IMG_SETTLE = 400
         var plates = []
         function plateState(node) {
           for (var i = 0; i < plates.length; i += 1) if (plates[i].node === node) return plates[i]
           // A page drawing its own failure over and over is not a page a
           // recovery can save, and the list is not allowed to grow with it.
           if (plates.length >= 50) return null
-          var state = { node: node, src: '', tries: 0, settled: false, deadline: null }
+          var state = { node: node, src: '', tries: 0, settled: false, timer: null, watched: false }
           plates.push(state)
           return state
+        }
+        // The element's own word for a picture it has decoded and is drawing.
+        // A reader looking at the plate has met no fault, whatever the
+        // requests behind it did.
+        function plateHolding(node) {
+          try {
+            return !!(node.complete && node.naturalWidth > 0)
+          } catch (ignored) {
+            return false
+          }
+        }
+        function plateSettle(state) {
+          state.settled = true
+          if (state.timer) {
+            clearTimeout(state.timer)
+            state.timer = null
+          }
+        }
+        // One try is outstanding at a time, so the next step and the window
+        // over the current try share the one handle.
+        function plateWatch(state) {
+          state.timer = setTimeout(function () {
+            state.timer = null
+            if (state.settled) return
+            plateLost(state)
+          }, IMG_TRY_WINDOW)
+        }
+        // A try that came back refused, or that went silent for longer than its
+        // own window. Either way it is over and the asking moves on from it.
+        function plateLost(state) {
+          if (state.settled) return
+          if (state.timer) {
+            clearTimeout(state.timer)
+            state.timer = null
+          }
+          if (state.tries >= IMG_WAITS.length) {
+            state.timer = setTimeout(function () {
+              state.timer = null
+              if (state.settled) return
+              if (plateHolding(state.node)) {
+                plateSettle(state)
+                return
+              }
+              plateSettle(state)
+              var named = state.src
+              try {
+                named = new URL(state.src, location.href).href
+              } catch (ignored) {}
+              report('resource', 'Failed to load img: ' + named)
+            }, IMG_SETTLE)
+            return
+          }
+          var wait = IMG_WAITS[state.tries]
+          state.tries += 1
+          state.timer = setTimeout(function () {
+            state.timer = null
+            if (state.settled) return
+            state.node.setAttribute('data-img-retry', String(state.tries))
+            state.node.src =
+              state.src + (state.src.indexOf('?') === -1 ? '?' : '&') + 'retry=' + state.tries
+            plateWatch(state)
+          }, wait)
         }
         function recoverImage(node, src) {
           if (!src) return false
@@ -275,30 +365,13 @@
           // stacking another query onto the last, and the report at the end
           // names what every earlier report of this file was filed under.
           if (!state.src) state.src = src
-          if (!state.deadline) {
+          if (!state.watched) {
+            state.watched = true
             node.addEventListener('load', function () {
-              state.settled = true
-              if (state.deadline) clearTimeout(state.deadline)
+              plateSettle(state)
             })
-            state.deadline = setTimeout(function () {
-              if (state.settled) return
-              state.settled = true
-              var named = state.src
-              try {
-                named = new URL(state.src, location.href).href
-              } catch (ignored) {}
-              report('resource', 'Failed to load img: ' + named)
-            }, IMG_GIVE_UP)
           }
-          if (state.tries >= IMG_WAITS.length) return true
-          var wait = IMG_WAITS[state.tries]
-          state.tries += 1
-          setTimeout(function () {
-            if (state.settled) return
-            node.setAttribute('data-img-retry', String(state.tries))
-            node.src =
-              state.src + (state.src.indexOf('?') === -1 ? '?' : '&') + 'retry=' + state.tries
-          }, wait)
+          plateLost(state)
           return true
         }
         window.addEventListener('vite:preloadError', function (event) {
