@@ -9,7 +9,7 @@
 <p align="center"><a href="https://www.rootriseholdings.com">rootriseholdings.com</a></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.43.1-8b5cf6?style=for-the-badge" alt="Version 2026.43.1" />
+  <img src="https://img.shields.io/badge/version-2026.44.0-8b5cf6?style=for-the-badge" alt="Version 2026.44.0" />
 </p>
 
 Root & Rise is a private trading desk that trades gold, NAS100, US30 and SP500 using Smart Money Concepts (market structure and pullback entries). It doesn't manage outside money or sell signals. The home page explains the method. The tools the desk works in are at `/app`, behind a sign-in.
