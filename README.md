@@ -6,7 +6,7 @@ A trading desk's journal, signal record and daily market briefing, behind a publ
 
 [rootriseholdings.com](https://www.rootriseholdings.com)
 
-<img src="https://img.shields.io/badge/version-2026.44.2-8b5cf6?style=for-the-badge" alt="Version 2026.44.2" />
+<img src="https://img.shields.io/badge/version-2026.44.3-8b5cf6?style=for-the-badge" alt="Version 2026.44.3" />
 
 Root & Rise is a private desk trading gold, NAS100, US30 and SP500 with Smart Money Concepts. It doesn't manage outside money or sell signals. The home page explains the method. The desk's tools are at `/app`, behind sign-in.
 
