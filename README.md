@@ -6,11 +6,12 @@ A trading desk's journal, signal record and daily market briefing, behind a publ
 
 [rootriseholdings.com](https://www.rootriseholdings.com)
 
-<img src="https://img.shields.io/badge/version-2026.44.1-8b5cf6?style=for-the-badge" alt="Version 2026.44.1" />
+<img src="https://img.shields.io/badge/version-2026.44.2-8b5cf6?style=for-the-badge" alt="Version 2026.44.2" />
 
 Root & Rise is a private desk trading gold, NAS100, US30 and SP500 with Smart Money Concepts. It doesn't manage outside money or sell signals. The home page explains the method. The desk's tools are at `/app`, behind sign-in.
 
-## What's in it
+<details>
+<summary>What's in it</summary>
 
 - A trade journal that holds the desk's risk rules at entry. It refuses a trade over 1% risk, locks the day after a 0.5% loss or two losses in a row, and marks trades under 2R as off-book.
 - A signal record. Each call is posted before the outcome and scored against price afterward.
@@ -18,6 +19,8 @@ Root & Rise is a private desk trading gold, NAS100, US30 and SP500 with Smart Mo
 - Live prices and charts, stats by instrument, setup, session and grade, and prop-firm challenge tracking.
 - A demo account that plays the signal record forward as a balance.
 - Email or webhook alerts when a new call is published.
+
+</details>
 
 ## How it's built
 
