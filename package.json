@@ -2,7 +2,7 @@
   "name": "rootriseholdings-com",
   "private": true,
   "license": "UNLICENSED",
-  "version": "2026.44.1",
+  "version": "2026.44.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
