@@ -278,6 +278,13 @@
         // the window above gave up on is still in flight, so this is the
         // chance it has to land before anything is said about it.
         var IMG_SETTLE = 400
+        // What the element is given once the asking is over and nothing came
+        // back. An empty drawing of the plate's own shape, carried in the page
+        // itself, so the reader is not waiting on another request to get a page
+        // that reads right - see plateFace below for why the element needs one
+        // at all.
+        var IMG_FACE =
+          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 280' width='400' height='280'%3E%3C/svg%3E"
         var plates = []
         function plateState(node) {
           for (var i = 0; i < plates.length; i += 1) if (plates[i].node === node) return plates[i]
@@ -305,6 +312,36 @@
           } catch (ignored) {
             return false
           }
+        }
+        // The other half of a picture that never arrives, and the half four
+        // passes at the recovery never reached.
+        //
+        // Three tries, spread out, each on an image of its own, is as far as
+        // asking goes. What is left when all three are spent is a file this
+        // page cannot get - lost on the way, refused by something sitting in
+        // front of the browser, or never put on the network at all - and no
+        // further request changes that. What is still this page's to put right
+        // is what the reader is looking at, and until now that was the
+        // browser's own broken-image mark with as much of the plate's
+        // description as fits beside it, in a panel the width of the column in
+        // the middle of the page. Driven against the built site with every
+        // address for the plate refused the instant it was asked for, which is
+        // the shape of a request stopped before it reached the network, the
+        // frame finished the run 510 by 357 and empty of everything but that.
+        //
+        // The plate's face belongs to the element rather than to the file - the
+        // drawing is transparent and the ground is the element's own - so an
+        // empty drawing of the plate's shape leaves exactly the panel the page
+        // was designed around, at the size it reserved. The description stays
+        // on the element for a reader listening to the page, and the report has
+        // already gone out by the time this runs: what the reader sees changes,
+        // what is filed does not.
+        function plateFace(state) {
+          if (plateHolding(state.node)) return
+          try {
+            state.node.setAttribute('data-img-lost', '1')
+            state.node.src = IMG_FACE
+          } catch (ignored) {}
         }
         function plateSettle(state) {
           state.settled = true
@@ -344,6 +381,7 @@
                 named = new URL(state.src, location.href).href
               } catch (ignored) {}
               report('resource', 'Failed to load img: ' + named)
+              plateFace(state)
             }, IMG_SETTLE)
             return
           }
