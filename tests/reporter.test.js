@@ -512,6 +512,79 @@ test('a picture that never arrives is filed once, under the name it has always h
   assert.equal(page.posted.length, 1, 'one missing picture was filed more than once')
 })
 
+test('a picture that never arrives leaves the plate’s own face rather than a broken frame', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image(PLATE)
+  page.throws({ target: plate })
+  page.tick(0)
+  page.refuse(1)
+  page.tick(1200)
+  page.refuse(2)
+  page.tick(1400)
+  page.refuse(3)
+  assert.equal(
+    plate.src,
+    PLATE,
+    'the element was given up on while the asking was still going on, so a picture that was about to arrive can no longer land on it'
+  )
+  page.tick(5000)
+  assert.equal(page.posted.length, 1, 'a picture the reader never got went unreported')
+  assert.ok(
+    plate.src.indexOf('data:image/svg+xml,') === 0,
+    'the reader is still left with the browser’s broken-image mark and the clipped description beside it where the plate should be'
+  )
+  assert.ok(
+    plate.src.indexOf('viewBox') !== -1 && plate.src.indexOf('400 280') !== -1,
+    'the face the element was given is not the shape the page reserved for the plate, so the panel collapses or overruns'
+  )
+  assert.equal(
+    plate.getAttribute('data-img-lost'),
+    '1',
+    'nothing on the element says the plate it is drawing is an empty face rather than the file'
+  )
+})
+
+test('a plate holding a picture is never given the face', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image(PLATE)
+  plate.complete = true
+  plate.naturalWidth = 400
+  page.throws({ target: plate })
+  page.tick(0)
+  page.refuse(1)
+  page.tick(1200)
+  page.refuse(2)
+  page.tick(1400)
+  page.refuse(3)
+  page.tick(5000)
+  assert.equal(
+    plate.src,
+    PLATE,
+    'a plate the reader was already looking at had its picture replaced with an empty face'
+  )
+  assert.equal(plate.getAttribute('data-img-lost'), null, 'a plate on the screen was marked lost')
+})
+
+test('a picture a try brings back is drawn rather than the face', () => {
+  const page = collector(PAGE_SCRIPTS)
+  const plate = image(PLATE)
+  page.throws({ target: plate })
+  page.tick(0)
+  page.deliver(1)
+  page.tick(5000)
+  assert.equal(page.posted.length, 0, 'a picture that arrived on a try was filed as one nobody got')
+  assert.equal(
+    plate.src,
+    PLATE + '?retry=1',
+    'the try that came back with the picture did not hand its address to the element'
+  )
+  assert.equal(
+    plate.getAttribute('data-img-lost'),
+    null,
+    'a plate that got its picture was marked as one that never did'
+  )
+})
+
 test('an image from another origin is still filed', () => {
   const page = collector(PAGE_SCRIPTS)
   const elsewhere = image('https://cdn.example.com/badge.png')
